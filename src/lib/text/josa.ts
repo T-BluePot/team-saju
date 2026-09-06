@@ -14,15 +14,43 @@
 const HANGUL_START = 0xac00
 const HANGUL_END = 0xd7a3
 
-/** 마지막 글자에 받침이 있나 */
-export function hasFinalConsonant(word: string): boolean {
+/** 마지막 글자가 한글 음절인가 */
+export function endsWithHangul(word: string): boolean {
   const code = word.charCodeAt(word.length - 1)
-  if (Number.isNaN(code) || code < HANGUL_START || code > HANGUL_END) return false
-  return (code - HANGUL_START) % 28 > 0
+  return !Number.isNaN(code) && code >= HANGUL_START && code <= HANGUL_END
 }
 
+/** 마지막 글자에 받침이 있나. 한글이 아니면 판단할 수 없다 */
+export function hasFinalConsonant(word: string): boolean {
+  if (!endsWithHangul(word)) return false
+  return (word.charCodeAt(word.length - 1) - HANGUL_START) % 28 > 0
+}
+
+/**
+ * 한글이 아니면 둘 다 적는다.
+ *
+ * 이름은 사용자가 자유롭게 넣는다. `Kim` 이나 `팀원0` 은 받침 소리로 끝나는데
+ * 한글 음절이 아니라 받침을 셀 수 없다. 그냥 하나를 고르면 조용히 틀린다.
+ * 괄호는 못생겼어도 틀리지는 않는다.
+ */
 function attach(word: string, withFinal: string, withoutFinal: string): string {
+  if (!endsWithHangul(word)) return `${word}${withFinal}(${withoutFinal})`
   return word + (hasFinalConsonant(word) ? withFinal : withoutFinal)
+}
+
+/**
+ * 여럿을 잇는다. 셋 이상이면 쉼표로 잇고 마지막만 과/와 다.
+ * "조율과 실행과 분석" 은 문법은 맞아도 읽기 나쁘다.
+ */
+export function and(words: string[]): string {
+  if (words.length <= 1) return words[0] ?? ''
+  const head = words.slice(0, -1)
+  const last = words[words.length - 1]
+  const before = head[head.length - 1]
+  const joiner = hasFinalConsonant(before) ? '과 ' : '와 '
+  return head.length === 1
+    ? `${before}${joiner}${last}`
+    : `${head.slice(0, -1).join(', ')}, ${before}${joiner}${last}`
 }
 
 /** 목이 / 화가 */

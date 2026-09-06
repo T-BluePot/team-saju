@@ -1,3 +1,4 @@
+import { and } from '../text/josa'
 import { TRAIT_AXES } from '../saju/constants'
 import type { SajuChart, TeamAnalysis } from '../saju/types'
 
@@ -32,9 +33,9 @@ function strengthLean(charts: SajuChart[]): Modifier | null {
 
   const strong = charts.filter((c) => c.strength.level === 'strong').length
   const weak = charts.filter((c) => c.strength.level === 'weak').length
-  const need = Math.ceil(charts.length * LEAN_RATIO)
+  const ratio = (n: number) => n / charts.length
 
-  if (strong >= need) {
+  if (ratio(strong) >= LEAN_RATIO) {
     return {
       id: 'all-strong',
       label: '다 밀어붙이는 쪽',
@@ -42,7 +43,7 @@ function strengthLean(charts: SajuChart[]): Modifier | null {
       fix: '결론이 갈리면 누가 정할지를 안건마다 미리 정해두세요',
     }
   }
-  if (weak >= need) {
+  if (ratio(weak) >= LEAN_RATIO) {
     return {
       id: 'all-weak',
       label: '다 맞춰주는 쪽',
@@ -50,22 +51,19 @@ function strengthLean(charts: SajuChart[]): Modifier | null {
       fix: '일마다 먼저 움직일 사람 한 명을 정해두세요. 다 같이 기다리는 걸 막습니다',
     }
   }
-  return {
-    id: 'mixed-strength',
-    label: '섞인 쪽',
-    line: '미는 사람과 맞추는 사람이 섞여 있습니다. 역할이 자연스럽게 갈립니다',
-  }
+  // 섞인 쪽은 89% 팀에 붙고 처방도 없다. 거의 모두에게 같은 문장은 변주가 아니라 노이즈다
+  return null
 }
 
 function emptyAxes(traits: TeamAnalysis['traits']): Modifier | null {
   const empty = TRAIT_AXES.filter((a) => traits[a] <= EMPTY_AXIS)
   if (empty.length === 0) return null
 
-  const names = empty.join('과 ')
+  const names = and(empty)
   return {
     id: 'empty-axis',
     label: `${names} 공백`,
-    line: `${names} 쪽이 거의 비어 있습니다. 그 일이 생기면 매번 같은 사람이 떠맡습니다`,
+    line: `${names} 쪽이 거의 비어 있습니다. 그 일이 생기면 한 사람에게 몰리기 쉽습니다`,
     fix: '그 자리를 사람이 아니라 규칙으로 메우세요. 회의 끝에 정해두는 절차 하나면 됩니다',
   }
 }
@@ -83,7 +81,7 @@ function chainBreak(analysis: TeamAnalysis): Modifier | null {
   }
 }
 
-function isolated(analysis: TeamAnalysis): Modifier | null {
+function isolated(analysis: TeamAnalysis, charts: SajuChart[]): Modifier | null {
   if (analysis.size < 3) return null
   // 상생이 아예 없으면 chainBreak 가 같은 얘기를 이미 한다
   if (analysis.pairCounts.generating === 0) return null
@@ -95,7 +93,8 @@ function isolated(analysis: TeamAnalysis): Modifier | null {
       linked.add(p.bId)
     }
   }
-  const alone = analysis.size - linked.size
+  // id 가 유일하다는 가정을 빌려 쓰지 않는다. 실제로 세어본다
+  const alone = charts.filter((c) => !linked.has(c.member.id)).length
   if (alone === 0) return null
 
   // 이름을 쓰지 않는다. 누가 겉도는지 지목하면 배제하는 UI 가 된다
@@ -139,9 +138,12 @@ function sizeBand(size: number): Modifier {
  * 순서는 눈에 띄는 것부터다. 인원수는 항상 마지막이다. 늘 나오는 얘기라 앞에 두면 지겹다.
  */
 export function teamModifiers(analysis: TeamAnalysis, charts: SajuChart[]): Modifier[] {
+  // 혼자면 변주가 없다. "한 명이 빠지면" 을 혼자인 사람에게 내밀 수 없다
+  if (analysis.size < 2) return []
+
   return [
     chainBreak(analysis),
-    isolated(analysis),
+    isolated(analysis, charts),
     emptyAxes(analysis.traits),
     strengthLean(charts),
     sizeBand(analysis.size),
