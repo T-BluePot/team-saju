@@ -19,13 +19,13 @@ const SAMPLE: Seed[] = [
   { name: '효경', birthDate: '1995-07-01', birthHour: 10 },
 ]
 
-function seedMembers(): boolean {
+function seedMembers(only = SAMPLE.length): boolean {
   const store = useTeamStore.getState()
   store.reset()
   store.agree()
   store.setTeamName('푸른핫가마')
 
-  for (const seed of SAMPLE) {
+  for (const seed of SAMPLE.slice(0, only)) {
     const error = useTeamStore.getState().addMember({
       ...emptyDraft(),
       ...seed,
@@ -42,6 +42,11 @@ function seedMembers(): boolean {
 export function seedDemo(): void {
   // 로딩 화면을 건너뛰고 결과를 바로 띄운다. 캡쳐가 타이밍을 안 타게
   if (seedMembers()) useTeamStore.setState({ view: 'result' })
+}
+
+/** 한 명만 넣은 결과. 1인 모드 화면을 보려면 여기로 */
+export function seedSolo(): void {
+  if (seedMembers(1)) useTeamStore.setState({ view: 'result' })
 }
 
 /** 로딩 화면에 세운다. 사람이 여럿일 때 명식이 넘어가는 걸 보려면 여기로 */
@@ -66,7 +71,7 @@ export function seedConsent(): void {
 
 /**
  * `#demo` 결과, `#demo-input` 입력, `#demo-loading` 로딩,
- * `#demo-consent` 동의 모달, `#demo-personal` 결과의 개인 명식 탭
+ * `#demo-consent` 동의 모달, `#demo-personal` 개인 명식 탭, `#demo-solo` 1인 결과
  */
 export function applyDemoHash(): void {
   if (window.location.hash === '#demo') seedDemo()
@@ -74,4 +79,5 @@ export function applyDemoHash(): void {
   if (window.location.hash === '#demo-loading') seedLoading()
   if (window.location.hash === '#demo-consent') seedConsent()
   if (window.location.hash === '#demo-personal') seedDemo()
+  if (window.location.hash === '#demo-solo') seedSolo()
 }

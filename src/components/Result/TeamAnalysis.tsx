@@ -8,9 +8,14 @@ import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 export function TeamAnalysis({ report }: { report: TeamReport }) {
   const { analysis, dominant, lacking } = report
   const reading = readTraits(analysis.traits)
+  const solo = analysis.size === 1
 
   return (
-    <CommonSection index="一" title="분석" subtitle="팀 전체의 기운을 재봤습니다">
+    <CommonSection
+      index="一"
+      title="분석"
+      subtitle={solo ? '기운을 재봤습니다' : '팀 전체의 기운을 재봤습니다'}
+    >
       <div className="flex flex-col items-center gap-7 sm:flex-row">
         <SajuElementRadar percents={analysis.elements.percents} size={230} />
         <div className="w-full flex-1">
@@ -45,9 +50,13 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
         </span>
       </div>
 
-      <h4 className="serif mt-8 text-base font-bold">이 팀이 일하는 방식</h4>
+      <h4 className="serif mt-8 text-base font-bold">
+        {solo ? '일하는 방식' : '이 팀이 일하는 방식'}
+      </h4>
       <p className="mt-1 text-sm" style={{ color: 'var(--ink-soft)' }}>
-        팀원들의 십신을 합쳐서 다섯 가지로 나눠봤습니다
+        {solo
+          ? '십신을 다섯 가지로 나눠봤습니다'
+          : '팀원들의 십신을 합쳐서 다섯 가지로 나눠봤습니다'}
       </p>
       <div className="mt-3.5">
         {/* 고르게 나온 팀은 짚을 축이 없다. 억지로 두 개를 굵게 하면 배열 순서가 새어 나온다 */}
