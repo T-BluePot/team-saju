@@ -1,4 +1,5 @@
 import { CommonChip, CommonRule, CommonSection, CommonSubHeading } from '../Common'
+import { TeamModifiers } from './TeamModifiers'
 import { isSolo, needsBlock } from '../../lib/report/solo'
 import type { TeamReport } from '../../lib/report/teamReport'
 
@@ -80,6 +81,8 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
           {needsSection}
         </>
       )}
+
+      <TeamModifiers report={report} />
 
       {/* 조합이 없으면 아예 안 그린다. 0쌍 0쌍 0쌍은 알려주는 게 없다 */}
       {hasPairs && (

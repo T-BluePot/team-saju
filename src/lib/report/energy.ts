@@ -1,4 +1,4 @@
-import { object, subject } from './josa'
+import { object, subject } from '../text/josa'
 import { ELEMENT_LABEL } from '../saju/constants'
 import type { Element } from '../saju/types'
 

@@ -11,6 +11,7 @@ import {
   emptyScores,
   flagElements,
 } from './elements'
+import { object, subject } from '../text/josa'
 import { emptyTraits, normalizeTraits } from './tenGods'
 import type {
   Element,
@@ -73,7 +74,7 @@ export function pairChemistry(a: SajuChart, b: SajuChart): PairChemistry {
       relation: 'generating',
       score: 90,
       label: '상생',
-      direction: `${an}이(가) ${bn}을(를) 밀어주는 방향`,
+      direction: `${subject(an)} ${object(bn)} 밀어주는 방향`,
     }
   }
   if (GENERATES[eb] === ea) {
@@ -82,7 +83,7 @@ export function pairChemistry(a: SajuChart, b: SajuChart): PairChemistry {
       relation: 'generating',
       score: 90,
       label: '상생',
-      direction: `${bn}이(가) ${an}을(를) 밀어주는 방향`,
+      direction: `${subject(bn)} ${object(an)} 밀어주는 방향`,
     }
   }
   if (CONTROLS[ea] === eb) {
@@ -91,7 +92,7 @@ export function pairChemistry(a: SajuChart, b: SajuChart): PairChemistry {
       relation: 'tension',
       score: 55,
       label: '긴장감 있는 조합',
-      direction: `${an}이(가) ${bn}에게 브레이크를 거는 방향. 견제가 품질을 올릴 수도 있다`,
+      direction: `${subject(an)} ${bn}에게 브레이크를 거는 방향. 견제가 품질을 올릴 수도 있다`,
     }
   }
   return {
@@ -99,7 +100,7 @@ export function pairChemistry(a: SajuChart, b: SajuChart): PairChemistry {
     relation: 'tension',
     score: 55,
     label: '긴장감 있는 조합',
-    direction: `${bn}이(가) ${an}에게 브레이크를 거는 방향. 견제가 품질을 올릴 수도 있다`,
+    direction: `${subject(bn)} ${an}에게 브레이크를 거는 방향. 견제가 품질을 올릴 수도 있다`,
   }
 }
 

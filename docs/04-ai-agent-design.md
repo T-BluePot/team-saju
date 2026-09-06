@@ -39,7 +39,7 @@
 |---|---|---|---|
 | saju-engine | 쓰기 | `src/lib/saju/**` | 순수 함수만. 수정하면 반드시 `npm test`. 테스트 기대값을 코드에 맞춰 고치는 건 금지 |
 | saju-verifier | 읽기 전용 | 계산 결과와 명세 대조 | 구현자가 자기 코드를 검증하면 같은 오해를 반복한다. 산출물은 불일치 목록 |
-| saju-writer | 쓰기 | `src/lib/report/**`, 프롬프트 | 계산 로직 수정 금지. 숫자가 이상하면 verifier에게 넘긴다 |
+| saju-writer | 쓰기 | `src/lib/report/**`, `src/lib/text/**`, 프롬프트 | 계산 로직 수정 금지. 숫자가 이상하면 verifier에게 넘긴다 |
 | ui-builder | 쓰기 | `src/components/**`, `src/pages/**` | 반응형, 다크모드, 접근성 필수. `src/lib/**` 수정 금지 |
 | ethics-reviewer | 읽기 전용 | 사용자에게 보이는 모든 문자열 | 미래 단정, 배제 표현, 건강 수명 언급, 조언 없는 부정 지적을 잡는다 |
 
