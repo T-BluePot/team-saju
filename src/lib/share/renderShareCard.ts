@@ -202,7 +202,8 @@ function layout(
     ctx.save()
     ctx.translate(W - PAD - 34, y - 24)
     ctx.rotate((-4 * Math.PI) / 180)
-    ctx.fillStyle = accent
+    // 흰 글자를 얹으니 accentDeep 을 쓴다. 화면 인장과 같은 규칙
+    ctx.fillStyle = accentDeep
     roundRect(ctx, -34, -34, 68, 68, 8)
     ctx.fill()
     ctx.fillStyle = '#fff'
