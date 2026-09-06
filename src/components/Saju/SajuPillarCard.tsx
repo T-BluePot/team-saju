@@ -1,6 +1,6 @@
-import { ELEMENT_LABEL, STEM_ELEMENT } from '../lib/saju/constants'
-import type { Pillar } from '../lib/saju/types'
-import { ELEMENT_COLOR } from '../lib/ui/elementStyle'
+import { ELEMENT_LABEL, STEM_ELEMENT } from '../../lib/saju/constants'
+import type { Pillar } from '../../lib/saju/types'
+import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 
 const KIND_LABEL: Record<Pillar['kind'], string> = {
   year: '연주',
@@ -9,7 +9,7 @@ const KIND_LABEL: Record<Pillar['kind'], string> = {
   hour: '시주',
 }
 
-export function PillarCard({ pillar, isDayMaster }: { pillar: Pillar; isDayMaster?: boolean }) {
+export function SajuPillarCard({ pillar, isDayMaster }: { pillar: Pillar; isDayMaster?: boolean }) {
   const stemEl = STEM_ELEMENT[pillar.stem]
 
   return (
@@ -17,7 +17,7 @@ export function PillarCard({ pillar, isDayMaster }: { pillar: Pillar; isDayMaste
       className="flex flex-col items-center gap-1 rounded-xl px-2 py-3"
       style={{
         background: 'var(--surface)',
-        border: isDayMaster ? '2px solid var(--cinnabar)' : '1px solid var(--rule)',
+        border: isDayMaster ? '2px solid var(--accent)' : '1px solid var(--rule)',
       }}
     >
       <span className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>
@@ -34,7 +34,7 @@ export function PillarCard({ pillar, isDayMaster }: { pillar: Pillar; isDayMaste
   )
 }
 
-export function EmptyPillar() {
+export function SajuEmptyPillar() {
   return (
     <div
       className="flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-3"

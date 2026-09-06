@@ -34,7 +34,7 @@ export const emptyDraft = (): Draft => ({
   consentSource: null,
 })
 
-export const MAX_MEMBERS = 15
+export const MAX_MEMBERS = 8
 
 type State = {
   consented: boolean

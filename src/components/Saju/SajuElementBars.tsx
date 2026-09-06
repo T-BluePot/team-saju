@@ -1,6 +1,6 @@
-import { ELEMENTS, ELEMENT_LABEL, ELEMENT_TEAM_MEANING } from '../lib/saju/constants'
-import type { ElementFlag, ElementScores } from '../lib/saju/types'
-import { ELEMENT_COLOR } from '../lib/ui/elementStyle'
+import { ELEMENTS, ELEMENT_LABEL, ELEMENT_TEAM_MEANING } from '../../lib/saju/constants'
+import type { ElementFlag, ElementScores } from '../../lib/saju/types'
+import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 
 const FLAG_LABEL: Record<ElementFlag, string> = {
   excess: '넘침',
@@ -15,7 +15,7 @@ type Props = {
   showMeaning?: boolean
 }
 
-export function ElementBars({ percents, flags, showMeaning = false }: Props) {
+export function SajuElementBars({ percents, flags, showMeaning = false }: Props) {
   return (
     <ul className="flex flex-col gap-2.5">
       {ELEMENTS.map((el) => {
@@ -47,8 +47,8 @@ export function ElementBars({ percents, flags, showMeaning = false }: Props) {
               <span
                 className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium"
                 style={{
-                  background: 'var(--cinnabar-wash)',
-                  color: 'var(--cinnabar)',
+                  background: 'var(--accent-wash)',
+                  color: 'var(--accent)',
                 }}
               >
                 {FLAG_LABEL[flag]}

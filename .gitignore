@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# 캡쳐 작업물 (docs/screenshots 는 커밋한다)
+/shot

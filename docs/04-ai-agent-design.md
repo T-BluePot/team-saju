@@ -68,7 +68,7 @@ SajuFacts[] (생년월일 없음)
 | Playbook | `{actions[3]}` 각각 `{title, why, how}` | 0.5 | 800 |
 | Editor | 최종 마크다운 | 0.3 | 1500 |
 
-모델은 `claude-sonnet-5`. Persona는 팀원 수만큼 병렬로 돌려서 15명이어도 지연은 1회분.
+모델은 `claude-sonnet-5`. Persona는 팀원 수만큼 병렬로 돌려서 8명이어도 지연은 1회분.
 구조화 출력은 tool_use 스키마로 강제해서 JSON 파싱 실패를 막는다.
 
 ### 가드레일

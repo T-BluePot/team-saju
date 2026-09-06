@@ -1,10 +1,10 @@
 import { useState } from 'react'
 
-import { ELEMENT_LABEL, TEN_GODS, TRAIT_AXES } from '../lib/saju/constants'
-import type { PairChemistry, SajuChart } from '../lib/saju/types'
-import { ElementBars } from './ElementBars'
-import { ELEMENT_COLOR } from '../lib/ui/elementStyle'
-import { EmptyPillar, PillarCard } from './PillarCard'
+import { CommonCard, CommonChip } from '../Common'
+import { SajuElementBars, SajuEmptyPillar, SajuPillarCard } from '../Saju'
+import { ELEMENT_LABEL, TEN_GODS, TRAIT_AXES } from '../../lib/saju/constants'
+import type { PairChemistry, SajuChart } from '../../lib/saju/types'
+import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 
 const STRENGTH_LABEL = {
   strong: { name: '신강', note: '주도적이고 추진력이 있어요. 대신 고집이 셀 수 있어요' },
@@ -31,10 +31,7 @@ export function PersonalView({
 
   return (
     <div className="flex flex-col gap-5">
-      <div
-        className="flex flex-wrap gap-2 rounded-2xl p-3"
-        style={{ background: 'var(--surface)', border: '1px solid var(--rule)' }}
-      >
+      <CommonCard flush className="flex flex-wrap gap-2 p-3">
         {charts.map((c, i) => (
           <button
             key={c.member.id}
@@ -44,38 +41,28 @@ export function PersonalView({
             className="rounded-full px-3.5 py-1.5 text-sm font-medium"
             style={
               i === selected
-                ? { background: 'var(--cinnabar)', color: '#fff' }
+                ? { background: 'var(--accent)', color: '#fff' }
                 : { background: 'var(--paper-deep)', border: '1px solid var(--rule)' }
             }
           >
             {c.member.name}
           </button>
         ))}
-      </div>
+      </CommonCard>
 
-      <section
-        className="rounded-2xl p-6"
-        style={{ background: 'var(--surface)', border: '1px solid var(--rule)' }}
-      >
+      <CommonCard>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-lg font-bold">{chart.member.name}</h3>
-          <span
-            className="rounded-full px-2.5 py-1 text-[11px] font-medium"
-            style={
-              chart.member.consent.source === 'delegated'
-                ? { background: '#fdf1d0', color: '#8a6a12' }
-                : { background: 'var(--paper-deep)', color: 'var(--ink-soft)' }
-            }
-          >
+          <CommonChip tone={chart.member.consent.source === 'delegated' ? 'warn' : 'neutral'} size="sm">
             {chart.member.consent.source === 'delegated' ? '대리 입력' : '본인 입력'}
-          </span>
+          </CommonChip>
         </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
-          <PillarCard pillar={pillars.year} />
-          <PillarCard pillar={pillars.month} />
-          <PillarCard pillar={pillars.day} isDayMaster />
-          {pillars.hour ? <PillarCard pillar={pillars.hour} /> : <EmptyPillar />}
+          <SajuPillarCard pillar={pillars.year} />
+          <SajuPillarCard pillar={pillars.month} />
+          <SajuPillarCard pillar={pillars.day} isDayMaster />
+          {pillars.hour ? <SajuPillarCard pillar={pillars.hour} /> : <SajuEmptyPillar />}
         </div>
 
         <p className="mt-3 text-sm" style={{ color: 'var(--ink-soft)' }}>
@@ -87,7 +74,7 @@ export function PersonalView({
         </p>
 
         <div className="mt-5">
-          <ElementBars percents={elements.percents} />
+          <SajuElementBars percents={elements.percents} />
         </div>
 
         <div className="mt-5 rounded-xl p-4" style={{ background: 'var(--paper-deep)' }}>
@@ -113,7 +100,7 @@ export function PersonalView({
               >
                 <div
                   className="h-full rounded-full"
-                  style={{ width: `${traits[axis]}%`, background: 'var(--cinnabar)' }}
+                  style={{ width: `${traits[axis]}%`, background: 'var(--accent)' }}
                 />
               </div>
               <span className="w-9 shrink-0 text-right text-sm tabular-nums">
@@ -126,13 +113,9 @@ export function PersonalView({
         <h4 className="mt-6 text-sm font-bold">십신</h4>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
           {TEN_GODS.filter((g) => tenGods[g] > 0).map((g) => (
-            <span
-              key={g}
-              className="rounded-full px-2.5 py-1 text-xs"
-              style={{ background: 'var(--paper-deep)', border: '1px solid var(--rule)' }}
-            >
+            <CommonChip key={g}>
               {g} {tenGods[g]}
-            </span>
+            </CommonChip>
           ))}
         </div>
 
@@ -178,7 +161,7 @@ export function PersonalView({
             </ul>
           </details>
         )}
-      </section>
+      </CommonCard>
     </div>
   )
 }

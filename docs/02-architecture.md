@@ -23,14 +23,14 @@
 | Next.js | SEO 필요 없는 도구형 SPA. 팀 표준도 Vite |
 | 자체 만세력 | 절기 시각은 천문 계산이라 직접 짜면 경계에서 틀린다 |
 | Recharts | 레이더 하나 그리자고 60KB 못 쓴다. SVG 직접 |
-| 백엔드 DB | v1은 서버 저장 안 한다. localStorage로 충분 |
+| 백엔드 DB | v1은 아무데도 저장 안 한다. 저장할 게 없으면 샐 것도 없다 |
 | 클라이언트 직접 Claude 호출 | API 키 노출. 서버리스 프록시 경유 필수 |
 
 ## 시스템 구조
 
 ```
 브라우저 (React SPA)
-  store/teamStore      zustand + localStorage
+  store/teamStore      zustand. 메모리에만 있고 새로고침하면 비워진다
   lib/saju/*           순수 함수, 결정론 계산
   lib/report/*         룰 기반 리포트 (AI 폴백)
         |
@@ -48,7 +48,7 @@ Vercel Function (api/interpret.ts)
 계산을 클라이언트에서 도는 이유
 
 1. 생년월일이 네트워크를 안 탄다
-2. 15명 계산이 100ms 미만이라 서버 왕복이 오히려 느리다
+2. 8명 계산이 100ms 미만이라 서버 왕복이 오히려 느리다
 3. AI 키 없이도 앱이 완전히 돈다
 
 ## 디렉터리
@@ -69,22 +69,34 @@ team-saju/
       elements.ts        오행 분포, 강약
       tenGods.ts         십신
       team.ts            팀 합성, 페어 케미
-    lib/report/ruleBased.ts
+    lib/report/       룰 기반 리포트, 유형(archetype) 정의
+    lib/share/        공유 카드 캔버스 렌더링
+    lib/ui/           오행 색, 일러스트 매핑 같은 화면용 상수
     store/teamStore.ts
     components/
-      input/   MemberForm, MemberList
-      chart/   PillarCard, ElementRadar, ElementBar
-      team/    TeamMap, PairMatrix, BalanceGauge
-      report/  ReportView
-    pages/
+      Common/   프리미티브. Button Card Chip Field Section 등. 색은 전부
+                index.css 의 CSS 변수만 본다. 화면 코드는 여기 있는 것만 쓴다
+      Layout/   AppHeader, AppNotice — App.tsx 껍데기 조각
+      Saju/     팀 탭과 개인 탭이 같이 쓰는 도메인 컴포넌트
+                SajuElementRadar, SajuElementBars, SajuPillarCard
+      Input/    입력 화면. InputConsentModal, InputMemberForm, InputMemberList
+      Loading/  LoadingView
+      Result/   결과 화면. TeamHeadline, TeamIllustration, TeamAnalysis,
+                TeamReportDetail, TeamShareCard, TeamReportView, PersonalView
+    pages/      화면 단위 컨테이너. LandingPage, InputPage, LoadingPage, ResultPage
+    App.tsx     헤더 + 화면 분기 + 하단 저장 고지만 남긴 얇은 껍데기
     index.css     Tailwind v4 + 디자인 토큰
   vite.config.ts  dev 서버용 API 미들웨어 포함
 ```
 
+`components/` 바로 아래에는 파일을 두지 않는다. 전부 위 폴더 중 하나에 속하고,
+각 폴더는 `index.ts` 배럴로 내보낸다. 이름은 접두로 소속을 드러낸다
+(`Common`, `Saju`, `Input`, `Loading`, `Result`, `Team*`).
+
 ## 데이터 계약
 
 ```ts
-// 앱 동의. localStorage 에 별도 저장
+// 앱 동의. 이것도 저장하지 않는다. 탭을 새로 열면 다시 받는다
 type AppConsent = {
   version: string    // 동의서 내용 바뀌면 올린다. 낮으면 재동의
   agreedAt: string
@@ -147,7 +159,7 @@ vercel deploy   정적 자산 + 서버리스 함수
 | 항목 | 처리 |
 |---|---|
 | `ANTHROPIC_API_KEY` | 서버 환경변수만. 클라이언트 번들에 절대 안 넣는다 |
-| 생년월일 | 브라우저 밖으로 안 나감. localStorage 에만 저장 |
+| 생년월일 | 브라우저 밖으로 안 나감. 디스크에도 안 남고 탭 메모리에만 있다 |
 | 공유 링크 | 계산 결과만 담는다. 생년월일 원본은 URL 에 절대 안 넣는다 |
 | 동의 | 최초 1회 앱 동의 + 팀원별 대리 입력 확인. 상세는 06-privacy.md |
 | API 입력 검증 | `birthDate` 같은 원본 필드 감지되면 400 거부. 실수 방지 장치 |

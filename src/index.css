@@ -32,6 +32,14 @@
   --cinnabar-deep: #a82a19;
   --cinnabar-wash: #fbeeea;
 
+  /* 강조색. 지금은 주사 고정이다. 결과 유형별로 갈아끼우는 건 #4 */
+  --accent: var(--cinnabar);
+  --accent-wash: var(--cinnabar-wash);
+
+  /* 주의 톤. 대리 입력 배지처럼 짚고 넘어가야 하는 자리에 */
+  --warn: #8a6a12;
+  --warn-wash: #fdf1d0;
+
   /* 오방색 */
   --el-wood: #2f7d6b;
   --el-fire: #d93a26;
@@ -52,6 +60,11 @@
     --cinnabar: #ef5a44;
     --cinnabar-deep: #ff7a66;
     --cinnabar-wash: #2b1a16;
+
+    /* --accent 는 여기서 다시 안 쓴다. var() 는 쓰이는 시점에 풀려서
+       위 정의 하나로 어두운 --cinnabar 를 알아서 따라간다 */
+    --warn: #e0b955;
+    --warn-wash: #2e2410;
 
     --el-wood: #58a892;
     --el-fire: #ef5a44;

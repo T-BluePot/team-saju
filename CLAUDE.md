@@ -13,7 +13,7 @@ LLM한테 "1993년 5월 3일 사주 봐줘" 하면 간지를 지어낸다. 그�
 ## 명령어
 
 ```bash
-npm run dev      # localhost:5173
+npm run dev      # localhost:5180
 npm test         # 골든셋 포함 전체 테스트
 npm run build
 npm run lint
@@ -54,6 +54,7 @@ npm run lint
 - 부정적 지적에는 반드시 처방이 붙는다
 - **공유 뷰에 이름과 생년월일이 들어가면 안 된다.** 공유 단위는 팀뿐이다
 - v1은 아무것도 저장하지 않는다. localStorage도 안 쓴다
+- **PR 본문 맨 아래에 바뀐 화면 캡쳐를 넣는다.** UI 작업은 예외 없다
 
 ## 에이전트
 

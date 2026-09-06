@@ -1,3 +1,5 @@
+import { CommonButton, CommonCard } from '../Common'
+
 type Props = {
   onAgree: () => void
 }
@@ -12,8 +14,12 @@ const ITEMS: Array<[string, string]> = [
 /**
  * 최초 1회 개인정보 동의. 문서 06-privacy.md
  * 다크패턴을 쓰지 않는다. 동의와 거부를 같은 크기로 나란히 둔다.
+ *
+ * 바깥 패널은 모바일에서 하단 시트로, 데스크톱에서 가운데 모달로 바뀌는
+ * 전용 모서리 값(rounded-t-[28px] / rounded-[28px])을 쓴다. CommonCard는
+ * 항상 rounded-2xl 이라 이 모양을 낼 수 없어서 배경/괘선만 직접 맞춘다.
  */
-export function ConsentModal({ onAgree }: Props) {
+export function InputConsentModal({ onAgree }: Props) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4"
@@ -22,9 +28,11 @@ export function ConsentModal({ onAgree }: Props) {
       aria-modal="true"
       aria-labelledby="consent-title"
     >
-      <div
-        className="flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden rounded-t-[28px] sm:rounded-[28px]"
-        style={{ background: 'var(--surface)', border: '1px solid var(--rule)' }}
+      <CommonCard
+        as="div"
+        flush
+        radius="rounded-t-[28px] sm:rounded-[28px]"
+        className="flex max-h-[92vh] w-full max-w-md flex-col"
       >
         <div className="flex-1 overflow-y-auto px-7 pb-6 pt-8">
           <span
@@ -48,7 +56,7 @@ export function ConsentModal({ onAgree }: Props) {
               <div key={term} className="flex gap-4">
                 <dt
                   className="serif w-16 shrink-0 text-sm font-bold"
-                  style={{ color: 'var(--cinnabar)' }}
+                  style={{ color: 'var(--accent)' }}
                 >
                   {term}
                 </dt>
@@ -59,7 +67,7 @@ export function ConsentModal({ onAgree }: Props) {
 
           <p
             className="mt-6 border-l-2 pl-3 text-xs leading-relaxed"
-            style={{ borderColor: 'var(--cinnabar)', color: 'var(--ink-soft)' }}
+            style={{ borderColor: 'var(--accent)', color: 'var(--ink-soft)' }}
           >
             만 14세 이상만 이용할 수 있습니다. 재미로 보는 콘텐츠이고 채용이나 평가에
             쓰라고 만든 게 아닙니다. 동의를 안 하셔도 되는데, 생년월일이 없으면 계산
@@ -78,16 +86,11 @@ export function ConsentModal({ onAgree }: Props) {
           >
             동의하지 않고 나가기
           </a>
-          <button
-            type="button"
-            onClick={onAgree}
-            className="serif block w-full py-5 text-base font-bold text-white"
-            style={{ background: 'var(--cinnabar)' }}
-          >
+          <CommonButton type="button" variant="primary" fullBleed serif onClick={onAgree}>
             동의하고 시작하기
-          </button>
+          </CommonButton>
         </div>
-      </div>
+      </CommonCard>
     </div>
   )
 }
