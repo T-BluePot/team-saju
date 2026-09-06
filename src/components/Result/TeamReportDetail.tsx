@@ -1,4 +1,5 @@
 import { CommonChip, CommonRule, CommonSection, CommonSubHeading } from '../Common'
+import { isSolo, needsBlock } from '../../lib/report/solo'
 import type { TeamReport } from '../../lib/report/teamReport'
 
 export function TeamReportDetail({ report }: { report: TeamReport }) {
@@ -11,27 +12,15 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
    * 대신 화면이 팀인 척하면 안 된다. 조합 집계는 빼고, 누굴 데려오면 좋은지를
    * 맨 앞으로 올린다. 혼자 볼 때는 그게 제일 궁금한 얘기다.
    */
-  const solo = analysis.size === 1
-  const hasPairs = analysis.pairs.length > 0
+  const solo = isSolo(analysis)
+  // 2명 이상이면 조합이 반드시 하나는 나온다. 판정이 둘이면 나중에 갈라진다
+  const hasPairs = !solo && analysis.pairs.length > 0
+  const needs = needsBlock(solo, archetype)
 
-  // 균형형 문구는 "이미 다 있습니다" 라서 혼자일 때 "같이 하면 좋은 사람" 아래
-  // 붙으면 앞뒤가 안 맞는다. 여럿이 모여서 고르다는 뜻으로 쓴 문장이다
-  const soloBalanced = solo && archetype.id === 'balanced'
-
-  const needs = (
+  const needsSection = (
     <>
-      <CommonSubHeading>
-        {soloBalanced
-          ? '지금은 이렇습니다'
-          : solo
-            ? '같이 하면 좋은 사람'
-            : '이 팀에 들어오면 좋은 사람'}
-      </CommonSubHeading>
-      <p className="serif mt-3 text-lg leading-relaxed">
-        {soloBalanced
-          ? '다섯 기운이 고르게 나왔습니다. 누가 와도 크게 안 흔들릴 텐데, 뒤집으면 아직 어느 쪽으로도 안 기울어 있다는 뜻입니다'
-          : archetype.needsPerson}
-      </p>
+      <CommonSubHeading>{needs.heading}</CommonSubHeading>
+      <p className="serif mt-3 text-lg leading-relaxed">{needs.body}</p>
     </>
   )
 
@@ -39,16 +28,20 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
     <CommonSection
       index="二"
       title="상세 보고서"
-      subtitle={solo ? '빈자리와 처방' : '강점과 빈자리, 그리고 처방'}
+      subtitle={
+        solo ? '이 기운이 팀이 되면 어떻게 되나' : '강점과 빈자리, 그리고 처방'
+      }
     >
       {solo && (
         <>
-          {needs}
+          {needsSection}
           <CommonRule />
         </>
       )}
 
-      <CommonSubHeading>{solo ? '지금 기운의 강점' : '이 팀의 강점'}</CommonSubHeading>
+      <CommonSubHeading>
+        {solo ? '이 기운이 만드는 강점' : '이 팀의 강점'}
+      </CommonSubHeading>
       <ul className="mt-3 flex flex-col gap-2.5">
         {archetype.strengths.map((s) => (
           <li key={s} className="flex gap-3 text-sm leading-relaxed">
@@ -84,7 +77,7 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
       {!solo && (
         <>
           <CommonRule />
-          {needs}
+          {needsSection}
         </>
       )}
 
