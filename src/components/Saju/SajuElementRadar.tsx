@@ -74,6 +74,7 @@ export function SajuElementRadar({ percents, size = 240, showLabels = true }: Pr
       <g
         style={{
           transform: shown ? 'scale(1)' : 'scale(0)',
+          transformBox: 'view-box',
           transformOrigin: `${center}px ${center}px`,
           opacity: shown ? 1 : 0,
           transition:
