@@ -50,9 +50,12 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
         팀원들의 십신을 합쳐서 다섯 가지로 나눠봤습니다
       </p>
       <div className="mt-3.5">
+        {/* 고르게 나온 팀은 짚을 축이 없다. 억지로 두 개를 굵게 하면 배열 순서가 새어 나온다 */}
         <SajuTraitBars
           traits={analysis.traits}
-          highlight={[reading.top, reading.bottom]}
+          highlight={
+            reading.even ? undefined : [...reading.topAxes, ...reading.bottomAxes]
+          }
         />
       </div>
 
@@ -64,11 +67,11 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
       ) : (
         <div className="mt-4 flex flex-col gap-3">
           <p className="text-sm leading-relaxed">
-            <b>{reading.top}</b>이 제일 두껍습니다. {reading.strength}
+            <b>{reading.topAxes.join('과 ')}</b>이 제일 두껍습니다. {reading.strength}
           </p>
           <div>
             <p className="text-sm leading-relaxed">
-              <b>{reading.bottom}</b>이 제일 얇습니다. {reading.gap}
+              <b>{reading.bottomAxes.join('과 ')}</b>이 제일 얇습니다. {reading.gap}
             </p>
             <p
               className="mt-1.5 border-l-2 pl-3 text-sm leading-relaxed"

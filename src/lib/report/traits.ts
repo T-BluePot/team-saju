@@ -44,6 +44,10 @@ const THIN: Record<TraitAxis, { effect: string; fix: string }> = {
 export type TraitReading = {
   top: TraitAxis
   bottom: TraitAxis
+  /** 제일 두꺼운 값과 같은 축 전부. 동점이면 여러 개다 */
+  topAxes: TraitAxis[]
+  /** 제일 얇은 값과 같은 축 전부 */
+  bottomAxes: TraitAxis[]
   /** 두꺼운 축 한 줄 */
   strength: string
   /** 얇은 축이 만드는 장면 */
@@ -54,8 +58,18 @@ export type TraitReading = {
   even: boolean
 }
 
-/** 다섯 축이 이 폭 안에 들어오면 고른 걸로 본다 */
-const EVEN_SPREAD = 6
+/**
+ * 다섯 축이 이 폭 안에 들어오면 고른 걸로 본다.
+ *
+ * `normalizeTraits` 가 합 100인 정수를 내니 평균은 20이다. 12면 축마다 평균에서
+ * 6%p 안쪽이라는 뜻이고, 오행 쪽 `BALANCED_ARCHETYPE_THRESHOLD` 75가 허용하는
+ * 축당 8%p 와 비슷한 눈금이 된다.
+ *
+ * 6으로 잡았더니 너무 빡빡했다. traits 는 십신 개수에서 나오는 거친 값이라
+ * 소규모 팀에서 spread 6이 거의 안 나와서 even 분기가 죽어 있었고, 반대로
+ * 4%p 차이를 놓고 "제일 얇습니다" 를 단정하게 됐다.
+ */
+const EVEN_SPREAD = 12
 
 export function readTraits(traits: TraitAxes): TraitReading {
   const sorted = [...TRAIT_AXES].sort((a, b) => traits[b] - traits[a])
@@ -63,9 +77,16 @@ export function readTraits(traits: TraitAxes): TraitReading {
   const bottom = sorted[sorted.length - 1]
   const thin = THIN[bottom]
 
+  // 0% 인 축이 둘 나오는 일이 실제로 있다. 값이 같은데 하나만 강조하면
+  // 읽는 사람 눈에는 그냥 버그로 보인다
+  const topAxes = TRAIT_AXES.filter((a) => traits[a] === traits[top])
+  const bottomAxes = TRAIT_AXES.filter((a) => traits[a] === traits[bottom])
+
   return {
     top,
     bottom,
+    topAxes,
+    bottomAxes,
     strength: THICK[top],
     gap: thin.effect,
     fix: thin.fix,
