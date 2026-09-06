@@ -34,7 +34,7 @@ export function ResultPage() {
               type="button"
               onClick={() => setTab(key)}
               aria-pressed={tab === key}
-              className="serif flex min-h-11 items-end pb-1.5 text-base font-bold"
+              className="press serif flex min-h-11 items-end pb-1.5 text-base font-bold"
               style={{
                 color: tab === key ? 'var(--ink)' : 'var(--ink-soft)',
                 borderBottom:
@@ -48,7 +48,7 @@ export function ResultPage() {
         <button
           type="button"
           onClick={goBack}
-          className="min-h-11 rounded-lg px-3.5 text-sm"
+          className="press min-h-11 rounded-lg px-3.5 text-sm"
           style={{ border: '1px solid var(--rule)', color: 'var(--ink-soft)' }}
         >
           팀원 수정

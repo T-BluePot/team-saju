@@ -1,4 +1,5 @@
 import { TRAIT_AXES } from '../../lib/saju/constants'
+import { useReveal } from '../../lib/ui/useReveal'
 import type { TraitAxes, TraitAxis } from '../../lib/saju/types'
 
 /**
@@ -16,9 +17,11 @@ export function SajuTraitBars({
    */
   highlight?: TraitAxis[]
 }) {
+  const { ref, shown } = useReveal<HTMLUListElement>()
+
   return (
-    <ul className="flex flex-col gap-2">
-      {TRAIT_AXES.map((axis) => {
+    <ul ref={ref} className="flex flex-col gap-2">
+      {TRAIT_AXES.map((axis, i) => {
         const dim = highlight != null && !highlight.includes(axis)
         const weight = highlight != null && !dim ? 'font-bold' : ''
         return (
@@ -31,8 +34,10 @@ export function SajuTraitBars({
               <div
                 className="h-full rounded-full"
                 style={{
-                  width: `${traits[axis]}%`,
+                  width: shown ? `${traits[axis]}%` : 0,
                   background: dim ? 'var(--ink-soft)' : 'var(--accent)',
+                  transition: 'width 700ms cubic-bezier(0.22, 1, 0.36, 1)',
+                  transitionDelay: `${i * 70}ms`,
                 }}
               />
             </div>

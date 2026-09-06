@@ -1,6 +1,7 @@
 import { ELEMENTS, ELEMENT_LABEL } from '../../lib/saju/constants'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 import type { ElementScores } from '../../lib/saju/types'
+import { useReveal } from '../../lib/ui/useReveal'
 
 type Props = {
   percents: ElementScores
@@ -21,6 +22,7 @@ function point(index: number, ratio: number, radius: number, center: number) {
 
 /** 오행 5각 레이더. 차트 라이브러리 대신 직접 그린다 */
 export function SajuElementRadar({ percents, size = 240, showLabels = true }: Props) {
+  const { ref, shown } = useReveal<SVGSVGElement>()
   const center = size / 2
   const radius = size / 2 - (showLabels ? 34 : 10)
 
@@ -34,6 +36,7 @@ export function SajuElementRadar({ percents, size = 240, showLabels = true }: Pr
 
   return (
     <svg
+      ref={ref}
       width={size}
       height={size}
       viewBox={`0 0 ${size} ${size}`}
@@ -64,19 +67,34 @@ export function SajuElementRadar({ percents, size = 240, showLabels = true }: Pr
         )
       })}
 
-      <polygon
-        points={shape}
-        fill="var(--accent)"
-        fillOpacity={0.22}
-        stroke="var(--accent)"
-        strokeWidth={2}
-        strokeLinejoin="round"
-      />
+      {/*
+        폴리곤 points 는 CSS 로 전이가 안 된다. 중심에서 펴지는 것처럼 보이게
+        transform scale 을 준다. 꼭짓점 원도 같이 딸려 나온다.
+      */}
+      <g
+        style={{
+          transform: shown ? 'scale(1)' : 'scale(0)',
+          transformBox: 'view-box',
+          transformOrigin: `${center}px ${center}px`,
+          opacity: shown ? 1 : 0,
+          transition:
+            'transform 800ms cubic-bezier(0.22, 1, 0.36, 1), opacity 400ms ease-out',
+        }}
+      >
+        <polygon
+          points={shape}
+          fill="var(--accent)"
+          fillOpacity={0.22}
+          stroke="var(--accent)"
+          strokeWidth={2}
+          strokeLinejoin="round"
+        />
 
-      {ELEMENTS.map((el, i) => {
-        const [x, y] = point(i, Math.min(percents[el] / MAX, 1), radius, center)
-        return <circle key={el} cx={x} cy={y} r={4} fill={ELEMENT_COLOR[el]} />
-      })}
+        {ELEMENTS.map((el, i) => {
+          const [x, y] = point(i, Math.min(percents[el] / MAX, 1), radius, center)
+          return <circle key={el} cx={x} cy={y} r={4} fill={ELEMENT_COLOR[el]} />
+        })}
+      </g>
 
       {showLabels &&
         ELEMENTS.map((el, i) => {
