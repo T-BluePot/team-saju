@@ -17,8 +17,9 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
 }
 
+// 전이는 .press 가 갖는다. 여기 transition 유틸을 두면 레이어 순서상 덮여서 죽은 선언이 된다
 const BASE =
-  'inline-flex items-center justify-center select-none transition-[transform,filter,background-color] duration-150 ease-out disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-2'
+  'inline-flex items-center justify-center select-none disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-2'
 
 /** 눌리는 반응. index.css 의 .press 를 공유한다 */
 const PRESS = 'press'
