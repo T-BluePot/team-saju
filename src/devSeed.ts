@@ -45,6 +45,32 @@ export function seedFilledInput(): void {
   if (seedMembers()) useTeamStore.setState({ view: 'input' })
 }
 
+/** 균형형이 나오는 팀. 기운 카드 섹션이 안 뜨는 걸 확인하려면 여기로 */
+const BALANCED_SAMPLE: SampleSeed[] = [
+  { name: '가람', birthDate: '1988-03-11', birthHour: 9 },
+  { name: '나린', birthDate: '1991-07-22', birthHour: 15 },
+  { name: '다온', birthDate: '1994-11-05', birthHour: 20 },
+]
+
+export function seedBalanced(): void {
+  const store = useTeamStore.getState()
+  store.reset()
+  store.agree()
+  store.setTeamName(SAMPLE_TEAM_NAME)
+  for (const seed of BALANCED_SAMPLE) {
+    const error = useTeamStore.getState().addMember({
+      ...emptyDraft(),
+      ...seed,
+      consentSource: 'self',
+    })
+    if (error) {
+      console.error('[devSeed]', seed.name, error)
+      return
+    }
+  }
+  useTeamStore.setState({ view: 'result' })
+}
+
 /** 예시 리포트 화면. 배너가 붙은 상태를 캡쳐하려면 여기로 */
 export function seedExample(): void {
   useTeamStore.getState().reset()
@@ -114,7 +140,8 @@ export function seedConsent(): void {
  * `#demo` 결과, `#demo-input` 입력, `#demo-loading` 로딩,
  * `#demo-consent` 동의 모달, `#demo-personal` 개인 명식 탭, `#demo-solo` 1인 결과,
  * `#demo-filled` 팀원이 들어 있는 입력 화면, `#demo-removed` 되돌리기가 뜬 상태,
- * `#demo-water` 다른 오행이 주도하는 팀 (강조색 비교용), `#demo-example` 예시 리포트
+ * `#demo-water` 다른 오행이 주도하는 팀, `#demo-example` 예시 리포트,
+ * `#demo-balanced` 균형형 팀
  */
 export function applyDemoHash(): void {
   if (window.location.hash === '#demo') seedDemo()
@@ -127,4 +154,5 @@ export function applyDemoHash(): void {
   if (window.location.hash === '#demo-removed') seedRemoved()
   if (window.location.hash === '#demo-water') seedWater()
   if (window.location.hash === '#demo-example') seedExample()
+  if (window.location.hash === '#demo-balanced') seedBalanced()
 }
