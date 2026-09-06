@@ -1,4 +1,5 @@
 import { ELEMENTS, ELEMENT_LABEL, ELEMENT_TEAM_MEANING } from '../../lib/saju/constants'
+import { useReveal } from '../../lib/ui/useReveal'
 import type { ElementFlag, ElementScores } from '../../lib/saju/types'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 
@@ -16,9 +17,11 @@ type Props = {
 }
 
 export function SajuElementBars({ percents, flags, showMeaning = false }: Props) {
+  const { ref, shown } = useReveal<HTMLUListElement>()
+
   return (
-    <ul className="flex flex-col gap-2.5">
-      {ELEMENTS.map((el) => {
+    <ul ref={ref} className="flex flex-col gap-2.5">
+      {ELEMENTS.map((el, i) => {
         const flag = flags?.[el] ?? 'normal'
         return (
           <li key={el} className="flex items-center gap-3">
@@ -33,10 +36,13 @@ export function SajuElementBars({ percents, flags, showMeaning = false }: Props)
               style={{ background: 'var(--rule)' }}
             >
               <div
-                className="h-full rounded-full transition-[width] duration-500"
+                className="h-full rounded-full"
                 style={{
-                  width: `${Math.min(percents[el] * 2, 100)}%`,
+                  // 원소마다 조금씩 늦게 출발시켜서 하나씩 차오르게 한다
+                  width: shown ? `${Math.min(percents[el] * 2, 100)}%` : 0,
                   background: ELEMENT_COLOR[el],
+                  transition: 'width 700ms cubic-bezier(0.22, 1, 0.36, 1)',
+                  transitionDelay: `${i * 70}ms`,
                 }}
               />
             </div>

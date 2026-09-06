@@ -38,7 +38,7 @@ export function PersonalView({
             type="button"
             onClick={() => setSelected(i)}
             aria-pressed={i === selected}
-            className="rounded-full px-3.5 py-1.5 text-sm font-medium"
+            className="press min-h-11 rounded-full px-4 text-sm font-medium"
             style={
               i === selected
                 ? { background: 'var(--accent)', color: '#fff' }

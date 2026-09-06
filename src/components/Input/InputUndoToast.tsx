@@ -41,7 +41,7 @@ export function InputUndoToast() {
       <button
         type="button"
         onClick={undoRemove}
-        className="serif min-h-11 shrink-0 rounded-lg px-4 text-sm font-bold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="press serif min-h-11 shrink-0 rounded-lg px-4 text-sm font-bold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{ color: 'var(--paper)', outlineColor: 'var(--paper)' }}
       >
         되돌리기

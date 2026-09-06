@@ -45,7 +45,7 @@ export function InputMemberList({ charts, onRemove }: Props) {
               type="button"
               onClick={() => onRemove(c.member.id)}
               aria-label={`${c.member.name} 삭제`}
-              className="flex size-8 items-center justify-center rounded-full text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="press flex size-8 items-center justify-center rounded-full text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{
                 background: 'var(--paper-deep)',
                 color: 'var(--ink-soft)',

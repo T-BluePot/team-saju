@@ -21,7 +21,7 @@ export function AppHeader() {
           <button
             type="button"
             onClick={goLanding}
-            className="min-h-11 rounded-lg px-3.5 text-sm"
+            className="press min-h-11 rounded-lg px-3.5 text-sm"
             style={{ border: '1px solid var(--rule)', color: 'var(--ink-soft)' }}
           >
             처음부터

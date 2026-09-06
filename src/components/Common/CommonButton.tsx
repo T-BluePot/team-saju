@@ -20,8 +20,8 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 const BASE =
   'inline-flex items-center justify-center select-none transition-[transform,filter,background-color] duration-150 ease-out disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-2'
 
-/** 눌리는 반응. 살짝 줄고 어두워진다 */
-const PRESS = 'active:scale-[0.985] active:brightness-90'
+/** 눌리는 반응. index.css 의 .press 를 공유한다 */
+const PRESS = 'press'
 
 const SHAPE = {
   normal: 'rounded-2xl px-5 py-3.5 text-base font-semibold',

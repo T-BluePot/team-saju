@@ -1,6 +1,7 @@
 import { CommonSection, CommonWell } from '../Common'
 import { SajuElementBars, SajuElementRadar, SajuTraitBars } from '../Saju'
 import { readTraits } from '../../lib/report/traits'
+import { useCountUp, useReveal } from '../../lib/ui/useReveal'
 import type { TeamReport } from '../../lib/report/teamReport'
 import { ELEMENT_LABEL } from '../../lib/saju/constants'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
@@ -9,6 +10,8 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
   const { analysis, dominant, lacking } = report
   const reading = readTraits(analysis.traits)
   const solo = analysis.size === 1
+  const { ref: balanceRef, shown: balanceShown } = useReveal<HTMLDivElement>()
+  const balanceValue = useCountUp(analysis.balance, balanceShown)
 
   return (
     <CommonSection
@@ -39,11 +42,15 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
       </div>
 
       <div
+        ref={balanceRef}
         className="mt-3 flex items-baseline gap-3 rounded-xl px-4 py-3"
         style={{ background: 'var(--paper-deep)' }}
       >
-        <span className="serif text-2xl font-bold" style={{ color: 'var(--accent)' }}>
-          {analysis.balance}
+        <span
+          className="serif text-2xl font-bold tabular-nums"
+          style={{ color: 'var(--accent)' }}
+        >
+          {balanceValue}
         </span>
         <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>
           균형 점수. 100이면 다섯 기운이 완전히 고른 상태입니다

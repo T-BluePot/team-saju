@@ -189,3 +189,25 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/*
+ * 눌리는 반응.
+ * CommonButton 말고도 탭, 칩, 삭제 버튼처럼 누르는 게 많은데 반응이 없으면 밋밋하다.
+ * 모션을 꺼둔 사람에게는 위의 reduced-motion 블록이 전이 시간을 없애준다.
+ */
+.press {
+  transition:
+    transform 150ms ease-out,
+    filter 150ms ease-out;
+}
+
+.press:active {
+  transform: scale(0.96);
+  filter: brightness(0.92);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press:active {
+    transform: none;
+  }
+}
