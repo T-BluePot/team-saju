@@ -1,5 +1,5 @@
 import { CommonButton, CommonField, CommonTextInput } from '../components/Common'
-import { InputMemberForm, InputMemberList } from '../components/Input'
+import { InputMemberForm, InputMemberList, InputUndoToast } from '../components/Input'
 import { MAX_MEMBERS, useTeamStore } from '../store/teamStore'
 
 export function InputPage() {
@@ -26,6 +26,7 @@ export function InputPage() {
       </CommonField>
 
       <InputMemberList charts={charts} onRemove={removeMember} />
+      <InputUndoToast />
 
       <InputMemberForm onSubmit={addMember} disabled={members.length >= MAX_MEMBERS} />
 

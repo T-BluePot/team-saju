@@ -39,6 +39,8 @@ type State = {
   teamName: string
   members: MemberInput[]
   charts: SajuChart[]
+  /** 방금 지운 사람. 되돌릴 수 있게 잠깐 들고 있는다 */
+  removed: { member: MemberInput; chart: SajuChart; index: number } | null
   view: 'landing' | 'input' | 'loading' | 'result'
   error: string | null
 
@@ -46,6 +48,8 @@ type State = {
   setTeamName: (name: string) => void
   addMember: (draft: Draft) => string | null
   removeMember: (id: string) => void
+  undoRemove: () => void
+  dismissRemoved: () => void
   goInput: () => void
   goLanding: () => void
   goResult: () => void
@@ -79,6 +83,7 @@ export const useTeamStore = create<State>((set, get) => ({
   teamName: '',
   members: [],
   charts: [],
+  removed: null,
   view: 'landing',
   error: null,
 
@@ -105,28 +110,64 @@ export const useTeamStore = create<State>((set, get) => ({
       members: [...s.members, input],
       charts: [...s.charts, chart],
       error: null,
+      // 새로 넣었으면 되돌리기는 무효다. 안 그러면 상한을 넘길 수 있다
+      removed: null,
     }))
     return null
   },
 
+  /**
+   * 지운 사람을 잠깐 들고 있는다.
+   *
+   * v1은 아무것도 저장하지 않아서 잘못 지우면 그 사람 생년월일시를 다시 물어봐야 한다.
+   * 대리 입력이면 팀원한테 또 물어보는 상황이 된다.
+   * 저장을 안 하는 설계일수록 실수 취소가 더 중요하다.
+   */
   removeMember: (id) =>
-    set((s) => ({
-      members: s.members.filter((m) => m.id !== id),
-      charts: s.charts.filter((c) => c.member.id !== id),
-    })),
+    set((s) => {
+      const index = s.members.findIndex((m) => m.id === id)
+      if (index < 0) return {}
+      return {
+        members: s.members.filter((m) => m.id !== id),
+        charts: s.charts.filter((c) => c.member.id !== id),
+        removed: { member: s.members[index], chart: s.charts[index], index },
+      }
+    }),
 
-  goInput: () => set({ view: 'input' }),
+  /** 지웠던 자리에 그대로 되돌린다 */
+  undoRemove: () =>
+    set((s) => {
+      if (!s.removed) return {}
+      const { member, chart, index } = s.removed
+      const members = [...s.members]
+      const charts = [...s.charts]
+      members.splice(index, 0, member)
+      charts.splice(index, 0, chart)
+      return { members, charts, removed: null }
+    }),
+
+  dismissRemoved: () => set({ removed: null }),
+
+  goInput: () => set({ view: 'input', removed: null }),
   /** 동의를 거절했을 때 돌아갈 곳. 넣던 내용은 지우고 처음 화면으로 */
   goLanding: () =>
-    set({ view: 'landing', teamName: '', members: [], charts: [], error: null }),
-  goResult: () => set({ view: 'loading' }),
+    set({
+      view: 'landing',
+      teamName: '',
+      members: [],
+      charts: [],
+      removed: null,
+      error: null,
+    }),
+  goResult: () => set({ view: 'loading', removed: null }),
   finishLoading: () => set({ view: 'result' }),
-  goBack: () => set({ view: 'input' }),
+  goBack: () => set({ view: 'input', removed: null }),
   reset: () =>
     set({
       teamName: '',
       members: [],
       charts: [],
+      removed: null,
       view: 'input',
       error: null,
     }),
