@@ -28,7 +28,12 @@ export function InputPage() {
       <InputMemberList charts={charts} onRemove={removeMember} />
       <InputUndoToast />
 
-      <InputMemberForm onSubmit={addMember} disabled={members.length >= MAX_MEMBERS} />
+      <InputMemberForm
+        onSubmit={addMember}
+        disabled={members.length >= MAX_MEMBERS}
+        count={members.length}
+        max={MAX_MEMBERS}
+      />
 
       <CommonButton
         type="button"

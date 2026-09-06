@@ -14,13 +14,22 @@ import { emptyDraft, type Draft } from '../../store/teamStore'
 type Props = {
   onSubmit: (draft: Draft) => string | null
   disabled?: boolean
+  /** 추가 성공을 알릴 때 쓴다. 지금 몇 명인지 같이 읽어준다 */
+  count: number
+  max: number
 }
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
 
-export function InputMemberForm({ onSubmit, disabled }: Props) {
+export function InputMemberForm({ onSubmit, disabled, count, max }: Props) {
   const [draft, setDraft] = useState<Draft>(emptyDraft)
   const [error, setError] = useState<string | null>(null)
+  /**
+   * 추가가 됐다는 걸 스크린리더에 알린다.
+   * 실패는 role="alert" 로 읽히는데 성공은 신호가 포커스 이동뿐이었다.
+   * 그러면 "이름, 편집 텍스트" 만 들려서 추가된 건지 실패해서 다시 치라는 건지 구분이 안 된다.
+   */
+  const [added, setAdded] = useState('')
   const nameRef = useRef<HTMLInputElement>(null)
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
@@ -28,9 +37,20 @@ export function InputMemberForm({ onSubmit, disabled }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const name = draft.name.trim()
     const message = onSubmit(draft)
     setError(message)
-    if (message) return
+    if (message) {
+      setAdded('')
+      return
+    }
+
+    const next = count + 1
+    setAdded(
+      next >= max
+        ? `${name} 추가했습니다. ${next}명으로 꽉 찼습니다`
+        : `${name} 추가했습니다. 지금 ${next}명`,
+    )
 
     // 진태양시는 팀 전체에 같은 선택인 경우가 대부분이라 직전 값을 들고 간다.
     // 동의 출처는 절대 유지하지 않는다. 06-privacy.md 가 팀원마다 다시 고르게 정해뒀고,
@@ -187,6 +207,15 @@ export function InputMemberForm({ onSubmit, disabled }: Props) {
           {error}
         </p>
       )}
+
+      {/*
+        추가된 건 팀원 칩으로 이미 보인다. 눈으로 보는 사람에게는 중복이라
+        화면에서 감추고 스크린리더만 읽게 둔다.
+        리전은 내용보다 먼저 트리에 있어야 안정적으로 읽히니 항상 렌더한다.
+      */}
+      <p role="status" className="sr-only">
+        {added}
+      </p>
 
       <CommonButton type="submit" variant="primary" disabled={disabled}>
         팀원 추가
