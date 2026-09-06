@@ -39,16 +39,15 @@ jobs:
       - uses: Jung-eunwoo/ai-code-review@01365adee404635cbb79c25b9f6f100ff8b2daff # main 기준
         with:
           pr: ${{ github.event.number }}
-          provider: claude
         env:
-          # Claude 를 분석기로 쓴다.
-          #   gh secret set ANTHROPIC_API_KEY --repo OWNER/REPO
+          # AI Studio 키 하나면 된다: https://aistudio.google.com/apikey
+          #   gh secret set GEMINI_API_KEY --repo OWNER/REPO
           #
-          # ⚠️ CLAUDE_CODE_OAUTH_TOKEN(구독 토큰)은 만료된다. CI 에 붙이면
-          #    주기적으로 리뷰가 끊긴다. 실제로 401 expired 로 죽었다.
-          #    두 변수를 같이 넘기지도 마라. 시크릿이 없는 쪽이 빈 문자열로
-          #    주입돼서 CLI 가 그걸 먼저 집는다.
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # claude provider 도 써봤는데 CI 컨테이너에서 claude -p 가
+          # stderr 없이 종료코드 1 로 죽었다. 빈 HOME 에서 첫 실행이 막히는
+          # 걸로 보이는데 재현이 안 돼서 되돌렸다. flash 가 503 을 뱉으면
+          # 재실행하거나 model: gemini-pro-latest 로 올린다.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
 
   # ── 리뷰 코멘트에 답글이 달리면 읽고 판단한다 ────────────────────────
@@ -72,7 +71,6 @@ jobs:
         with:
           pr: ${{ github.event.pull_request.number }}
           reply-to: ${{ github.event.comment.id }}
-          provider: claude
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
