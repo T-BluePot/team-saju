@@ -1,4 +1,5 @@
 export { PersonalView } from './PersonalView'
+export { ResultExampleNotice } from './ResultExampleNotice'
 export { TeamAnalysis } from './TeamAnalysis'
 export { TeamHeadline } from './TeamHeadline'
 export { TeamIllustration } from './TeamIllustration'

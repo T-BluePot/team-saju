@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 
+import { SAMPLE_TEAM, SAMPLE_TEAM_NAME } from '../lib/report/sample'
 import { buildChart, SajuInputError } from '../lib/saju/chart'
 import type { MemberInput, SajuChart } from '../lib/saju/types'
 
@@ -39,6 +40,8 @@ type State = {
   teamName: string
   members: MemberInput[]
   charts: SajuChart[]
+  /** 지금 보고 있는 게 예시 리포트인가. 자기 결과로 오해하면 안 된다 */
+  isExample: boolean
   /** 방금 지운 사람. 되돌릴 수 있게 잠깐 들고 있는다 */
   removed: { member: MemberInput; chart: SajuChart; index: number } | null
   view: 'landing' | 'input' | 'loading' | 'result'
@@ -48,6 +51,7 @@ type State = {
   setTeamName: (name: string) => void
   addMember: (draft: Draft) => string | null
   removeMember: (id: string) => void
+  showExample: () => void
   undoRemove: () => void
   dismissRemoved: () => void
   goInput: () => void
@@ -83,6 +87,7 @@ export const useTeamStore = create<State>((set, get) => ({
   teamName: '',
   members: [],
   charts: [],
+  isExample: false,
   removed: null,
   view: 'landing',
   error: null,
@@ -112,6 +117,8 @@ export const useTeamStore = create<State>((set, get) => ({
       error: null,
       // 새로 넣었으면 되돌리기는 무효다. 안 그러면 상한을 넘길 수 있다
       removed: null,
+      // 예시를 보다가 직접 넣기 시작하면 더 이상 예시가 아니다
+      isExample: false,
     }))
     return null
   },
@@ -148,7 +155,27 @@ export const useTeamStore = create<State>((set, get) => ({
 
   dismissRemoved: () => set({ removed: null }),
 
-  goInput: () => set({ view: 'input', removed: null }),
+  goInput: () => set({ view: 'input', removed: null, isExample: false }),
+
+  /**
+   * 표본 팀으로 결과를 보여준다.
+   *
+   * 남의 생년월일시까지 받아와야 하는 입력을 시키기 전에, 뭐가 나오는지 먼저 보여준다.
+   * 동의는 건드리지 않는다. 예시를 보는 데 개인정보를 넣는 게 아니라서다.
+   */
+  showExample: () => {
+    set({ teamName: SAMPLE_TEAM_NAME, members: [], charts: [], removed: null })
+    for (const seed of SAMPLE_TEAM) {
+      const error = get().addMember({ ...emptyDraft(), ...seed, consentSource: 'self' })
+      if (error) {
+        // 반쯤 채워진 표본을 남기면 다음에 팀 만들기를 눌렀을 때 그게 섞인다
+        get().goLanding()
+        return
+      }
+    }
+    // addMember 가 isExample 을 끄니 마지막에 다시 켠다
+    set({ view: 'result', isExample: true, error: null })
+  },
   /** 동의를 거절했을 때 돌아갈 곳. 넣던 내용은 지우고 처음 화면으로 */
   goLanding: () =>
     set({
@@ -157,6 +184,7 @@ export const useTeamStore = create<State>((set, get) => ({
       members: [],
       charts: [],
       removed: null,
+      isExample: false,
       error: null,
     }),
   goResult: () => set({ view: 'loading', removed: null }),
@@ -168,6 +196,7 @@ export const useTeamStore = create<State>((set, get) => ({
       members: [],
       charts: [],
       removed: null,
+      isExample: false,
       view: 'input',
       error: null,
     }),
