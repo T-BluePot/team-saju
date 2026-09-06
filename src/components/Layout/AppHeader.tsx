@@ -1,7 +1,7 @@
 import { useTeamStore } from '../../store/teamStore'
 
 export function AppHeader() {
-  const reset = useTeamStore((s) => s.reset)
+  const goLanding = useTeamStore((s) => s.goLanding)
   const view = useTeamStore((s) => s.view)
 
   return (
@@ -20,7 +20,7 @@ export function AppHeader() {
         {(view === 'result' || view === 'loading') && (
           <button
             type="button"
-            onClick={reset}
+            onClick={goLanding}
             className="rounded-lg px-3 py-1.5 text-sm"
             style={{ border: '1px solid var(--rule)', color: 'var(--ink-soft)' }}
           >

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { PersonalView, TeamReportView } from '../components/Result'
+import { PersonalView, TeamNextStep, TeamReportView } from '../components/Result'
 import { buildTeamReport } from '../lib/report/teamReport'
 import { useTeamStore } from '../store/teamStore'
 
@@ -8,6 +8,7 @@ export function ResultPage() {
   const charts = useTeamStore((s) => s.charts)
   const teamName = useTeamStore((s) => s.teamName)
   const goBack = useTeamStore((s) => s.goBack)
+  const reset = useTeamStore((s) => s.reset)
   const [tab, setTab] = useState<'team' | 'personal'>('team')
 
   const report = useMemo(() => buildTeamReport(charts, teamName), [charts, teamName])
@@ -55,6 +56,8 @@ export function ResultPage() {
       ) : (
         <PersonalView charts={charts} pairs={report.analysis.pairs} />
       )}
+
+      <TeamNextStep count={charts.length} onEdit={goBack} onRestart={reset} />
     </div>
   )
 }
