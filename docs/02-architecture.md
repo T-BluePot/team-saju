@@ -73,8 +73,11 @@ team-saju/
     lib/report/       룰 기반 리포트, 유형(archetype) 정의
     lib/share/        공유 카드 캔버스 렌더링
     lib/ui/           오행 색, 일러스트 매핑 같은 화면용 상수
-    lib/text/         조사 붙이기 같은 순수 문자열 유틸. 아무것도 import 하지 않아서
-                      계산 레이어도 쓸 수 있다
+    lib/text/         조사 붙이기 같은 순수 문자열 유틸. 아무것도 import 하지 않는다
+
+계산은 숫자와 관계까지만 낸다. 사용자에게 보이는 문장은 전부 `lib/report/` 가 만든다.
+조합 문구는 `lib/report/pairs.ts`, 유형 문구는 `archetypes.ts` 다.
+계산이 카피를 들고 있으면 문구 한 글자 고칠 때마다 계산 테스트가 깨진다.
     store/teamStore.ts
     components/
       Common/   프리미티브. Button Card Chip Field Section 등. 색은 전부

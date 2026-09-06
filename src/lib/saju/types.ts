@@ -123,6 +123,12 @@ export type SajuChart = {
 /** 오행 관계 */
 export type PairRelation = 'generating' | 'same' | 'tension'
 
+/**
+ * 두 사람의 관계. **문장은 여기 없다.**
+ *
+ * 계산은 관계와 방향까지만 낸다. 사용자에게 보이는 문장은 `lib/report/pairs.ts` 가 만든다.
+ * 계산 레이어가 카피를 들고 있으면 문구 한 글자 고칠 때마다 계산 테스트가 깨진다.
+ */
 export type PairChemistry = {
   aId: string
   bId: string
@@ -130,9 +136,14 @@ export type PairChemistry = {
   bName: string
   relation: PairRelation
   score: number
-  label: string
-  /** 누가 누구를 생하거나 극하는지 */
-  direction: string
+  /** 두 사람의 주도 오행 */
+  aElement: Element
+  bElement: Element
+  /**
+   * 방향. 미는 쪽이나 브레이크를 거는 쪽이 누구인가.
+   * `ab` 면 a 가 주체다. 같은 결이면 방향이 없다
+   */
+  flow: 'ab' | 'ba' | null
 }
 
 export type ElementFlag = 'excess' | 'lacking' | 'empty' | 'normal'
