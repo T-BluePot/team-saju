@@ -1,4 +1,9 @@
-import type { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react'
+import type {
+  ComponentPropsWithoutRef,
+  CSSProperties,
+  ElementType,
+  ReactNode,
+} from 'react'
 
 type OwnProps<T extends ElementType> = {
   /** form 이나 li 로도 쓴다. 폼 카드까지 프리미티브로 덮으려면 필요하다 */
@@ -7,6 +12,13 @@ type OwnProps<T extends ElementType> = {
   flush?: boolean
   /** 기본은 2xl. 바텀시트처럼 위만 둥근 경우 직접 준다 */
   radius?: string
+  /**
+   * className 과 style 은 여기서 구체 타입으로 못박는다.
+   * 아래 Omit 에 걸려 제네릭 쪽에서 빠지기 때문이다. 안 그러면 T 가 안 정해진 상태라
+   * className 이 ComponentPropsWithoutRef<T>[string] 로 남아서 기본값 '' 을 못 넣는다.
+   */
+  className?: string
+  style?: CSSProperties
   children: ReactNode
 }
 
