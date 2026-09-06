@@ -4,6 +4,7 @@ import { CommonCard, CommonChip } from '../Common'
 import { SajuElementBars, SajuEmptyPillar, SajuPillarCard, SajuTraitBars } from '../Saju'
 import { ELEMENT_LABEL, TEN_GODS } from '../../lib/saju/constants'
 import type { PairChemistry, SajuChart } from '../../lib/saju/types'
+import { pairCopy } from '../../lib/report/pairs'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 
 const STRENGTH_LABEL = {
@@ -128,23 +129,26 @@ export function PersonalView({
           <>
             <h4 className="mt-6 text-sm font-bold">다른 팀원과의 조합</h4>
             <ul className="mt-2.5 flex flex-col gap-2">
-              {myPairs.map((p) => (
-                <li
-                  key={`${p.aId}-${p.bId}`}
-                  className="rounded-lg px-3 py-2.5 text-sm"
-                  style={{ background: 'var(--paper-deep)' }}
-                >
-                  <span className="font-medium">
-                    {p.aId === chart.member.id ? p.bName : p.aName}
-                  </span>
-                  <span className="mx-2" style={{ color: 'var(--ink-soft)' }}>
-                    {p.label}
-                  </span>
-                  <span className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-                    {p.direction}
-                  </span>
-                </li>
-              ))}
+              {myPairs.map((p) => {
+                const copy = pairCopy(p)
+                return (
+                  <li
+                    key={`${p.aId}-${p.bId}`}
+                    className="rounded-lg px-3 py-2.5 text-sm"
+                    style={{ background: 'var(--paper-deep)' }}
+                  >
+                    <span className="font-medium">
+                      {p.aId === chart.member.id ? p.bName : p.aName}
+                    </span>
+                    <span className="mx-2" style={{ color: 'var(--ink-soft)' }}>
+                      {copy.label}
+                    </span>
+                    <span className="text-xs" style={{ color: 'var(--ink-soft)' }}>
+                      {copy.direction}
+                    </span>
+                  </li>
+                )
+              })}
             </ul>
           </>
         )}

@@ -11,7 +11,6 @@ import {
   emptyScores,
   flagElements,
 } from './elements'
-import { object, subject } from '../text/josa'
 import { emptyTraits, normalizeTraits } from './tenGods'
 import type {
   Element,
@@ -51,57 +50,38 @@ export function archetypeIdFor(
  * 상극을 나쁨으로 표기하지 않는다. 라벨은 긴장감 있는 조합이고 조언이 따라붙는다.
  * 문서 03-saju-spec.md 7.2
  */
+/**
+ * 두 사람의 관계를 잰다.
+ *
+ * **문장을 만들지 않는다.** 관계와 방향까지가 계산의 몫이고
+ * 사용자에게 보이는 문구는 `lib/report/pairs.ts` 가 만든다.
+ */
 export function pairChemistry(a: SajuChart, b: SajuChart): PairChemistry {
   const ea = a.elements.dominant
   const eb = b.elements.dominant
-  const an = a.member.name
-  const bn = b.member.name
 
-  const base = { aId: a.member.id, bId: b.member.id, aName: an, bName: bn }
+  const base = {
+    aId: a.member.id,
+    bId: b.member.id,
+    aName: a.member.name,
+    bName: b.member.name,
+    aElement: ea,
+    bElement: eb,
+  }
 
   if (ea === eb) {
-    return {
-      ...base,
-      relation: 'same',
-      score: 70,
-      label: '비슷한 결',
-      direction: `둘 다 ${ea} 기운이 앞선다. 말이 잘 통하는 대신 사각지대도 같다`,
-    }
+    return { ...base, relation: 'same', score: 70, flow: null }
   }
   if (GENERATES[ea] === eb) {
-    return {
-      ...base,
-      relation: 'generating',
-      score: 90,
-      label: '상생',
-      direction: `${subject(an)} ${object(bn)} 밀어주는 방향`,
-    }
+    return { ...base, relation: 'generating', score: 90, flow: 'ab' }
   }
   if (GENERATES[eb] === ea) {
-    return {
-      ...base,
-      relation: 'generating',
-      score: 90,
-      label: '상생',
-      direction: `${subject(bn)} ${object(an)} 밀어주는 방향`,
-    }
+    return { ...base, relation: 'generating', score: 90, flow: 'ba' }
   }
   if (CONTROLS[ea] === eb) {
-    return {
-      ...base,
-      relation: 'tension',
-      score: 55,
-      label: '긴장감 있는 조합',
-      direction: `${subject(an)} ${bn}에게 브레이크를 거는 방향. 견제가 품질을 올릴 수도 있다`,
-    }
+    return { ...base, relation: 'tension', score: 55, flow: 'ab' }
   }
-  return {
-    ...base,
-    relation: 'tension',
-    score: 55,
-    label: '긴장감 있는 조합',
-    direction: `${subject(bn)} ${an}에게 브레이크를 거는 방향. 견제가 품질을 올릴 수도 있다`,
-  }
+  return { ...base, relation: 'tension', score: 55, flow: 'ba' }
 }
 
 function sumTraits(charts: SajuChart[]): TraitAxes {

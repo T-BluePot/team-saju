@@ -71,10 +71,11 @@ team-saju/
       tenGods.ts         십신
       team.ts            팀 합성, 페어 케미
     lib/report/       룰 기반 리포트, 유형(archetype) 정의
+      archetypes.ts      21가지 팀 유형 문구
+      pairs.ts           두 사람 조합에 붙는 문장
     lib/share/        공유 카드 캔버스 렌더링
     lib/ui/           오행 색, 일러스트 매핑 같은 화면용 상수
-    lib/text/         조사 붙이기 같은 순수 문자열 유틸. 아무것도 import 하지 않아서
-                      계산 레이어도 쓸 수 있다
+    lib/text/         조사 붙이기 같은 순수 문자열 유틸. 아무것도 import 하지 않는다
     store/teamStore.ts
     components/
       Common/   프리미티브. Button Card Chip Field Section 등. 색은 전부
@@ -91,6 +92,13 @@ team-saju/
     index.css     Tailwind v4 + 디자인 토큰
   vite.config.ts  dev 서버용 API 미들웨어 포함
 ```
+
+계산은 숫자와 관계까지만 낸다. 조합 문구와 유형 문구는 `lib/report/` 가 만든다.
+계산이 카피를 들고 있으면 문구 한 글자 고칠 때마다 계산 테스트가 깨지고,
+카피를 손볼 때 `saju-writer` 가 아니라 `saju-engine` 영역을 건드려야 한다.
+
+아직 다 옮기지는 못했다. `chart.ts` 와 `timeCorrection.ts` 의 시간 보정 안내문,
+`constants.ts` 의 오행 키워드가 계산 레이어에 남아 화면으로 그대로 나간다. 옮길 대상이다.
 
 `components/` 바로 아래에는 파일을 두지 않는다. 전부 위 폴더 중 하나에 속하고,
 각 폴더는 `index.ts` 배럴로 내보낸다. 이름은 접두로 소속을 드러낸다
