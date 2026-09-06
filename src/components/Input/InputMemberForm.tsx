@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
   CommonButton,
@@ -9,28 +9,61 @@ import {
   CommonSelect,
   CommonTextInput,
 } from '../Common'
-import { emptyDraft, type Draft } from '../../store/teamStore'
+import { MAX_MEMBERS, emptyDraft, type Draft } from '../../store/teamStore'
 
 type Props = {
   onSubmit: (draft: Draft) => string | null
   disabled?: boolean
+  /** 추가 성공을 알릴 때 쓴다. 지금 몇 명인지 같이 읽어준다 */
+  count: number
 }
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
 
-export function InputMemberForm({ onSubmit, disabled }: Props) {
+/** 읽어준 뒤 문장을 비우는 시간 */
+const ANNOUNCE_MS = 4000
+
+export function InputMemberForm({ onSubmit, disabled, count }: Props) {
   const [draft, setDraft] = useState<Draft>(emptyDraft)
   const [error, setError] = useState<string | null>(null)
+  /**
+   * 추가가 됐다는 걸 스크린리더에 알린다.
+   * 실패는 role="alert" 로 읽히는데 성공은 신호가 포커스 이동뿐이었다.
+   * 그러면 "이름, 편집 텍스트" 만 들려서 추가된 건지 실패해서 다시 치라는 건지 구분이 안 된다.
+   *
+   * 읽어준 뒤에는 비운다. 안 비우면 두 가지가 걸린다.
+   * 문장이 직전과 똑같으면 React 가 텍스트 노드를 안 건드려서 aria-live 가 안 읽는다.
+   * 지우고 같은 이름을 다시 넣는 흐름에서 두 번째가 무음이 된다.
+   * 그리고 팀원을 지우면 인원수는 줄었는데 여기 낡은 숫자가 그대로 남는다.
+   */
+  const [added, setAdded] = useState('')
   const nameRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (!added) return
+    const t = window.setTimeout(() => setAdded(''), ANNOUNCE_MS)
+    return () => window.clearTimeout(t)
+  }, [added])
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }))
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const name = draft.name.trim()
     const message = onSubmit(draft)
     setError(message)
-    if (message) return
+    if (message) {
+      setAdded('')
+      return
+    }
+
+    const next = count + 1
+    setAdded(
+      next >= MAX_MEMBERS
+        ? `${name} 추가했습니다. ${next}명으로 꽉 찼습니다`
+        : `${name} 추가했습니다. 지금 ${next}명`,
+    )
 
     // 진태양시는 팀 전체에 같은 선택인 경우가 대부분이라 직전 값을 들고 간다.
     // 동의 출처는 절대 유지하지 않는다. 06-privacy.md 가 팀원마다 다시 고르게 정해뒀고,
@@ -187,6 +220,15 @@ export function InputMemberForm({ onSubmit, disabled }: Props) {
           {error}
         </p>
       )}
+
+      {/*
+        추가된 건 팀원 칩으로 이미 보인다. 눈으로 보는 사람에게는 중복이라
+        화면에서 감추고 스크린리더만 읽게 둔다.
+        리전은 내용보다 먼저 트리에 있어야 안정적으로 읽히니 항상 렌더한다.
+      */}
+      <p role="status" className="sr-only">
+        {added}
+      </p>
 
       <CommonButton type="submit" variant="primary" disabled={disabled}>
         팀원 추가
