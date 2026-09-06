@@ -39,6 +39,8 @@ jobs:
       - uses: Jung-eunwoo/ai-code-review@01365adee404635cbb79c25b9f6f100ff8b2daff # main 기준
         with:
           pr: ${{ github.event.number }}
+          # flash 가 503 을 계속 뱉어서 pro 로 올렸다. 무료 한도를 더 빨리 쓴다
+          model: gemini-pro-latest
         env:
           # AI Studio 키 하나면 된다: https://aistudio.google.com/apikey
           #   gh secret set GEMINI_API_KEY --repo OWNER/REPO
@@ -71,6 +73,7 @@ jobs:
         with:
           pr: ${{ github.event.pull_request.number }}
           reply-to: ${{ github.event.comment.id }}
+          model: gemini-pro-latest
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
