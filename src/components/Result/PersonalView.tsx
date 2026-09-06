@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
 import { CommonCard, CommonChip } from '../Common'
-import { SajuElementBars, SajuEmptyPillar, SajuPillarCard } from '../Saju'
-import { ELEMENT_LABEL, TEN_GODS, TRAIT_AXES } from '../../lib/saju/constants'
+import { SajuElementBars, SajuEmptyPillar, SajuPillarCard, SajuTraitBars } from '../Saju'
+import { ELEMENT_LABEL, TEN_GODS } from '../../lib/saju/constants'
 import type { PairChemistry, SajuChart } from '../../lib/saju/types'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 
@@ -90,25 +90,9 @@ export function PersonalView({
         </div>
 
         <h4 className="mt-6 text-sm font-bold">협업 성향</h4>
-        <ul className="mt-2.5 flex flex-col gap-2">
-          {TRAIT_AXES.map((axis) => (
-            <li key={axis} className="flex items-center gap-3">
-              <span className="w-9 shrink-0 text-sm">{axis}</span>
-              <div
-                className="h-2 flex-1 overflow-hidden rounded-full"
-                style={{ background: 'var(--rule)' }}
-              >
-                <div
-                  className="h-full rounded-full"
-                  style={{ width: `${traits[axis]}%`, background: 'var(--accent)' }}
-                />
-              </div>
-              <span className="w-9 shrink-0 text-right text-sm tabular-nums">
-                {traits[axis]}%
-              </span>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-2.5">
+          <SajuTraitBars traits={traits} />
+        </div>
 
         <h4 className="mt-6 text-sm font-bold">십신</h4>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
