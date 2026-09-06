@@ -79,7 +79,6 @@ export type MemberInput = {
   birthMinute: number
   calendar: 'solar' | 'lunar'
   isLeapMonth: boolean
-  gender: 'male' | 'female'
   useTrueSolarTime: boolean
   consent: {
     source: ConsentSource

@@ -10,13 +10,13 @@ import { emptyDraft, useTeamStore, type Draft } from './store/teamStore'
  * 프로덕션 번들에는 들어가지 않는다. main.tsx 에서 import.meta.env.DEV 로 막는다.
  */
 
-type Seed = Pick<Draft, 'name' | 'birthDate' | 'birthHour' | 'gender'>
+type Seed = Pick<Draft, 'name' | 'birthDate' | 'birthHour'>
 
 /** 실존 인물이 아니다. 오행이 한쪽으로 쏠리게 골라 결과가 균형형으로 안 빠지게 했다 */
 const SAMPLE: Seed[] = [
-  { name: '은우', birthDate: '1990-06-15', birthHour: 12, gender: 'male' },
-  { name: '서림', birthDate: '1988-06-20', birthHour: 14, gender: 'female' },
-  { name: '효경', birthDate: '1995-07-01', birthHour: 10, gender: 'female' },
+  { name: '은우', birthDate: '1990-06-15', birthHour: 12 },
+  { name: '서림', birthDate: '1988-06-20', birthHour: 14 },
+  { name: '효경', birthDate: '1995-07-01', birthHour: 10 },
 ]
 
 function seedMembers(): boolean {
