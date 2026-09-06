@@ -1,5 +1,6 @@
 import { CommonSection } from '../Common'
 import { energyCards } from '../../lib/report/energy'
+import { BALANCED_ARCHETYPE_ID } from '../../lib/saju/team'
 import type { TeamReport } from '../../lib/report/teamReport'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 
@@ -14,15 +15,22 @@ import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 export function TeamEnergyCards({ report }: { report: TeamReport }) {
   const { dominant, lacking } = report.analysis.elements
 
-  // 균형형은 채울 데도 덜 데도 없다. 억지로 네 장을 만들면 같은 말이 두 번 나온다
-  if (dominant === lacking) return null
+  /*
+   * 균형형은 채울 데도 덜 데도 없다. 억지로 네 장을 만들면 같은 말이 두 번 나온다.
+   *
+   * `dominant === lacking` 을 보면 안 된다. 균형 판정은 대부분 balance 점수에서 나오고
+   * 그때도 dominant 와 lacking 은 서로 다르다. 그 조건만 막으면 균형형인데도 섹션이 그려져서,
+   * 바로 위에서 "이미 다 있습니다" 라고 해놓고 아래에서 "제일 없는 게 금입니다" 가 된다.
+   */
+  if (report.archetype.id === BALANCED_ARCHETYPE_ID) return null
 
   const cards = energyCards(dominant, lacking)
 
   return (
     <CommonSection index="三" title="누굴 데려오면 되나" subtitle="아직 팀에 없는 기운입니다">
       <div
-        className="-mx-6 flex snap-x snap-mandatory gap-3 overflow-x-auto px-6 pb-2 sm:-mx-7 sm:px-7"
+        // scroll-pl 이 없으면 스냅이 첫 카드를 스크롤포트 시작에 붙여서 왼쪽 여백을 먹는다
+        className="-mx-6 flex snap-x snap-mandatory scroll-pl-6 gap-3 overflow-x-auto px-6 pb-2 sm:-mx-7 sm:scroll-pl-7 sm:px-7"
         tabIndex={0}
         role="group"
         aria-label="데려오면 좋은 기운과 지금은 안 되는 기운"
