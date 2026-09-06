@@ -70,11 +70,24 @@ describe('데려오면 좋은 기운 카드', () => {
     }
   })
 
+  it('조사가 앞말 받침에 맞는다', () => {
+    // 화 토 수는 받침이 없다. "화이 넘치는데" 같은 비문이 나오면 안 된다
+    const broken = [/[화토수](?:이|을|은)\s/, /[목금](?:가|를|는)\s/]
+    const all = PAIRS.flatMap(([d, l]) =>
+      energyCards(d, l).flatMap((c) => [c.title, c.nickname, c.line, c.effect, c.fix ?? '']),
+    ).join(' ')
+
+    for (const rule of broken) {
+      const hit = all.match(rule)
+      expect(hit, `조사가 어긋난다: ${hit?.[0]}`).toBeNull()
+    }
+  })
+
   it('사람을 배제하는 말을 안 쓴다', () => {
     // "안 되는 기운" 이라고 해서 사람을 자르는 말이 되면 안 된다
     const excluding = [/뽑지\s*마/, /거르/, /피하세요/, /함께\s*할\s*수\s*없/, /안\s*뽑/]
     const all = PAIRS.flatMap(([d, l]) =>
-      energyCards(d, l).flatMap((c) => [c.effect, c.fix ?? '']),
+      energyCards(d, l).flatMap((c) => [c.title, c.nickname, c.effect, c.fix ?? '']),
     ).join(' ')
 
     for (const rule of excluding) {

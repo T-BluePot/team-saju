@@ -1,3 +1,4 @@
+import { object, subject } from './josa'
 import { ELEMENT_LABEL } from '../saju/constants'
 import type { Element } from '../saju/types'
 
@@ -54,12 +55,12 @@ const WEAK: Record<Element, Profile> = {
     line: '급해도 목소리가 안 커지는 타입. 분위기를 띄우지는 않습니다.',
   },
   土: {
-    nickname: '뒤를 안 보는 사람',
-    line: '앞으로 가는 데는 좋은데 벌여둔 걸 정리하는 쪽은 남한테 맡기는 타입입니다.',
+    nickname: '앞만 보는 사람',
+    line: '앞으로 가는 데 집중하고 벌여둔 걸 정리하는 쪽은 남한테 맡기는 타입입니다.',
   },
   金: {
-    nickname: '잘 못 자르는 사람',
-    line: '누가 뭘 하자고 하면 웬만하면 다 받아주는 타입. 접자는 말을 잘 못 꺼냅니다.',
+    nickname: '다 받아주는 사람',
+    line: '누가 뭘 하자고 하면 웬만하면 받아주는 타입. 접자는 말을 먼저 꺼내지는 않습니다.',
   },
   水: {
     nickname: '일단 가는 사람',
@@ -118,7 +119,7 @@ export function energyCards(dominant: Element, lacking: Element): EnergyCard[] {
       title: title(dominant, 'weak'),
       nickname: WEAK[dominant].nickname,
       line: WEAK[dominant].line,
-      effect: `${dom}이 이미 넘치는 팀이라, 거기에 더 안 보태는 것만으로도 균형이 잡힙니다.`,
+      effect: `${subject(dom)} 이미 넘치는 팀이라, 거기에 더 안 보태는 것만으로도 균형이 잡힙니다.`,
     },
     {
       id: 'more-dominant',
@@ -126,9 +127,9 @@ export function energyCards(dominant: Element, lacking: Element): EnergyCard[] {
       strength: 'strong',
       good: false,
       title: title(dominant, 'strong'),
-      nickname: `${dom}에 ${dom}을 더하기`,
+      nickname: `${dom}에 ${object(dom)} 더하기`,
       line: STRONG[dominant].line,
-      effect: `안 그래도 ${dom}이 넘치는데 한 명 더 넣으면 쏠림이 두 배가 됩니다. 재밌긴 하겠네요.`,
+      effect: `안 그래도 ${subject(dom)} 넘치는데 한 명 더 넣으면 쏠림이 두 배가 됩니다. 재밌긴 하겠네요.`,
       fix: `그래도 데려오고 싶으면 ${lack} 쪽 한 명을 같이 뽑으세요. 둘이 세트입니다.`,
     },
     {
@@ -139,8 +140,8 @@ export function energyCards(dominant: Element, lacking: Element): EnergyCard[] {
       title: title(lacking, 'weak'),
       nickname: '빈 데를 더 비우는',
       line: WEAK[lacking].line,
-      effect: `가뜩이나 ${lack}이 비어 있는데 여기서 더 비면 그 자리를 아무도 안 맡게 됩니다.`,
-      fix: `이 사람이 꼭 필요하면 ${lack}을 대신할 규칙을 하나 만들어두세요. 사람이 없으면 문서가 대신합니다.`,
+      effect: `가뜩이나 ${subject(lack)} 비어 있는데 여기서 더 비면 그 자리를 아무도 안 맡게 됩니다.`,
+      fix: `이 사람이 꼭 필요하면 ${object(lack)} 대신할 규칙을 하나 만들어두세요. 사람이 없으면 문서가 대신합니다.`,
     },
   ]
 
