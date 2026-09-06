@@ -45,7 +45,6 @@ type State = {
   /** 방금 지운 사람. 되돌릴 수 있게 잠깐 들고 있는다 */
   removed: { member: MemberInput; chart: SajuChart; index: number } | null
   view: 'landing' | 'input' | 'loading' | 'result'
-  error: string | null
 
   agree: () => void
   setTeamName: (name: string) => void
@@ -90,7 +89,6 @@ export const useTeamStore = create<State>((set, get) => ({
   isExample: false,
   removed: null,
   view: 'landing',
-  error: null,
 
   agree: () => set({ consented: true }),
   setTeamName: (teamName) => set({ teamName }),
@@ -114,7 +112,6 @@ export const useTeamStore = create<State>((set, get) => ({
     set((s) => ({
       members: [...s.members, input],
       charts: [...s.charts, chart],
-      error: null,
       // 새로 넣었으면 되돌리기는 무효다. 안 그러면 상한을 넘길 수 있다
       removed: null,
       // 예시를 보다가 직접 넣기 시작하면 더 이상 예시가 아니다
@@ -174,7 +171,7 @@ export const useTeamStore = create<State>((set, get) => ({
       }
     }
     // addMember 가 isExample 을 끄니 마지막에 다시 켠다
-    set({ view: 'result', isExample: true, error: null })
+    set({ view: 'result', isExample: true })
   },
   /** 동의를 거절했을 때 돌아갈 곳. 넣던 내용은 지우고 처음 화면으로 */
   goLanding: () =>
@@ -185,7 +182,6 @@ export const useTeamStore = create<State>((set, get) => ({
       charts: [],
       removed: null,
       isExample: false,
-      error: null,
     }),
   goResult: () => set({ view: 'loading', removed: null }),
   finishLoading: () => set({ view: 'result' }),
@@ -198,6 +194,5 @@ export const useTeamStore = create<State>((set, get) => ({
       removed: null,
       isExample: false,
       view: 'input',
-      error: null,
     }),
 }))
