@@ -17,7 +17,6 @@ function member(over: Partial<MemberInput> = {}): MemberInput {
     birthMinute: 30,
     calendar: 'solar',
     isLeapMonth: false,
-    gender: 'male',
     useTrueSolarTime: true,
     consent: { source: 'self', confirmedAt: '2026-09-06T00:00:00Z' },
     ...over,

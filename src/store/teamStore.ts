@@ -16,7 +16,6 @@ export type Draft = {
   birthMinute: number
   calendar: 'solar' | 'lunar'
   isLeapMonth: boolean
-  gender: 'male' | 'female'
   useTrueSolarTime: boolean
   consentSource: 'self' | 'delegated' | null
 }
@@ -29,7 +28,6 @@ export const emptyDraft = (): Draft => ({
   birthMinute: 0,
   calendar: 'solar',
   isLeapMonth: false,
-  gender: 'male',
   useTrueSolarTime: true,
   consentSource: null,
 })
@@ -68,7 +66,6 @@ function draftToInput(draft: Draft): MemberInput {
     birthMinute: draft.hourKnown ? draft.birthMinute : 0,
     calendar: draft.calendar,
     isLeapMonth: draft.calendar === 'lunar' && draft.isLeapMonth,
-    gender: draft.gender,
     useTrueSolarTime: draft.useTrueSolarTime,
     consent: {
       source: draft.consentSource ?? 'self',

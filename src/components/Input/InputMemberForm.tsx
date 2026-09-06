@@ -135,27 +135,6 @@ export function InputMemberForm({ onSubmit, disabled }: Props) {
         )}
       </CommonFieldGroup>
 
-      <CommonFieldGroup legend="성별">
-        <div className="flex gap-3 text-sm">
-          <CommonCheckLabel
-            type="radio"
-            name="gender"
-            checked={draft.gender === 'male'}
-            onChange={() => set('gender', 'male')}
-          >
-            남
-          </CommonCheckLabel>
-          <CommonCheckLabel
-            type="radio"
-            name="gender"
-            checked={draft.gender === 'female'}
-            onChange={() => set('gender', 'female')}
-          >
-            여
-          </CommonCheckLabel>
-        </div>
-      </CommonFieldGroup>
-
       <CommonCheckLabel
         checked={draft.useTrueSolarTime}
         onChange={(e) => set('useTrueSolarTime', e.target.checked)}

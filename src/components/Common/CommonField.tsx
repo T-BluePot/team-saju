@@ -96,7 +96,7 @@ export function CommonCheckLabel({
   )
 }
 
-/** 묶음 입력. 성별, 양음력처럼 선택지가 몇 개 없을 때 */
+/** 묶음 입력. 양음력, 태어난 시간처럼 선택지가 몇 개 없을 때 */
 export function CommonFieldGroup({
   legend,
   children,
