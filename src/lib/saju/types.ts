@@ -35,6 +35,15 @@ export type Pillar = {
   stemGod: TenGod | null
   /** 지지 정기의 십신 */
   branchGod: TenGod
+  /**
+   * 십이운성. 일간이 이 지지에서 어느 세기에 있나.
+   * 원어가 아니라 기운의 세기로 옮긴 말이다. `docs/03-saju-spec.md` 참고
+   */
+  stage: string
+  /** 납음오행. 해중금 노중화 같은 60갑자 별칭 */
+  naYin: string
+  /** 지지에 든 천간. 오행 계산에 쓰던 걸 화면에도 펼친다 */
+  hiddenStems: Stem[]
 }
 
 export type ElementScores = Record<Element, number>
@@ -103,6 +112,11 @@ export type SajuChart = {
   strength: Strength
   tenGods: TenGodCount
   traits: TraitAxes
+  /**
+   * 공망. 일주 기준 순중에서 비는 지지 둘이다.
+   * 빈 칸이라는 뜻이지 나쁜 게 아니다. 운을 점치는 데 쓰지 않는다
+   */
+  voidBranches: Branch[]
   corrections: AppliedCorrection[]
 }
 
