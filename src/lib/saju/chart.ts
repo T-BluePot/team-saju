@@ -1,6 +1,12 @@
 import { Lunar, Solar } from 'lunar-typescript'
 
-import { HIDDEN_STEMS, STEM_ELEMENT, STEM_YINYANG } from './constants'
+import {
+  HIDDEN_STEMS,
+  NAYIN_KO,
+  STEM_ELEMENT,
+  STEM_YINYANG,
+  TWELVE_STAGE_KO,
+} from './constants'
 import {
   buildDistribution,
   computeElementScoresWithMonthIndex,
@@ -72,6 +78,8 @@ function buildPillar(
   kind: PillarKind,
   ganZhi: string,
   dayStem: Stem,
+  rawStage: string,
+  rawNaYin: string,
 ): Pillar {
   const stem = ganZhi[0] as Stem
   const branch = ganZhi[1] as Branch
@@ -81,7 +89,17 @@ function buildPillar(
     branch,
     stemGod: kind === 'day' ? null : getTenGod(dayStem, stem),
     branchGod: getTenGod(dayStem, hiddenMainOf(branch)),
+    // 매핑에 없으면 원문을 그대로 둔다. 표 하나 때문에 계산이 멈추면 안 된다
+    stage: TWELVE_STAGE_KO[rawStage] ?? rawStage,
+    naYin: NAYIN_KO[rawNaYin] ?? rawNaYin,
+    hiddenStems: hiddenStemsOf(branch),
   }
+}
+
+/** 여기 중기 정기 순이다. 계산에 쓰는 가중치와 같은 순서로 보여준다 */
+function hiddenStemsOf(branch: Branch): Stem[] {
+  const h = HIDDEN_STEMS[branch]
+  return [h.residual, h.middle, h.main].filter((s): s is Stem => s !== null)
 }
 
 function hiddenMainOf(branch: Branch): Stem {
@@ -158,11 +176,35 @@ export function buildChart(member: MemberInput): SajuChart {
   const dayGanZhi = eightChar.getDay()
   const dayStem = dayGanZhi[0] as Stem
 
-  const year = buildPillar('year', eightChar.getYear(), dayStem)
-  const month = buildPillar('month', eightChar.getMonth(), dayStem)
-  const day = buildPillar('day', dayGanZhi, dayStem)
+  const year = buildPillar(
+    'year',
+    eightChar.getYear(),
+    dayStem,
+    eightChar.getYearDiShi(),
+    eightChar.getYearNaYin(),
+  )
+  const month = buildPillar(
+    'month',
+    eightChar.getMonth(),
+    dayStem,
+    eightChar.getMonthDiShi(),
+    eightChar.getMonthNaYin(),
+  )
+  const day = buildPillar(
+    'day',
+    dayGanZhi,
+    dayStem,
+    eightChar.getDayDiShi(),
+    eightChar.getDayNaYin(),
+  )
   const hour = hasHour
-    ? buildPillar('hour', eightChar.getTime(), dayStem)
+    ? buildPillar(
+        'hour',
+        eightChar.getTime(),
+        dayStem,
+        eightChar.getTimeDiShi(),
+        eightChar.getTimeNaYin(),
+      )
     : null
 
   const pillars = [year, month, day, ...(hour ? [hour] : [])]
@@ -189,6 +231,8 @@ export function buildChart(member: MemberInput): SajuChart {
     strength: computeStrength(STEM_ELEMENT[dayStem], scores),
     tenGods,
     traits: normalizeTraits(tenGodsToTraits(tenGods)),
+    // 라이브러리가 "戌亥" 처럼 두 글자로 준다
+    voidBranches: [...eightChar.getDayXunKong()] as Branch[],
     corrections,
   }
 }

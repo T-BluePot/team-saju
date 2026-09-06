@@ -39,6 +39,46 @@ describe('골든 셋', () => {
     expect(ganzhi(member())).toBe('庚午 辛巳 庚辰 癸未')
   })
 
+  it('G1 십이운성 납음 지장간 공망까지 고정한다', () => {
+    const c = buildChart(member())
+    const p = [c.pillars.year, c.pillars.month, c.pillars.day, c.pillars.hour!]
+
+    // 십이운성은 원어가 아니라 기운의 세기로 옮긴 말이다. docs/03-saju-spec.md 대응표
+    expect(p.map((x) => x.stage)).toEqual(['씻기는', '막 트는', '자라는', '갖추는'])
+    expect(p.map((x) => x.naYin)).toEqual(['노방토', '백랍금', '백랍금', '양류목'])
+    // 여기 중기 정기 순. 오행 계산에 쓰는 순서와 같다
+    expect(p.map((x) => x.hiddenStems.join(''))).toEqual([
+      '丙己丁',
+      '戊庚丙',
+      '乙癸戊',
+      '丁乙己',
+    ])
+    expect(c.voidBranches).toEqual(['申', '酉'])
+  })
+
+  it('건강이나 죽음을 연상시키는 원어가 화면 값으로 안 나온다', () => {
+    // 십이운성 원어 열둘 중 病 死 墓 絕 넷이 프로젝트 금지선에 걸린다.
+    // 어떤 날짜를 넣어도 그 글자가 그대로 나오면 안 된다
+    const banned = ['病', '死', '墓', '绝', '絕']
+    for (let month = 1; month <= 12; month++) {
+      for (const hour of [3, 9, 15, 21]) {
+        const c = buildChart(
+          member({ birthDate: `1990-${String(month).padStart(2, '0')}-15`, birthHour: hour }),
+        )
+        const stages = [c.pillars.year, c.pillars.month, c.pillars.day, c.pillars.hour!].map(
+          (x) => x.stage,
+        )
+        for (const stage of stages) {
+          for (const bad of banned) {
+            expect(stage.includes(bad), `${month}월 ${hour}시에 원어가 샜다: ${stage}`).toBe(
+              false,
+            )
+          }
+        }
+      }
+    }
+  })
+
   it('G2 입춘 전이라 연주가 전년도 간지', () => {
     const chart = buildChart(
       member({ birthDate: '1990-02-03', birthHour: 10, birthMinute: 0 }),

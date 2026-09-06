@@ -23,7 +23,8 @@ export function PersonalView({
   const chart = charts[selected]
   if (!chart) return null
 
-  const { pillars, dayMaster, elements, strength, traits, tenGods, corrections } = chart
+  const { pillars, dayMaster, elements, strength, traits, tenGods, voidBranches, corrections } =
+    chart
   const strengthInfo = STRENGTH_LABEL[strength.level]
   const myPairs = pairs.filter(
     (p) => p.aId === chart.member.id || p.bId === chart.member.id,
@@ -65,6 +66,15 @@ export function PersonalView({
           {pillars.hour ? <SajuPillarCard pillar={pillars.hour} /> : <SajuEmptyPillar />}
         </div>
 
+        {/*
+          십이운성에 프레이밍이 없으면 회색과 강조색이 좋고 나쁨처럼 읽힌다.
+          팀원 전환 탭이 있어서 남의 명식도 같은 화면에 보인다. 평가로 쓰이면 안 된다
+        */}
+        <p className="mt-3 text-xs" style={{ color: 'var(--ink-soft)' }}>
+          기둥마다 지장간, 기운의 단계, 납음을 적었어요. 단계는 그 글자에서 기운이 어디쯤
+          있는지 보여주는 거지 좋고 나쁨을 가르는 게 아니에요
+        </p>
+
         <p className="mt-3 text-sm" style={{ color: 'var(--ink-soft)' }}>
           일간은{' '}
           <strong style={{ color: ELEMENT_COLOR[dayMaster.element] }}>
@@ -72,6 +82,17 @@ export function PersonalView({
           </strong>
           . 사주에서 나 자신에 해당하는 글자예요
         </p>
+
+        {/*
+          공망. 빈 칸이라는 뜻이지 나쁜 게 아니다.
+          운을 점치는 데 쓰지 않는다. 그냥 이 사주에서 안 채워진 자리다
+        */}
+        {voidBranches.length > 0 && (
+          <p className="mt-1.5 text-sm" style={{ color: 'var(--ink-soft)' }}>
+            공망은 <strong style={{ color: 'var(--ink)' }}>{voidBranches.join(' ')}</strong>.
+            이 사주에서 비어 있는 칸이에요. 나쁜 뜻은 아니에요
+          </p>
+        )}
 
         <div className="mt-5">
           <SajuElementBars percents={elements.percents} />
