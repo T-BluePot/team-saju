@@ -42,22 +42,36 @@ export function tenGodsToTraits(counts: TenGodCount): TraitAxes {
   return traits
 }
 
-/** 5축을 합이 100인 비율로. 전부 0이면 균등하게 나눈다 */
+/**
+ * 5축을 합이 100인 비율로. 전부 0이면 균등하게 나눈다.
+ *
+ * 최대 잔차 분배를 쓴다. 내림한 뒤 남은 몫을 소수부가 큰 축부터 하나씩 준다.
+ *
+ * 예전에는 앞 네 축을 반올림하고 마지막 축에 `100 - assigned` 를 몰아줬는데,
+ * 앞 넷의 반올림이 올림으로 몰리면 **마지막 축이 음수가 됐다.**
+ * 막대 폭에 음수가 들어가고 5축 공백 판정에도 걸려서 화면 문구로 새어 나왔다.
+ *
+ * 잔차가 같으면 `TRAIT_AXES` 순서가 이긴다. 정렬이 안정적이라 결정론적이다.
+ */
 export function normalizeTraits(traits: TraitAxes): TraitAxes {
   const total = TRAIT_AXES.reduce((sum, a) => sum + traits[a], 0)
   if (total === 0) {
     return Object.fromEntries(TRAIT_AXES.map((a) => [a, 20])) as TraitAxes
   }
+
+  const exact = TRAIT_AXES.map((axis) => ({ axis, value: (traits[axis] / total) * 100 }))
   const result = emptyTraits()
   let assigned = 0
-  TRAIT_AXES.forEach((axis, i) => {
-    if (i === TRAIT_AXES.length - 1) {
-      result[axis] = 100 - assigned
-      return
-    }
-    const v = Math.round((traits[axis] / total) * 100)
-    result[axis] = v
-    assigned += v
-  })
+  for (const { axis, value } of exact) {
+    const floor = Math.floor(value)
+    result[axis] = floor
+    assigned += floor
+  }
+
+  const rest = 100 - assigned
+  const byRemainder = [...exact].sort((a, b) => (b.value % 1) - (a.value % 1))
+  for (let i = 0; i < rest; i++) {
+    result[byRemainder[i].axis] += 1
+  }
   return result
 }
