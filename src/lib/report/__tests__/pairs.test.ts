@@ -24,21 +24,25 @@ describe('조합 문장', () => {
 
   it('브레이크를 거는 쪽이 주어가 된다', () => {
     const p = pair({ relation: 'tension', flow: 'ba' })
-    expect(pairCopy(p).direction).toMatch(/^서림이 은우에게 브레이크를 거는 방향/)
+    // 처방까지 한 문장이다. 지적만 남기고 뒤를 자르면 규칙을 어긴다
+    expect(pairCopy(p).direction).toBe(
+      '서림이 은우에게 브레이크를 거는 방향. 견제가 품질을 올릴 수도 있다',
+    )
   })
 
   it('같은 결이면 방향이 없고 오행을 말한다', () => {
     const p = pair({ relation: 'same', flow: null, aElement: '火', bElement: '火' })
-    expect(pairCopy(p).label).toBe('비슷한 결')
-    expect(pairCopy(p).direction).toContain('둘 다 火 기운이 앞선다')
+    expect(pairCopy(p).direction).toBe('둘 다 火 기운이 앞선다. 말이 잘 통하는 대신 사각지대도 같다')
     expect(pairCopy(p).direction).not.toContain('은우')
   })
 
-  it('관계마다 라벨이 다르다', () => {
-    const labels = (['generating', 'same', 'tension'] as const).map(
-      (relation) => pairCopy(pair({ relation, flow: relation === 'same' ? null : 'ab' })).label,
-    )
-    expect(new Set(labels).size).toBe(3)
+  it('관계마다 라벨이 정해져 있다', () => {
+    // Set 크기만 보면 오타가 통과한다. 값을 그대로 박는다
+    const labelOf = (relation: PairChemistry['relation']) =>
+      pairCopy(pair({ relation, flow: relation === 'same' ? null : 'ab' })).label
+    expect(labelOf('generating')).toBe('상생')
+    expect(labelOf('same')).toBe('비슷한 결')
+    expect(labelOf('tension')).toBe('긴장감 있는 조합')
   })
 
   it('이름 받침에 맞는 조사를 쓴다', () => {
