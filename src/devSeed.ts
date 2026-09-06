@@ -41,7 +41,17 @@ export function seedDemo(): void {
   useTeamStore.setState({ view: 'result' })
 }
 
-/** `#demo` 로 들어오면 시드를 깐다 */
+/** 동의만 통과시키고 입력 화면에 세운다. 폼 캡쳐용 */
+export function seedInput(): void {
+  const store = useTeamStore.getState()
+  store.reset()
+  store.agree()
+  store.setTeamName('푸른핫가마')
+  useTeamStore.setState({ view: 'input' })
+}
+
+/** `#demo` 는 결과 화면, `#demo-input` 은 입력 화면으로 세운다 */
 export function applyDemoHash(): void {
   if (window.location.hash === '#demo') seedDemo()
+  if (window.location.hash === '#demo-input') seedInput()
 }
