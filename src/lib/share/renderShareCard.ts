@@ -188,7 +188,9 @@ function layout(
   paint(() => {
     ctx.fillStyle = C.inkSoft
     ctx.font = sans(28, 500)
-    ctx.fillText(`${analysis.teamName} · ${analysis.size}명`, PAD, y)
+    // 혼자면 "1명" 이 아니라 아직 혼자라고 적는다. 팀인 척하지 않는다
+    const who = analysis.size === 1 ? '아직 혼자' : `${analysis.size}명`
+    ctx.fillText(`${analysis.teamName} · ${who}`, PAD, y)
 
     ctx.save()
     ctx.translate(W - PAD - 34, y - 24)
