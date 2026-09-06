@@ -168,7 +168,8 @@ export const useTeamStore = create<State>((set, get) => ({
     for (const seed of SAMPLE_TEAM) {
       const error = get().addMember({ ...emptyDraft(), ...seed, consentSource: 'self' })
       if (error) {
-        set({ error, view: 'landing', isExample: false })
+        // 반쯤 채워진 표본을 남기면 다음에 팀 만들기를 눌렀을 때 그게 섞인다
+        get().goLanding()
         return
       }
     }

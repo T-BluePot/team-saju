@@ -15,6 +15,8 @@ export function ResultPage() {
   const goBack = useTeamStore((s) => s.goBack)
   const reset = useTeamStore((s) => s.reset)
   const isExample = useTeamStore((s) => s.isExample)
+  // 예시에서 편집으로 나가면 표본이 사용자 팀이 되어버린다. 예시일 때는 비우고 시작한다
+  const onEdit = isExample ? reset : goBack
   // 해시에 personal 이 있으면 개인 탭으로 연다. 캡쳐할 때 클릭을 안 거쳐도 되고,
   // 나중에 링크로 특정 탭을 열 때도 이 자리를 쓴다
   const [tab, setTab] = useState<'team' | 'personal'>(() =>
@@ -55,7 +57,7 @@ export function ResultPage() {
         </div>
         <button
           type="button"
-          onClick={goBack}
+          onClick={onEdit}
           className="press min-h-11 rounded-lg px-3.5 text-sm"
           style={{ border: '1px solid var(--rule)', color: 'var(--ink-soft)' }}
         >
@@ -69,7 +71,7 @@ export function ResultPage() {
         <PersonalView charts={charts} pairs={report.analysis.pairs} />
       )}
 
-      <TeamNextStep count={charts.length} onEdit={goBack} onRestart={reset} />
+      <TeamNextStep count={charts.length} onEdit={onEdit} onRestart={reset} />
     </div>
   )
 }
