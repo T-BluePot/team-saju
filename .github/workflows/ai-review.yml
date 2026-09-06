@@ -41,10 +41,11 @@ jobs:
           pr: ${{ github.event.number }}
           provider: claude
         env:
-          # Claude 를 분석기로 쓴다. 둘 중 하나만 있으면 된다.
-          #   API 크레딧:  gh secret set ANTHROPIC_API_KEY --repo OWNER/REPO
-          #   구독 토큰:   claude setup-token 으로 발급 후 CLAUDE_CODE_OAUTH_TOKEN 에 넣는다
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Claude 를 분석기로 쓴다. claude setup-token 으로 받은 구독 토큰.
+          #
+          # ⚠️ ANTHROPIC_API_KEY 를 같이 넘기지 마라. 시크릿이 없으면 빈 문자열로
+          #    주입되는데, CLI 가 그걸 먼저 집어서 인증 없이 죽는다.
+          #    API 크레딧으로 바꿀 거면 이 줄을 지우고 그쪽만 넣는다.
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           GH_TOKEN: ${{ github.token }}
 
@@ -71,6 +72,5 @@ jobs:
           reply-to: ${{ github.event.comment.id }}
           provider: claude
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           GH_TOKEN: ${{ github.token }}
