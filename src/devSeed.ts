@@ -44,6 +44,11 @@ export function seedDemo(): void {
   if (seedMembers()) useTeamStore.setState({ view: 'result' })
 }
 
+/** 팀원을 넣어둔 입력 화면. 팀원 목록과 되돌리기를 보려면 여기로 */
+export function seedFilledInput(): void {
+  if (seedMembers()) useTeamStore.setState({ view: 'input' })
+}
+
 /** 한 명만 넣은 결과. 1인 모드 화면을 보려면 여기로 */
 export function seedSolo(): void {
   if (seedMembers(1)) useTeamStore.setState({ view: 'result' })
@@ -71,7 +76,8 @@ export function seedConsent(): void {
 
 /**
  * `#demo` 결과, `#demo-input` 입력, `#demo-loading` 로딩,
- * `#demo-consent` 동의 모달, `#demo-personal` 개인 명식 탭, `#demo-solo` 1인 결과
+ * `#demo-consent` 동의 모달, `#demo-personal` 개인 명식 탭, `#demo-solo` 1인 결과,
+ * `#demo-filled` 팀원이 들어 있는 입력 화면
  */
 export function applyDemoHash(): void {
   if (window.location.hash === '#demo') seedDemo()
@@ -80,4 +86,5 @@ export function applyDemoHash(): void {
   if (window.location.hash === '#demo-consent') seedConsent()
   if (window.location.hash === '#demo-personal') seedDemo()
   if (window.location.hash === '#demo-solo') seedSolo()
+  if (window.location.hash === '#demo-filled') seedFilledInput()
 }

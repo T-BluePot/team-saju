@@ -27,7 +27,7 @@ export function InputMemberList({ charts, onRemove }: Props) {
             as="li"
             flush
             radius="rounded-full"
-            className="flex items-center gap-2 py-1.5 pl-3.5 pr-2"
+            className="flex items-center gap-2 py-1 pl-3.5 pr-1"
           >
             <span className="text-sm font-medium">{c.member.name}</span>
             <span
@@ -45,8 +45,12 @@ export function InputMemberList({ charts, onRemove }: Props) {
               type="button"
               onClick={() => onRemove(c.member.id)}
               aria-label={`${c.member.name} 삭제`}
-              className="flex size-5 items-center justify-center rounded-full text-xs"
-              style={{ background: 'var(--paper-deep)', color: 'var(--ink-soft)' }}
+              className="flex size-8 items-center justify-center rounded-full text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{
+                background: 'var(--paper-deep)',
+                color: 'var(--ink-soft)',
+                outlineColor: 'var(--accent)',
+              }}
             >
               ×
             </button>
