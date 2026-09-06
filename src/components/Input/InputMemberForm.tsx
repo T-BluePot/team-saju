@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
   CommonButton,
@@ -9,28 +9,41 @@ import {
   CommonSelect,
   CommonTextInput,
 } from '../Common'
-import { emptyDraft, type Draft } from '../../store/teamStore'
+import { MAX_MEMBERS, emptyDraft, type Draft } from '../../store/teamStore'
 
 type Props = {
   onSubmit: (draft: Draft) => string | null
   disabled?: boolean
   /** 추가 성공을 알릴 때 쓴다. 지금 몇 명인지 같이 읽어준다 */
   count: number
-  max: number
 }
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
 
-export function InputMemberForm({ onSubmit, disabled, count, max }: Props) {
+/** 읽어준 뒤 문장을 비우는 시간 */
+const ANNOUNCE_MS = 4000
+
+export function InputMemberForm({ onSubmit, disabled, count }: Props) {
   const [draft, setDraft] = useState<Draft>(emptyDraft)
   const [error, setError] = useState<string | null>(null)
   /**
    * 추가가 됐다는 걸 스크린리더에 알린다.
    * 실패는 role="alert" 로 읽히는데 성공은 신호가 포커스 이동뿐이었다.
    * 그러면 "이름, 편집 텍스트" 만 들려서 추가된 건지 실패해서 다시 치라는 건지 구분이 안 된다.
+   *
+   * 읽어준 뒤에는 비운다. 안 비우면 두 가지가 걸린다.
+   * 문장이 직전과 똑같으면 React 가 텍스트 노드를 안 건드려서 aria-live 가 안 읽는다.
+   * 지우고 같은 이름을 다시 넣는 흐름에서 두 번째가 무음이 된다.
+   * 그리고 팀원을 지우면 인원수는 줄었는데 여기 낡은 숫자가 그대로 남는다.
    */
   const [added, setAdded] = useState('')
   const nameRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (!added) return
+    const t = window.setTimeout(() => setAdded(''), ANNOUNCE_MS)
+    return () => window.clearTimeout(t)
+  }, [added])
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }))
@@ -47,7 +60,7 @@ export function InputMemberForm({ onSubmit, disabled, count, max }: Props) {
 
     const next = count + 1
     setAdded(
-      next >= max
+      next >= MAX_MEMBERS
         ? `${name} 추가했습니다. ${next}명으로 꽉 찼습니다`
         : `${name} 추가했습니다. 지금 ${next}명`,
     )

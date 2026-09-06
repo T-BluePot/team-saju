@@ -32,7 +32,6 @@ export function InputPage() {
         onSubmit={addMember}
         disabled={members.length >= MAX_MEMBERS}
         count={members.length}
-        max={MAX_MEMBERS}
       />
 
       <CommonButton
