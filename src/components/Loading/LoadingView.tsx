@@ -48,8 +48,10 @@ export function LoadingView({ charts, onDone }: Props) {
   const rounds = Math.min(Math.max(charts.length, 1), MAX_ROUNDS)
   const totalSteps = rounds * PER_CHART
 
-  // 여덟 글자를 다 열면 다음 사람으로 넘어간다
-  const who = Math.min(Math.floor(opened / PER_CHART), rounds - 1)
+  // 여덟 글자를 다 열면 다음 사람으로 넘어간다.
+  // floor 를 쓰면 opened 가 8일 때 바로 다음 사람으로 넘어가버려서
+  // 앞사람 명식이 여덟 글자를 다 채운 화면을 한 프레임도 못 보여준다.
+  const who = Math.min(Math.max(Math.ceil(opened / PER_CHART) - 1, 0), rounds - 1)
   const revealed = opened - who * PER_CHART
 
   const sample = charts[who]
@@ -126,9 +128,9 @@ export function LoadingView({ charts, onDone }: Props) {
       </div>
 
       <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-        {charts.length === 1
+        {charts.length <= 1 || !sample
           ? '명식을 살펴보고 있습니다'
-          : `${charts.length}명 중 ${sample?.member.name ?? ''} 명식을 보는 중`}
+          : `${sample.member.name} 명식을 보는 중`}
       </p>
     </div>
   )
