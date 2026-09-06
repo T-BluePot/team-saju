@@ -36,7 +36,7 @@ const ILLUST_BY_LACKING: Record<Element, { src: string; alt: string }> = {
 
 /** 어디도 안 비어서 붙일 결핍이 없다. 아무도 안 집는 마지막 한 조각 */
 const BALANCED_ILLUST = {
-  src: '/illust/balanced.png',
+  src: '/illust/no-lacking.png',
   alt: '접시에 하나 남은 음식',
 }
 
