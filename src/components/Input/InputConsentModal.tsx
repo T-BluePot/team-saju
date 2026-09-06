@@ -77,17 +77,9 @@ export function InputConsentModal({ onAgree, onDecline }: Props) {
         </div>
 
         <div className="shrink-0">
-          <button
-            type="button"
-            onClick={onDecline}
-            className="block w-full py-4 text-center text-sm"
-            style={{
-              borderTop: '1px solid var(--rule)',
-              color: 'var(--ink-soft)',
-            }}
-          >
+          <CommonButton type="button" variant="quiet" fullBleed onClick={onDecline}>
             동의하지 않고 나가기
-          </button>
+          </CommonButton>
           <CommonButton type="button" variant="primary" fullBleed serif onClick={onAgree}>
             동의하고 시작하기
           </CommonButton>
