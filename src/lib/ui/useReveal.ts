@@ -21,6 +21,11 @@ export function prefersReducedMotion(): boolean {
  *
  * 폴백 타이머를 같이 둔다. 관찰자가 어떤 이유로든 안 불리면 차트가 0 인 채로 영원히 남는다.
  * 애니메이션을 못 보는 건 참을 수 있어도 결과가 안 보이는 건 안 된다.
+ *
+ * 단 **관찰자가 한 번도 안 불린 경우에만** 발동한다. 무조건 켜면 화면 밖 차트까지
+ * 1.2초 뒤에 다 타버려서 스크롤해 도착했을 때 이미 끝나 있다. 리빌을 만든 이유가 없어진다.
+ * 보이는 문서에서는 교차하지 않아도 초기 콜백이 isIntersecting: false 로 한 번 오고,
+ * 문서가 숨겨져 있으면 콜백이 아예 안 온다. 이 차이가 두 경우를 정확히 갈라준다.
  */
 export function useReveal<T extends Element>() {
   const ref = useRef<T>(null)
@@ -31,13 +36,14 @@ export function useReveal<T extends Element>() {
 
   useEffect(() => {
     if (shown) return
-    const el = ref.current
-    if (!el) return
-
-    const fallback = window.setTimeout(() => setShown(true), FALLBACK_MS)
+    let called = false
+    const fallback = window.setTimeout(() => {
+      if (!called) setShown(true)
+    }, FALLBACK_MS)
 
     const io = new IntersectionObserver(
       (entries) => {
+        called = true
         if (entries.some((e) => e.isIntersecting)) {
           setShown(true)
           io.disconnect()
@@ -45,7 +51,7 @@ export function useReveal<T extends Element>() {
       },
       { threshold: 0.2 },
     )
-    io.observe(el)
+    if (ref.current) io.observe(ref.current)
     return () => {
       io.disconnect()
       window.clearTimeout(fallback)
@@ -79,9 +85,10 @@ export function useCountUp(target: number, run: boolean, ms = 900): number {
       const eased = 1 - Math.pow(1 - t, 3)
       setValue(Math.round(target * eased))
       if (t < 1) raf = requestAnimationFrame(tick)
+      else window.clearTimeout(fallback)
     }
-    raf = requestAnimationFrame(tick)
     const fallback = window.setTimeout(() => setValue(target), duration + 400)
+    raf = requestAnimationFrame(tick)
     return () => {
       cancelAnimationFrame(raf)
       window.clearTimeout(fallback)
