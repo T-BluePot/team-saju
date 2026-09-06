@@ -367,7 +367,7 @@ export async function drawShareCard(
   const ctx = canvas.getContext('2d')
   if (!ctx) return
 
-  const { src } = illustFor(report.archetype.id, report.analysis.elements.dominant)
+  const { src } = illustFor(report.archetype.id, report.analysis.elements.lacking)
   const illust = await loadImage(src)
 
   // 1차. 높이만 잰다
