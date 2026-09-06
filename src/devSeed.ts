@@ -58,9 +58,16 @@ export function seedInput(): void {
   useTeamStore.setState({ view: 'input' })
 }
 
-/** `#demo` 결과, `#demo-input` 입력, `#demo-loading` 로딩 화면 */
+/** 동의 모달이 뜬 상태로 세운다. 동의를 안 한 채 입력 화면에 있으면 모달이 뜬다 */
+export function seedConsent(): void {
+  useTeamStore.getState().reset()
+  useTeamStore.setState({ consented: false, view: 'input' })
+}
+
+/** `#demo` 결과, `#demo-input` 입력, `#demo-loading` 로딩, `#demo-consent` 동의 모달 */
 export function applyDemoHash(): void {
   if (window.location.hash === '#demo') seedDemo()
   if (window.location.hash === '#demo-input') seedInput()
   if (window.location.hash === '#demo-loading') seedLoading()
+  if (window.location.hash === '#demo-consent') seedConsent()
 }
