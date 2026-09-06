@@ -1,5 +1,6 @@
 import { ELEMENTS, ELEMENT_LABEL } from '../saju/constants'
 import type { Element } from '../saju/types'
+import { SOLO_LEAD, isSolo, needsBlock } from '../report/solo'
 import type { TeamReport } from '../report/teamReport'
 import { ELEMENT_HEX, illustFor } from '../ui/elementStyle'
 
@@ -177,6 +178,8 @@ function layout(
   draw: boolean,
 ): number {
   const { analysis, archetype, dominant, lacking } = report
+  const solo = isSolo(analysis)
+  const needs = needsBlock(solo, archetype)
   const inner = W - PAD * 2
   const paint = (fn: () => void) => {
     if (draw) fn()
@@ -189,7 +192,7 @@ function layout(
     ctx.fillStyle = C.inkSoft
     ctx.font = sans(28, 500)
     // 혼자면 "1명" 이 아니라 아직 혼자라고 적는다. 팀인 척하지 않는다
-    const who = analysis.size === 1 ? '아직 혼자' : `${analysis.size}명`
+    const who = solo ? '아직 혼자' : `${analysis.size}명`
     ctx.fillText(`${analysis.teamName} · ${who}`, PAD, y)
 
     ctx.save()
@@ -208,8 +211,16 @@ function layout(
     ctx.textBaseline = 'alphabetic'
   })
 
-  // 유형 이름
-  y += 84
+  // 유형 이름. 혼자면 "이 기운으로 팀을 만들면" 을 위에 붙여서 화면과 화법을 맞춘다
+  y += solo ? 62 : 84
+  if (solo) {
+    paint(() => {
+      ctx.fillStyle = C.cinnabar
+      ctx.font = serif(26, 700)
+      ctx.fillText(SOLO_LEAD, PAD, y)
+    })
+    y += 44
+  }
   ctx.font = serif(72, 800)
   const nameLines = wrap(ctx, archetype.name, inner)
   paint(() => {
@@ -318,12 +329,12 @@ function layout(
   paint(() => {
     ctx.fillStyle = C.inkSoft
     ctx.font = sans(25, 500)
-    ctx.fillText('이 팀에 들어오면 좋은 사람', PAD, y)
+    ctx.fillText(needs.heading, PAD, y)
   })
 
   y += 48
   ctx.font = serif(33, 700)
-  const needLines = wrap(ctx, archetype.needsPerson, inner)
+  const needLines = wrap(ctx, needs.body, inner)
   paint(() => {
     ctx.fillStyle = C.ink
     needLines.forEach((line, i) => ctx.fillText(line, PAD, y + i * 44))
@@ -342,11 +353,11 @@ function layout(
 
     ctx.fillStyle = C.inkSoft
     ctx.font = sans(23, 400)
-    ctx.fillText(
-      `균형 ${analysis.balance}점 · 상생 ${analysis.pairCounts.generating}쌍 · 비슷한 결 ${analysis.pairCounts.same}쌍 · 긴장 ${analysis.pairCounts.tension}쌍`,
-      PAD,
-      footerTop,
-    )
+    // 혼자면 조합이 없다. 0쌍 0쌍 0쌍은 알려주는 게 없어서 균형 점수만 남긴다
+    const stats = solo
+      ? `균형 ${analysis.balance}점`
+      : `균형 ${analysis.balance}점 · 상생 ${analysis.pairCounts.generating}쌍 · 비슷한 결 ${analysis.pairCounts.same}쌍 · 긴장 ${analysis.pairCounts.tension}쌍`
+    ctx.fillText(stats, PAD, footerTop)
     ctx.fillText('팀사주 · 재미로 보는 콘텐츠입니다', PAD, footerTop + 36)
   })
 
