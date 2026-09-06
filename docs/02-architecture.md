@@ -111,7 +111,6 @@ type MemberInput = {
   birthMinute: number
   calendar: 'solar' | 'lunar'
   isLeapMonth: boolean
-  gender: 'male' | 'female'
   useTrueSolarTime: boolean
   consent: {
     source: 'self' | 'delegated'   // 본인 정보인가 대리 입력인가
