@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap');
+@import 'tailwindcss';
+
+/*
+ * 디자인 방향
+ *
+ * 사주 서적과 부적의 감성을 가져온다. 한지 바탕, 먹 글씨, 주사(朱砂) 다홍.
+ * 오행 색은 전통 오방색을 쓴다. 청(木) 적(火) 황(土) 백(金) 흑(水).
+ * 제목은 명조체, 본문은 고딕. 그림자 대신 얇은 괘선으로 면을 나눈다.
+ */
+
+@theme {
+  --font-serif: 'Nanum Myeongjo', 'Apple SD Gothic Neo', serif;
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* 한지와 먹 */
+  --paper: #f7f3ea;
+  --paper-deep: #efe9dc;
+  --surface: #fffdf8;
+  --ink: #17140f;
+  --ink-soft: #6b6355;
+  --rule: #ddd4c2;
+
+  /* 주사. 부적에 쓰는 다홍 */
+  --cinnabar: #d93a26;
+  --cinnabar-deep: #a82a19;
+  --cinnabar-wash: #fbeeea;
+
+  /* 오방색 */
+  --el-wood: #2f7d6b;
+  --el-fire: #d93a26;
+  --el-earth: #c08a2e;
+  --el-metal: #7c8188;
+  --el-water: #2b3a55;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #15120d;
+    --paper-deep: #100e0a;
+    --surface: #1e1a14;
+    --ink: #f2ece0;
+    --ink-soft: #a49a87;
+    --rule: #352f25;
+
+    --cinnabar: #ef5a44;
+    --cinnabar-deep: #ff7a66;
+    --cinnabar-wash: #2b1a16;
+
+    --el-wood: #58a892;
+    --el-fire: #ef5a44;
+    --el-earth: #d9a648;
+    --el-metal: #9aa1aa;
+    --el-water: #6b83ad;
+  }
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--paper);
+  /* 한지 결. 아주 옅은 격자를 깔아 종이 느낌을 준다 */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 23px,
+      color-mix(in srgb, var(--rule) 22%, transparent) 23px 24px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 23px,
+      color-mix(in srgb, var(--rule) 14%, transparent) 23px 24px
+    );
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* 제목은 명조체 */
+.serif {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+}
+
+/* 인장. 붉은 사각 도장 느낌 */
+.seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-weight: 800;
+  color: #fff;
+  background: var(--cinnabar);
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+}
+
+/* 괘선 */
+.rule {
+  border: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.rule-double {
+  border: 0;
+  border-top: 3px double var(--rule);
+}
+
+/* 세로쓰기 라벨 */
+.vertical {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0.2em;
+}
+
+@keyframes seal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(-8deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(-4deg);
+  }
+}
+
+@keyframes ink-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-ink {
+  animation: ink-rise 0.5s ease-out both;
+}
+
+.animate-seal {
+  animation: seal-in 0.4s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

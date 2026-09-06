@@ -1,0 +1,16 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "team-saju",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/workspaces/T-BluePot/sub/team-saju",
+        "run",
+        "dev"
+      ],
+      "port": 5180
+    }
+  ]
+}
