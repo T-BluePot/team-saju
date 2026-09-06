@@ -32,6 +32,10 @@
   --cinnabar-deep: #a82a19;
   --cinnabar-wash: #fbeeea;
 
+  /* 강조색. 기본은 주사, 결과 화면에서 오행색으로 덮어쓴다 */
+  --accent: var(--cinnabar);
+  --accent-wash: var(--cinnabar-wash);
+
   /* 오방색 */
   --el-wood: #2f7d6b;
   --el-fire: #d93a26;
@@ -52,6 +56,9 @@
     --cinnabar: #ef5a44;
     --cinnabar-deep: #ff7a66;
     --cinnabar-wash: #2b1a16;
+
+    --accent: var(--cinnabar);
+    --accent-wash: var(--cinnabar-wash);
 
     --el-wood: #58a892;
     --el-fire: #ef5a44;
