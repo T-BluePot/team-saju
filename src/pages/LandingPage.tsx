@@ -1,20 +1,7 @@
 import { CommonButton } from '../components/Common'
+import { ARCHETYPES } from '../lib/report/archetypes'
+import { LANDING_TASTE } from '../lib/report/sample'
 import { useTeamStore } from '../store/teamStore'
-
-/**
- * 랜딩에 스치듯 보여주는 유형 이름.
- *
- * 21개 중 제일 알아보기 쉬운 것들이다. 이게 이 제품에서 제일 재미있는 부분인데
- * 지금까지는 결과 화면에 도착해야만 보였다. 남의 생년월일시까지 받아와야 하는
- * 입력을 시키기 전에 뭐가 나오는지 먼저 보여준다.
- */
-const TASTE = [
-  '브레이크 없는 팀',
-  '회의록만 두꺼워지는 팀',
-  '결론이 안 나는 팀',
-  '온도가 낮은 팀',
-  '다 있는데 안 움직이는 팀',
-]
 
 export function LandingPage() {
   const goInput = useTeamStore((s) => s.goInput)
@@ -48,7 +35,7 @@ export function LandingPage() {
           이런 유형이 나옵니다
         </p>
         <ul className="mt-3 flex flex-wrap gap-2">
-          {TASTE.map((name) => (
+          {LANDING_TASTE.map((name) => (
             <li
               key={name}
               className="serif rounded-full px-3.5 py-1.5 text-sm font-bold"
@@ -64,7 +51,7 @@ export function LandingPage() {
             className="rounded-full px-3.5 py-1.5 text-sm"
             style={{ background: 'var(--paper-deep)', color: 'var(--ink-soft)' }}
           >
-            그리고 16가지 더
+            그리고 {ARCHETYPES.length - LANDING_TASTE.length}가지 더
           </li>
         </ul>
       </div>
