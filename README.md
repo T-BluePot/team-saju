@@ -76,8 +76,9 @@ API 키가 없어도 룰 기반으로 리포트가 나온다.
 
 ```bash
 npm install
-npm run dev      # localhost:5180
-npm test         # 골든 테스트 포함
+npm run dev        # localhost:5180
+npm test           # 골든 테스트 포함
+npm run typecheck  # 타입만 빠르게
 npm run build
 npm run lint
 ```
@@ -224,8 +225,13 @@ PR을 스쿼시 머지하면 PR 제목이 그대로 `dev` 의 커밋이 됩니�
 ```bash
 npm test
 npm run lint
+npm run typecheck
 npm run build
 ```
+
+`npx tsc --noEmit` 은 쓰지 마세요. 루트 `tsconfig.json` 이 `"files": []` 에
+references 만 있어서 **파일을 하나도 안 봅니다.** 항상 통과합니다.
+references 는 `tsc -b` 일 때만 따라갑니다.
 
 계산 로직을 건드렸으면 `/verify-engine` 을 한 번 돌립니다.
 사용자에게 보이는 문장을 추가했으면 `/ethics-check` 를 돌립니다.

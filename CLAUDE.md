@@ -13,8 +13,9 @@ LLM한테 "1993년 5월 3일 사주 봐줘" 하면 간지를 지어낸다. 그�
 ## 명령어
 
 ```bash
-npm run dev      # localhost:5180
-npm test         # 골든셋 포함 전체 테스트
+npm run dev        # localhost:5180
+npm test           # 골든셋 포함 전체 테스트
+npm run typecheck  # tsc -b. --noEmit 은 이 저장소에서 아무것도 안 본다
 npm run build
 npm run lint
 ```
