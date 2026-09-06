@@ -9,7 +9,11 @@ export function ResultPage() {
   const teamName = useTeamStore((s) => s.teamName)
   const goBack = useTeamStore((s) => s.goBack)
   const reset = useTeamStore((s) => s.reset)
-  const [tab, setTab] = useState<'team' | 'personal'>('team')
+  // 해시에 personal 이 있으면 개인 탭으로 연다. 캡쳐할 때 클릭을 안 거쳐도 되고,
+  // 나중에 링크로 특정 탭을 열 때도 이 자리를 쓴다
+  const [tab, setTab] = useState<'team' | 'personal'>(() =>
+    window.location.hash.includes('personal') ? 'personal' : 'team',
+  )
 
   const report = useMemo(() => buildTeamReport(charts, teamName), [charts, teamName])
 
