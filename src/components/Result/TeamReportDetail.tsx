@@ -45,7 +45,7 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
       <ul className="mt-3 flex flex-col gap-2.5">
         {archetype.strengths.map((s) => (
           <li key={s} className="flex gap-3 text-sm leading-relaxed">
-            <span style={{ color: 'var(--accent)' }}>·</span>
+            <span style={{ color: 'var(--accent-deep)' }}>·</span>
             <span>{s}</span>
           </li>
         ))}
@@ -64,7 +64,7 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
             >
               <span
                 className="serif mr-1.5 text-xs font-bold"
-                style={{ color: 'var(--accent)' }}
+                style={{ color: 'var(--accent-deep)' }}
               >
                 處方
               </span>

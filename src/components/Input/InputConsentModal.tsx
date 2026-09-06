@@ -57,7 +57,7 @@ export function InputConsentModal({ onAgree, onDecline }: Props) {
               <div key={term} className="flex gap-4">
                 <dt
                   className="serif w-16 shrink-0 text-sm font-bold"
-                  style={{ color: 'var(--accent)' }}
+                  style={{ color: 'var(--accent-deep)' }}
                 >
                   {term}
                 </dt>

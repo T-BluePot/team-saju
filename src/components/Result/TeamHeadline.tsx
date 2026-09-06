@@ -19,7 +19,7 @@ export function TeamHeadline({ report }: { report: TeamReport }) {
       </p>
 
       {solo && (
-        <p className="serif mt-3 text-sm" style={{ color: 'var(--accent)' }}>
+        <p className="serif mt-3 text-sm" style={{ color: 'var(--accent-deep)' }}>
           {SOLO_LEAD}
         </p>
       )}

@@ -49,6 +49,32 @@ export function seedFilledInput(): void {
   if (seedMembers()) useTeamStore.setState({ view: 'input' })
 }
 
+/** 물 기운이 앞서는 팀. 유형별 강조색이 갈리는 걸 보려면 여기로 */
+const WATER_SAMPLE: Seed[] = [
+  { name: '지호', birthDate: '1992-12-08', birthHour: 23 },
+  { name: '유진', birthDate: '1983-11-22', birthHour: 1 },
+  { name: '민서', birthDate: '1996-01-14', birthHour: 22 },
+]
+
+export function seedWater(): void {
+  const store = useTeamStore.getState()
+  store.reset()
+  store.agree()
+  store.setTeamName('푸른핫가마')
+  for (const seed of WATER_SAMPLE) {
+    const error = useTeamStore.getState().addMember({
+      ...emptyDraft(),
+      ...seed,
+      consentSource: 'self',
+    })
+    if (error) {
+      console.error('[devSeed]', seed.name, error)
+      return
+    }
+  }
+  useTeamStore.setState({ view: 'result' })
+}
+
 /** 한 명을 지운 직후. 되돌리기가 떠 있는 상태를 캡쳐하려면 여기로 */
 export function seedRemoved(): void {
   if (!seedMembers()) return
@@ -85,7 +111,8 @@ export function seedConsent(): void {
 /**
  * `#demo` 결과, `#demo-input` 입력, `#demo-loading` 로딩,
  * `#demo-consent` 동의 모달, `#demo-personal` 개인 명식 탭, `#demo-solo` 1인 결과,
- * `#demo-filled` 팀원이 들어 있는 입력 화면, `#demo-removed` 되돌리기가 뜬 상태
+ * `#demo-filled` 팀원이 들어 있는 입력 화면, `#demo-removed` 되돌리기가 뜬 상태,
+ * `#demo-water` 다른 오행이 주도하는 팀 (강조색 비교용)
  */
 export function applyDemoHash(): void {
   if (window.location.hash === '#demo') seedDemo()
@@ -96,4 +123,5 @@ export function applyDemoHash(): void {
   if (window.location.hash === '#demo-solo') seedSolo()
   if (window.location.hash === '#demo-filled') seedFilledInput()
   if (window.location.hash === '#demo-removed') seedRemoved()
+  if (window.location.hash === '#demo-water') seedWater()
 }

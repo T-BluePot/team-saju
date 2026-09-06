@@ -10,7 +10,7 @@ const TONE: Record<Tone, React.CSSProperties> = {
   },
   accent: {
     background: 'var(--accent-wash)',
-    color: 'var(--accent)',
+    color: 'var(--accent-deep)',
   },
   warn: {
     background: 'var(--warn-wash)',

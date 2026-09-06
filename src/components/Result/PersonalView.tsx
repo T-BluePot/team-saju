@@ -41,7 +41,7 @@ export function PersonalView({
             className="press min-h-11 rounded-full px-4 text-sm font-medium"
             style={
               i === selected
-                ? { background: 'var(--accent)', color: '#fff' }
+                ? { background: 'var(--accent-deep)', color: '#fff' }
                 : { background: 'var(--paper-deep)', border: '1px solid var(--rule)' }
             }
           >

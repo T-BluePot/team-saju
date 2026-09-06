@@ -48,7 +48,7 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
       >
         <span
           className="serif text-2xl font-bold tabular-nums"
-          style={{ color: 'var(--accent)' }}
+          style={{ color: 'var(--accent-deep)' }}
         >
           {balanceValue}
         </span>

@@ -13,7 +13,7 @@ export function LandingPage() {
   return (
     <div className="flex flex-col gap-9 py-6">
       <div>
-        <p className="serif text-sm" style={{ color: 'var(--accent)' }}>
+        <p className="serif text-sm" style={{ color: 'var(--accent-deep)' }}>
           四柱로 보는 팀 궁합
         </p>
         <h1 className="serif mt-4 text-[2.4rem] font-extrabold leading-[1.2] sm:text-5xl">
@@ -38,7 +38,7 @@ export function LandingPage() {
           >
             <span
               className="serif w-5 shrink-0 text-lg font-bold"
-              style={{ color: 'var(--accent)' }}
+              style={{ color: 'var(--accent-deep)' }}
             >
               {num}
             </span>

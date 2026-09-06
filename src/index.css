@@ -32,8 +32,13 @@
   --cinnabar-deep: #a82a19;
   --cinnabar-wash: #fbeeea;
 
-  /* 강조색. 지금은 주사 고정이다. 결과 유형별로 갈아끼우는 건 #4 */
+  /*
+   * 강조색. 기본은 주사고, 결과 화면에서 [data-element] 로 오행색으로 갈아끼운다.
+   * --accent 는 면과 선에, --accent-deep 은 글자에 쓴다.
+   * 오방색 원본은 라이트 배경에서 대비가 모자란 게 있어서 글자용을 따로 둔다.
+   */
   --accent: var(--cinnabar);
+  --accent-deep: var(--cinnabar-deep);
   --accent-wash: var(--cinnabar-wash);
 
   /* 주의 톤. 대리 입력 배지처럼 짚고 넘어가야 하는 자리에 */
@@ -61,7 +66,7 @@
     --cinnabar-deep: #ff7a66;
     --cinnabar-wash: #2b1a16;
 
-    /* --accent 는 여기서 다시 안 쓴다. var() 는 쓰이는 시점에 풀려서
+    /* --accent 계열은 여기서 다시 안 쓴다. var() 는 쓰이는 시점에 풀려서
        위 정의 하나로 어두운 --cinnabar 를 알아서 따라간다 */
     --warn: #e0b955;
     --warn-wash: #2e2410;
@@ -110,7 +115,11 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* 인장. 붉은 사각 도장 느낌 */
+/*
+ * 인장. 붉은 사각 도장 느낌. 결과 화면 안에서는 오행색을 따라간다.
+ * 흰 글자를 얹으니 면색은 --accent 가 아니라 --accent-deep 을 쓴다.
+ * 오방색 원본 위에 흰 글자를 놓으면 土 3.04:1, 金 3.92:1 로 안 읽힌다.
+ */
 .seal {
   display: inline-flex;
   align-items: center;
@@ -118,7 +127,7 @@ body {
   font-family: var(--font-serif);
   font-weight: 800;
   color: #fff;
-  background: var(--cinnabar);
+  background: var(--accent-deep);
   border-radius: 4px;
   letter-spacing: 0.08em;
 }
@@ -209,5 +218,64 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .press:active {
     transform: none;
+  }
+}
+
+/*
+ * 결과 유형별 강조색.
+ *
+ * 팀의 주도 오행으로 화면 색이 바뀐다. 넘치는 기운이 그 팀의 성격이라서다.
+ * 다홍은 브랜드 색으로 남기고 결과 화면 안에서만 갈아끼운다.
+ *
+ * --accent 는 면과 선, --accent-deep 은 글자다. 오방색 원본은 라이트 배경에서
+ * 土 2.99:1, 金 3.86:1 이라 글자로 쓰면 4.5:1 에 못 미친다. 그래서 진한 값을 따로 둔다.
+ * 다크에서는 오방색이 이미 밝아서 원본을 그대로 쓴다.
+ */
+[data-element='木'] {
+  --accent: var(--el-wood);
+  --accent-deep: #1f5a4c;
+  --accent-wash: color-mix(in srgb, var(--el-wood) 12%, var(--surface));
+}
+[data-element='火'] {
+  --accent: var(--el-fire);
+  --accent-deep: var(--cinnabar-deep);
+  --accent-wash: color-mix(in srgb, var(--el-fire) 12%, var(--surface));
+}
+[data-element='土'] {
+  --accent: var(--el-earth);
+  --accent-deep: #8a6220;
+  --accent-wash: color-mix(in srgb, var(--el-earth) 12%, var(--surface));
+}
+[data-element='金'] {
+  --accent: var(--el-metal);
+  --accent-deep: #565b61;
+  --accent-wash: color-mix(in srgb, var(--el-metal) 12%, var(--surface));
+}
+[data-element='水'] {
+  --accent: var(--el-water);
+  --accent-deep: var(--el-water);
+  --accent-wash: color-mix(in srgb, var(--el-water) 12%, var(--surface));
+}
+
+@media (prefers-color-scheme: dark) {
+  /*
+   * 다크는 오방색이 밝아서 대체로 글자로 바로 쓴다.
+   * wash 도 12%에서 10%로 낮춘다. 12%면 火가 4.42:1 로 모자란다.
+   */
+  [data-element='木'],
+  [data-element='火'],
+  [data-element='土'],
+  [data-element='金'],
+  [data-element='水'] {
+    --accent-deep: var(--accent);
+    --accent-wash: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  }
+
+  /*
+   * 水만 예외다. 다크 --el-water 가 어두운 편이라 그대로 쓰면 wash 위에서 4.03:1 이고,
+   * wash 를 0%까지 낮춰도 4.51:1 이라 여유가 없다. 농도로는 못 고쳐서 색을 밝힌다.
+   */
+  [data-element='水'] {
+    --accent-deep: #8098c4;
   }
 }

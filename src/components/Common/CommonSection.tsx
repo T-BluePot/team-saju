@@ -22,7 +22,7 @@ export function CommonSection({
     <section>
       <div className="mb-5 flex flex-wrap items-baseline gap-3">
         {index && (
-          <span className="serif text-sm font-bold" style={{ color: 'var(--accent)' }}>
+          <span className="serif text-sm font-bold" style={{ color: 'var(--accent-deep)' }}>
             {index}
           </span>
         )}

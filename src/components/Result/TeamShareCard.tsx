@@ -160,7 +160,7 @@ export function TeamShareCard({ report }: { report: TeamReport }) {
           className={notice ? 'mt-4 rounded-lg px-3 py-2 text-sm' : undefined}
           style={
             notice
-              ? { background: 'var(--accent-wash)', color: 'var(--cinnabar-deep)' }
+              ? { background: 'var(--accent-wash)', color: 'var(--accent-deep)' }
               : undefined
           }
         >
