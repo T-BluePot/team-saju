@@ -148,7 +148,7 @@ export const useTeamStore = create<State>((set, get) => ({
 
   dismissRemoved: () => set({ removed: null }),
 
-  goInput: () => set({ view: 'input' }),
+  goInput: () => set({ view: 'input', removed: null }),
   /** 동의를 거절했을 때 돌아갈 곳. 넣던 내용은 지우고 처음 화면으로 */
   goLanding: () =>
     set({
@@ -159,9 +159,9 @@ export const useTeamStore = create<State>((set, get) => ({
       removed: null,
       error: null,
     }),
-  goResult: () => set({ view: 'loading' }),
+  goResult: () => set({ view: 'loading', removed: null }),
   finishLoading: () => set({ view: 'result' }),
-  goBack: () => set({ view: 'input' }),
+  goBack: () => set({ view: 'input', removed: null }),
   reset: () =>
     set({
       teamName: '',
