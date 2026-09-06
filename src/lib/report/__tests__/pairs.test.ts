@@ -6,6 +6,11 @@ import type { Element, PairChemistry } from '../../saju/types'
 /** 사람 쪽만 바꿔 끼운다. 관계와 방향은 아래 두 헬퍼가 짝지어 든다 */
 type People = Partial<Pick<PairChemistry, 'aName' | 'bName' | 'aElement' | 'bElement'>>
 
+/**
+ * `pairCopy` 는 `score` 를 안 읽는다. 엔진 상수(90/70/55)를 여기 복사해두면
+ * 점수를 검증하는 것처럼 보이고, 엔진이 바꾸면 조용히 낡는다.
+ * 점수 계약은 `saju/__tests__/team.test.ts` 가 잡는다.
+ */
 const BASE = {
   aId: 'a',
   bId: 'b',
@@ -13,6 +18,7 @@ const BASE = {
   bName: '서림',
   aElement: '木',
   bElement: '火',
+  score: 0,
 } as const
 
 /**
@@ -27,7 +33,6 @@ const directed = (
   people: People = {},
 ): PairChemistry => ({
   ...BASE,
-  score: relation === 'generating' ? 90 : 55,
   relation,
   flow,
   ...people,
@@ -39,7 +44,6 @@ const same = (element: Element): PairChemistry => ({
   aElement: element,
   bElement: element,
   relation: 'same',
-  score: 70,
   flow: null,
 })
 
@@ -51,6 +55,9 @@ describe('조합 문장', () => {
 
   it('브레이크를 거는 쪽이 주어가 된다', () => {
     // 처방까지 한 문장이다. 지적만 남기고 뒤를 자르면 규칙을 어긴다
+    expect(pairCopy(directed('tension', 'ab')).direction).toBe(
+      '은우가 서림에게 브레이크를 거는 방향. 견제가 품질을 올릴 수도 있다',
+    )
     expect(pairCopy(directed('tension', 'ba')).direction).toBe(
       '서림이 은우에게 브레이크를 거는 방향. 견제가 품질을 올릴 수도 있다',
     )

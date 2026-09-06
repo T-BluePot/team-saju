@@ -120,15 +120,7 @@ export type SajuChart = {
   corrections: AppliedCorrection[]
 }
 
-/** 오행 관계 */
-export type PairRelation = 'generating' | 'same' | 'tension'
-
-/**
- * 두 사람의 관계. **문장은 여기 없다.**
- *
- * 계산은 관계와 방향까지만 낸다. 사용자에게 보이는 문장은 `lib/report/pairs.ts` 가 만든다.
- * 계산 레이어가 카피를 들고 있으면 문구 한 글자 고칠 때마다 계산 테스트가 깨진다.
- */
+/** 두 사람의 관계에서 문장과 무관한 부분 */
 type PairBase = {
   aId: string
   bId: string
@@ -141,14 +133,24 @@ type PairBase = {
 }
 
 /**
- * 방향. 미는 쪽이나 브레이크를 거는 쪽이 누구인가. `ab` 면 a 가 주체다.
+ * 두 사람의 관계. **문장은 여기 없다.**
  *
- * 관계와 묶어서 유니온으로 둔다. 한 필드로 두면 `tension` 인데 방향이 없는 값이
- * 타입상 만들어지고, 읽는 쪽이 그걸 조용히 `'ab'` 로 떨어뜨린다.
+ * 계산은 관계와 방향까지만 낸다. 사용자에게 보이는 문장은 `lib/report/pairs.ts` 가 만든다.
+ * 계산 레이어가 카피를 들고 있으면 문구 한 글자 고칠 때마다 계산 테스트가 깨진다.
+ *
+ * 관계와 방향(`flow`)을 한 덩어리로 묶는다. `flow` 를 따로 두면 `tension` 인데
+ * 방향이 없는 값이 타입상 만들어지고, 읽는 쪽이 그걸 조용히 `'ab'` 로 떨어뜨린다.
+ *
+ * **관계를 추가할 거면 여기서 방향 유무를 정해야 한다.** 그게 이 유니온의 요점이다.
  */
 export type PairChemistry =
+  /** 같은 오행. 미는 쪽도 브레이크를 거는 쪽도 없다 */
   | (PairBase & { relation: 'same'; flow: null })
-  | (PairBase & { relation: Exclude<PairRelation, 'same'>; flow: 'ab' | 'ba' })
+  /** `ab` 면 a 가 주체다. 생하는 쪽이거나 극하는 쪽 */
+  | (PairBase & { relation: 'generating' | 'tension'; flow: 'ab' | 'ba' })
+
+/** 오행 관계. 유니온에서 파생시킨다. 여기가 진실이면 두 곳이 어긋날 수 없다 */
+export type PairRelation = PairChemistry['relation']
 
 export type ElementFlag = 'excess' | 'lacking' | 'empty' | 'normal'
 
