@@ -31,6 +31,7 @@
 ```
 브라우저 (React SPA)
   store/teamStore      zustand. 메모리에만 있고 새로고침하면 비워진다
+                       에러는 화면마다 띄울 자리가 달라서 스토어에 안 모은다
   lib/saju/*           순수 함수, 결정론 계산
   lib/report/*         룰 기반 리포트 (AI 폴백)
         |
