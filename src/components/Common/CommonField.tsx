@@ -1,5 +1,10 @@
 import { useId } from 'react'
-import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react'
+import type {
+  ComponentPropsWithRef,
+  InputHTMLAttributes,
+  ReactNode,
+  SelectHTMLAttributes,
+} from 'react'
 
 // outline-none 을 같이 쓰면 안 된다. Tailwind v4 에서 --tw-outline-style 을 none 으로
 // 박아버려서 focus-visible 규칙까지 같이 죽는다. 키보드로 다니면 포커스가 안 보인다
@@ -47,7 +52,7 @@ export function CommonTextInput({
   className = '',
   style,
   ...props
-}: InputHTMLAttributes<HTMLInputElement>) {
+}: ComponentPropsWithRef<'input'>) {
   return (
     <input
       {...props}

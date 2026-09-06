@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import {
   CommonButton,
@@ -21,6 +21,7 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i)
 export function InputMemberForm({ onSubmit, disabled }: Props) {
   const [draft, setDraft] = useState<Draft>(emptyDraft)
   const [error, setError] = useState<string | null>(null)
+  const nameRef = useRef<HTMLInputElement>(null)
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }))
@@ -29,7 +30,13 @@ export function InputMemberForm({ onSubmit, disabled }: Props) {
     e.preventDefault()
     const message = onSubmit(draft)
     setError(message)
-    if (!message) setDraft(emptyDraft())
+    if (message) return
+
+    // 진태양시는 팀 전체에 같은 선택인 경우가 대부분이라 직전 값을 들고 간다.
+    // 동의 출처는 절대 유지하지 않는다. 06-privacy.md 가 팀원마다 다시 고르게 정해뒀고,
+    // 자동으로 채워두면 그 확인이 형식만 남는다.
+    setDraft({ ...emptyDraft(), useTrueSolarTime: draft.useTrueSolarTime })
+    nameRef.current?.focus()
   }
 
   return (
@@ -39,6 +46,7 @@ export function InputMemberForm({ onSubmit, disabled }: Props) {
       <CommonField label="이름">
         {(id) => (
           <CommonTextInput
+            ref={nameRef}
             id={id}
             value={draft.name}
             onChange={(e) => set('name', e.target.value)}
