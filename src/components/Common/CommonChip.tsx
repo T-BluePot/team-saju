@@ -13,8 +13,8 @@ const TONE: Record<Tone, React.CSSProperties> = {
     color: 'var(--accent)',
   },
   warn: {
-    background: '#fdf1d0',
-    color: '#8a6a12',
+    background: 'var(--warn-wash)',
+    color: 'var(--warn)',
   },
 }
 
