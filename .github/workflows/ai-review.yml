@@ -33,17 +33,19 @@ jobs:
       cancel-in-progress: true
     steps:
       # ⚠️ 전체 커밋 SHA 로 고정한다. @main 이나 @v1 같은 이동 가능한 ref 를 쓰면
-      #    업스트림이 바뀌는 순간 검토되지 않은 코드가 이 저장소의 GEMINI_API_KEY 와
+      #    업스트림이 바뀌는 순간 검토되지 않은 코드가 이 저장소의 모델 키와
       #    pull-requests: write 권한으로 실행된다.
       #    올릴 때는 리뷰어 저장소의 diff 를 보고 SHA 를 손으로 바꾼다.
       - uses: Jung-eunwoo/ai-code-review@01365adee404635cbb79c25b9f6f100ff8b2daff # main 기준
         with:
           pr: ${{ github.event.number }}
-          # 더 정확한 판정이 필요하면 model: gemini-pro-latest
+          provider: claude
         env:
-          # AI Studio 키 하나면 된다: https://aistudio.google.com/apikey
-          #   gh secret set GEMINI_API_KEY --repo OWNER/REPO
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Claude 를 분석기로 쓴다. 둘 중 하나만 있으면 된다.
+          #   API 크레딧:  gh secret set ANTHROPIC_API_KEY --repo OWNER/REPO
+          #   구독 토큰:   claude setup-token 으로 발급 후 CLAUDE_CODE_OAUTH_TOKEN 에 넣는다
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           GH_TOKEN: ${{ github.token }}
 
   # ── 리뷰 코멘트에 답글이 달리면 읽고 판단한다 ────────────────────────
@@ -67,6 +69,8 @@ jobs:
         with:
           pr: ${{ github.event.pull_request.number }}
           reply-to: ${{ github.event.comment.id }}
+          provider: claude
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           GH_TOKEN: ${{ github.token }}
