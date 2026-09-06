@@ -41,12 +41,10 @@ export function SajuPillarCard({ pillar, isDayMaster }: { pillar: Pillar; isDayM
       </span>
 
       <span
-        className="mt-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
-        style={
-          STRONG_STAGES.has(pillar.stage)
-            ? { background: 'var(--accent-wash)', color: 'var(--accent-deep)' }
-            : { background: 'var(--paper-deep)', color: 'var(--ink-soft)' }
-        }
+        className="mt-1 text-[10px] font-semibold"
+        style={{
+          color: STRONG_STAGES.has(pillar.stage) ? 'var(--accent-deep)' : 'var(--ink-soft)',
+        }}
       >
         {pillar.stage}
       </span>

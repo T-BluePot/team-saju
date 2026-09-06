@@ -200,7 +200,7 @@ export const TWELVE_STAGE_KO: Record<string, string> = {
   病: '힘이 빠진',
   死: '가라앉은',
   墓: '잠긴',
-  绝: '끊긴',
+  绝: '쉬어 가는',
   胎: '다시 맺히는',
   养: '자라는',
 }

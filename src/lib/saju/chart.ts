@@ -96,7 +96,7 @@ function buildPillar(
   }
 }
 
-/** 여기 순서는 여기 정기 순이다. 계산에 쓰는 가중치와 같은 순서로 보여준다 */
+/** 여기 중기 정기 순이다. 계산에 쓰는 가중치와 같은 순서로 보여준다 */
 function hiddenStemsOf(branch: Branch): Stem[] {
   const h = HIDDEN_STEMS[branch]
   return [h.residual, h.middle, h.main].filter((s): s is Stem => s !== null)
