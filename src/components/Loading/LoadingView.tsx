@@ -19,8 +19,21 @@ const LINES = [
   '헛기침 한 번 하는 중',
 ]
 
-const STEP_MS = 260
 const LINE_MS = 900
+
+/** 한 사람 명식은 여덟 글자 */
+const PER_CHART = 8
+
+/**
+ * 몇 사람 명식을 넘겨볼지.
+ * 8명을 넣어도 8번 다 보여주면 로딩이 한세월이라 세 명에서 끊는다.
+ */
+const MAX_ROUNDS = 3
+
+/** 글자를 다 여는 데 쓰는 시간. 사람이 늘면 늘리되 선형으로는 안 늘린다 */
+function revealMsFor(rounds: number) {
+  return 2100 + (rounds - 1) * 900
+}
 
 type Props = {
   charts: SajuChart[]
@@ -28,36 +41,47 @@ type Props = {
 }
 
 export function LoadingView({ charts, onDone }: Props) {
-  const [revealed, setRevealed] = useState(0)
+  /** 지금까지 연 글자 수. 사람 수만큼 이어서 센다 */
+  const [opened, setOpened] = useState(0)
   const [lineIndex, setLineIndex] = useState(0)
 
-  const sample = charts[0]
+  const rounds = Math.min(Math.max(charts.length, 1), MAX_ROUNDS)
+  const totalSteps = rounds * PER_CHART
+
+  // 여덟 글자를 다 열면 다음 사람으로 넘어간다.
+  // floor 를 쓰면 opened 가 8일 때 바로 다음 사람으로 넘어가버려서
+  // 앞사람 명식이 여덟 글자를 다 채운 화면을 한 프레임도 못 보여준다.
+  const who = Math.min(Math.max(Math.ceil(opened / PER_CHART) - 1, 0), rounds - 1)
+  const revealed = opened - who * PER_CHART
+
+  const sample = charts[who]
   const pillars = sample
     ? [sample.pillars.year, sample.pillars.month, sample.pillars.day, sample.pillars.hour]
     : []
 
   useEffect(() => {
-    const total = 8
+    const stepMs = revealMsFor(rounds) / totalSteps
+
     const stepper = setInterval(() => {
-      setRevealed((n) => (n >= total ? n : n + 1))
-    }, STEP_MS)
+      setOpened((n) => (n >= totalSteps ? n : n + 1))
+    }, stepMs)
 
     const roller = setInterval(() => {
       setLineIndex((i) => (i + 1) % LINES.length)
     }, LINE_MS)
 
-    const finish = setTimeout(onDone, STEP_MS * total + 700)
+    const finish = setTimeout(onDone, revealMsFor(rounds) + 700)
 
     return () => {
       clearInterval(stepper)
       clearInterval(roller)
       clearTimeout(finish)
     }
-  }, [onDone])
+  }, [onDone, rounds, totalSteps])
 
   return (
     <div className="flex min-h-[68vh] flex-col items-center justify-center gap-10 py-10">
-      <div className="flex gap-2.5">
+      <div key={who} className="flex gap-2.5">
         {pillars.map((p, col) => (
           <div key={col} className="flex flex-col gap-2.5">
             {[p?.stem ?? null, p?.branch ?? null].map((ch, row) => {
@@ -104,7 +128,9 @@ export function LoadingView({ charts, onDone }: Props) {
       </div>
 
       <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-        {charts.length}명의 명식을 살펴보고 있습니다
+        {charts.length <= 1 || !sample
+          ? '명식을 살펴보고 있습니다'
+          : `${sample.member.name} 명식을 보는 중`}
       </p>
     </div>
   )

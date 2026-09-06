@@ -10,6 +10,7 @@ export default function App() {
   const consented = useTeamStore((s) => s.consented)
   const view = useTeamStore((s) => s.view)
   const agree = useTeamStore((s) => s.agree)
+  const goLanding = useTeamStore((s) => s.goLanding)
 
   return (
     <div className="min-h-screen">
@@ -21,7 +22,9 @@ export default function App() {
         {view === 'result' && <ResultPage />}
       </main>
       <AppNotice />
-      {!consented && view !== 'landing' && <InputConsentModal onAgree={agree} />}
+      {!consented && view !== 'landing' && (
+        <InputConsentModal onAgree={agree} onDecline={goLanding} />
+      )}
     </div>
   )
 }

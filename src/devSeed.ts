@@ -19,7 +19,7 @@ const SAMPLE: Seed[] = [
   { name: '효경', birthDate: '1995-07-01', birthHour: 10, gender: 'female' },
 ]
 
-export function seedDemo(): void {
+function seedMembers(): boolean {
   const store = useTeamStore.getState()
   store.reset()
   store.agree()
@@ -33,12 +33,20 @@ export function seedDemo(): void {
     })
     if (error) {
       console.error('[devSeed]', seed.name, error)
-      return
+      return false
     }
   }
+  return true
+}
 
+export function seedDemo(): void {
   // 로딩 화면을 건너뛰고 결과를 바로 띄운다. 캡쳐가 타이밍을 안 타게
-  useTeamStore.setState({ view: 'result' })
+  if (seedMembers()) useTeamStore.setState({ view: 'result' })
+}
+
+/** 로딩 화면에 세운다. 사람이 여럿일 때 명식이 넘어가는 걸 보려면 여기로 */
+export function seedLoading(): void {
+  if (seedMembers()) useTeamStore.setState({ view: 'loading' })
 }
 
 /** 동의만 통과시키고 입력 화면에 세운다. 폼 캡쳐용 */
@@ -50,8 +58,16 @@ export function seedInput(): void {
   useTeamStore.setState({ view: 'input' })
 }
 
-/** `#demo` 는 결과 화면, `#demo-input` 은 입력 화면으로 세운다 */
+/** 동의 모달이 뜬 상태로 세운다. 동의를 안 한 채 입력 화면에 있으면 모달이 뜬다 */
+export function seedConsent(): void {
+  useTeamStore.getState().reset()
+  useTeamStore.setState({ consented: false, view: 'input' })
+}
+
+/** `#demo` 결과, `#demo-input` 입력, `#demo-loading` 로딩, `#demo-consent` 동의 모달 */
 export function applyDemoHash(): void {
   if (window.location.hash === '#demo') seedDemo()
   if (window.location.hash === '#demo-input') seedInput()
+  if (window.location.hash === '#demo-loading') seedLoading()
+  if (window.location.hash === '#demo-consent') seedConsent()
 }

@@ -2,6 +2,7 @@ import { CommonButton, CommonCard } from '../Common'
 
 type Props = {
   onAgree: () => void
+  onDecline: () => void
 }
 
 const ITEMS: Array<[string, string]> = [
@@ -19,7 +20,7 @@ const ITEMS: Array<[string, string]> = [
  * 전용 모서리 값(rounded-t-[28px] / rounded-[28px])을 쓴다. CommonCard는
  * 항상 rounded-2xl 이라 이 모양을 낼 수 없어서 배경/괘선만 직접 맞춘다.
  */
-export function InputConsentModal({ onAgree }: Props) {
+export function InputConsentModal({ onAgree, onDecline }: Props) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4"
@@ -76,16 +77,9 @@ export function InputConsentModal({ onAgree }: Props) {
         </div>
 
         <div className="shrink-0">
-          <a
-            href="https://www.google.com"
-            className="block w-full py-4 text-center text-sm"
-            style={{
-              borderTop: '1px solid var(--rule)',
-              color: 'var(--ink-soft)',
-            }}
-          >
+          <CommonButton type="button" variant="quiet" fullBleed onClick={onDecline}>
             동의하지 않고 나가기
-          </a>
+          </CommonButton>
           <CommonButton type="button" variant="primary" fullBleed serif onClick={onAgree}>
             동의하고 시작하기
           </CommonButton>

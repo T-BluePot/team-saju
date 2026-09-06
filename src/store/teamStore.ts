@@ -49,6 +49,7 @@ type State = {
   addMember: (draft: Draft) => string | null
   removeMember: (id: string) => void
   goInput: () => void
+  goLanding: () => void
   goResult: () => void
   finishLoading: () => void
   goBack: () => void
@@ -118,6 +119,9 @@ export const useTeamStore = create<State>((set, get) => ({
     })),
 
   goInput: () => set({ view: 'input' }),
+  /** 동의를 거절했을 때 돌아갈 곳. 넣던 내용은 지우고 처음 화면으로 */
+  goLanding: () =>
+    set({ view: 'landing', teamName: '', members: [], charts: [], error: null }),
   goResult: () => set({ view: 'loading' }),
   finishLoading: () => set({ view: 'result' }),
   goBack: () => set({ view: 'input' }),
