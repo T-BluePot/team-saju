@@ -15,8 +15,11 @@ export type PairCopy = {
   direction: string
 }
 
-/** 방향이 있는 관계에서 주체와 대상을 가른다 */
-function ends(pair: PairChemistry): { from: string; to: string } {
+/** 방향이 없는 관계는 여기 못 들어온다. 타입이 막는다 */
+type DirectedPair = Extract<PairChemistry, { flow: 'ab' | 'ba' }>
+
+/** 주체와 대상을 가른다 */
+function ends(pair: DirectedPair): { from: string; to: string } {
   return pair.flow === 'ba'
     ? { from: pair.bName, to: pair.aName }
     : { from: pair.aName, to: pair.bName }
