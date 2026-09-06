@@ -3,8 +3,8 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 /**
  * 버튼 프리미티브.
  *
- * 색은 CSS 변수만 쓴다. 강조색은 `--accent` 를 보고, 결과 화면에서 오행별로
- * 덮어쓰면 버튼 색도 같이 따라간다.
+ * 색은 CSS 변수만 쓴다. 강조색은 `--accent` 를 본다.
+ * 결과 유형별로 --accent 를 갈아끼우는 건 아직 안 했다. #4 에서 붙인다.
  */
 export type CommonButtonVariant = 'primary' | 'ghost' | 'quiet'
 
@@ -26,6 +26,8 @@ const PRESS = 'active:scale-[0.985] active:brightness-90'
 const SHAPE = {
   normal: 'rounded-2xl px-5 py-3.5 text-base font-semibold',
   bleed: 'w-full py-4 text-base font-bold',
+  /** 꽉 차는 보조 버튼. 주요 버튼과 나란히 놓여도 무게가 안 겹치게 한 단 내린다 */
+  bleedQuiet: 'w-full py-4 text-sm font-medium',
 } as const
 
 function styleFor(variant: CommonButtonVariant, fullBleed: boolean) {
@@ -58,15 +60,24 @@ export function CommonButton({
   serif = false,
   className = '',
   children,
+  style,
   ...rest
 }: Props) {
-  const shape = fullBleed ? SHAPE.bleed : SHAPE.normal
+  const shape = fullBleed
+    ? variant === 'quiet'
+      ? SHAPE.bleedQuiet
+      : SHAPE.bleed
+    : SHAPE.normal
   const classes = [BASE, PRESS, shape, serif ? 'serif' : '', className]
     .filter(Boolean)
     .join(' ')
 
   return (
-    <button {...rest} className={classes} style={styleFor(variant, fullBleed)}>
+    <button
+      {...rest}
+      className={classes}
+      style={{ ...styleFor(variant, fullBleed), ...style }}
+    >
       {children}
     </button>
   )
