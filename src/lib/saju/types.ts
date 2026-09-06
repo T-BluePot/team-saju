@@ -129,22 +129,26 @@ export type PairRelation = 'generating' | 'same' | 'tension'
  * 계산은 관계와 방향까지만 낸다. 사용자에게 보이는 문장은 `lib/report/pairs.ts` 가 만든다.
  * 계산 레이어가 카피를 들고 있으면 문구 한 글자 고칠 때마다 계산 테스트가 깨진다.
  */
-export type PairChemistry = {
+type PairBase = {
   aId: string
   bId: string
   aName: string
   bName: string
-  relation: PairRelation
   score: number
   /** 두 사람의 주도 오행 */
   aElement: Element
   bElement: Element
-  /**
-   * 방향. 미는 쪽이나 브레이크를 거는 쪽이 누구인가.
-   * `ab` 면 a 가 주체다. 같은 결이면 방향이 없다
-   */
-  flow: 'ab' | 'ba' | null
 }
+
+/**
+ * 방향. 미는 쪽이나 브레이크를 거는 쪽이 누구인가. `ab` 면 a 가 주체다.
+ *
+ * 관계와 묶어서 유니온으로 둔다. 한 필드로 두면 `tension` 인데 방향이 없는 값이
+ * 타입상 만들어지고, 읽는 쪽이 그걸 조용히 `'ab'` 로 떨어뜨린다.
+ */
+export type PairChemistry =
+  | (PairBase & { relation: 'same'; flow: null })
+  | (PairBase & { relation: Exclude<PairRelation, 'same'>; flow: 'ab' | 'ba' })
 
 export type ElementFlag = 'excess' | 'lacking' | 'empty' | 'normal'
 
