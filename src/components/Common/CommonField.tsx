@@ -1,8 +1,10 @@
 import { useId } from 'react'
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react'
 
+// outline-none 을 같이 쓰면 안 된다. Tailwind v4 에서 --tw-outline-style 을 none 으로
+// 박아버려서 focus-visible 규칙까지 같이 죽는다. 키보드로 다니면 포커스가 안 보인다
 const CONTROL =
-  'rounded-xl px-4 py-3 text-sm outline-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
+  'rounded-xl px-4 py-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
 
 const controlStyle: React.CSSProperties = {
   background: 'var(--paper-deep)',
@@ -13,8 +15,8 @@ const controlStyle: React.CSSProperties = {
 
 /**
  * 라벨과 컨트롤을 묶는다.
- * label 과 input 을 id 로 연결하는 걸 컴포넌트가 보장해서
- * 화면마다 빠뜨릴 일이 없게 한다.
+ * label 의 htmlFor 는 여기서 만들고 id 를 children 으로 넘긴다.
+ * 컨트롤에 그 id 를 다는 건 호출부 몫이라 강제되지는 않는다. 규칙으로 지킨다.
  */
 export function CommonField({
   label,
@@ -41,18 +43,45 @@ export function CommonField({
   )
 }
 
-export function CommonTextInput(props: InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} className={CONTROL} style={controlStyle} />
+export function CommonTextInput({
+  className = '',
+  style,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <input
+      {...props}
+      className={[CONTROL, className].filter(Boolean).join(' ')}
+      style={{ ...controlStyle, ...style }}
+    />
+  )
 }
 
-export function CommonSelect(props: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select {...props} className={CONTROL} style={controlStyle} />
+export function CommonSelect({
+  className = '',
+  style,
+  ...props
+}: SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <select
+      {...props}
+      className={[CONTROL, className].filter(Boolean).join(' ')}
+      style={{ ...controlStyle, ...style }}
+    />
+  )
 }
 
-/** 라디오와 체크박스는 라벨 전체가 클릭 영역이 되게 감싼다 */
+/**
+ * 라디오와 체크박스는 라벨 전체가 클릭 영역이 되게 감싼다.
+ * type 기본값을 반드시 둔다. input 의 기본 type 은 text 라서
+ * 빠뜨리면 체크박스가 텍스트 칸으로 렌더되고 checked 가 항상 false 로 읽힌다.
+ * {...rest} 보다 앞에 둬야 호출부의 type="radio" 가 이긴다.
+ */
 export function CommonCheckLabel({
   children,
   className = '',
+  type = 'checkbox',
+  style,
   ...rest
 }: InputHTMLAttributes<HTMLInputElement> & { children: ReactNode }) {
   return (
@@ -61,7 +90,7 @@ export function CommonCheckLabel({
         .filter(Boolean)
         .join(' ')}
     >
-      <input {...rest} style={{ accentColor: 'var(--accent)' }} />
+      <input type={type} {...rest} style={{ accentColor: 'var(--accent)', ...style }} />
       <span>{children}</span>
     </label>
   )
