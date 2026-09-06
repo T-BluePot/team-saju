@@ -10,21 +10,20 @@ export function SajuTraitBars({
   highlight,
 }: {
   traits: TraitAxes
-  /** 굵게 표시할 축. 제일 높은 축과 제일 낮은 축을 짚어줄 때 */
+  /**
+   * 짚어줄 축. 제일 두꺼운 쪽과 얇은 쪽을 강조할 때 넘긴다.
+   * 안 넘기면 전부 강조색이다. 짚을 축이 없다는 것과 전부 흐리게 하라는 건 다르다.
+   */
   highlight?: TraitAxis[]
 }) {
   return (
     <ul className="flex flex-col gap-2">
       {TRAIT_AXES.map((axis) => {
-        const on = highlight?.includes(axis)
+        const dim = highlight != null && !highlight.includes(axis)
+        const weight = highlight != null && !dim ? 'font-bold' : ''
         return (
           <li key={axis} className="flex items-center gap-3">
-            <span
-              className="w-9 shrink-0 text-sm"
-              style={on ? { fontWeight: 700 } : undefined}
-            >
-              {axis}
-            </span>
+            <span className={`w-9 shrink-0 text-sm ${weight}`}>{axis}</span>
             <div
               className="h-2 flex-1 overflow-hidden rounded-full"
               style={{ background: 'var(--rule)' }}
@@ -33,13 +32,12 @@ export function SajuTraitBars({
                 className="h-full rounded-full"
                 style={{
                   width: `${traits[axis]}%`,
-                  background: on ? 'var(--accent)' : 'var(--ink-soft)',
+                  background: dim ? 'var(--ink-soft)' : 'var(--accent)',
                 }}
               />
             </div>
             <span
-              className="w-9 shrink-0 text-right text-sm tabular-nums"
-              style={on ? { fontWeight: 700 } : undefined}
+              className={`w-9 shrink-0 text-right text-sm tabular-nums ${weight}`}
             >
               {traits[axis]}%
             </span>
