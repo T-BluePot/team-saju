@@ -64,10 +64,14 @@ export function seedConsent(): void {
   useTeamStore.setState({ consented: false, view: 'input' })
 }
 
-/** `#demo` 결과, `#demo-input` 입력, `#demo-loading` 로딩, `#demo-consent` 동의 모달 */
+/**
+ * `#demo` 결과, `#demo-input` 입력, `#demo-loading` 로딩,
+ * `#demo-consent` 동의 모달, `#demo-personal` 결과의 개인 명식 탭
+ */
 export function applyDemoHash(): void {
   if (window.location.hash === '#demo') seedDemo()
   if (window.location.hash === '#demo-input') seedInput()
   if (window.location.hash === '#demo-loading') seedLoading()
   if (window.location.hash === '#demo-consent') seedConsent()
+  if (window.location.hash === '#demo-personal') seedDemo()
 }
