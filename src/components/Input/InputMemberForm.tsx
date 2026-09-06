@@ -181,7 +181,7 @@ export function InputMemberForm({ onSubmit, disabled }: Props) {
       {error && (
         <p
           className="rounded-lg px-3 py-2 text-sm"
-          style={{ background: 'var(--accent-wash)', color: 'var(--accent)' }}
+          style={{ background: 'var(--accent-wash)', color: 'var(--cinnabar-deep)' }}
           role="alert"
         >
           {error}

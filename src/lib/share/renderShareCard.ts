@@ -390,7 +390,10 @@ export async function shareCardBlob(report: TeamReport): Promise<Blob | null> {
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
 }
 
+/** 파일명에 못 쓰는 글자와 공백을 없앤다 */
+const cleanName = (s: string) => s.replace(/[\\/:*?"<>|\s]+/g, '-')
+
 export function shareCardFileName(report: TeamReport): string {
-  const safe = report.analysis.teamName.replace(/[\\/:*?"<>|\s]+/g, '-')
-  return `팀사주-${safe}-${report.archetype.name}.png`
+  // 유형 이름에도 전부 공백이 들어 있다. 팀 이름만 씻으면 반만 씻는 셈이다
+  return `팀사주-${cleanName(report.analysis.teamName)}-${cleanName(report.archetype.name)}.png`
 }
