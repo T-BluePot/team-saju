@@ -23,14 +23,14 @@
 | Next.js | SEO 필요 없는 도구형 SPA. 팀 표준도 Vite |
 | 자체 만세력 | 절기 시각은 천문 계산이라 직접 짜면 경계에서 틀린다 |
 | Recharts | 레이더 하나 그리자고 60KB 못 쓴다. SVG 직접 |
-| 백엔드 DB | v1은 서버 저장 안 한다. localStorage로 충분 |
+| 백엔드 DB | v1은 아무데도 저장 안 한다. 저장할 게 없으면 샐 것도 없다 |
 | 클라이언트 직접 Claude 호출 | API 키 노출. 서버리스 프록시 경유 필수 |
 
 ## 시스템 구조
 
 ```
 브라우저 (React SPA)
-  store/teamStore      zustand + localStorage
+  store/teamStore      zustand. 메모리에만 있고 새로고침하면 비워진다
   lib/saju/*           순수 함수, 결정론 계산
   lib/report/*         룰 기반 리포트 (AI 폴백)
         |
@@ -96,7 +96,7 @@ team-saju/
 ## 데이터 계약
 
 ```ts
-// 앱 동의. localStorage 에 별도 저장
+// 앱 동의. 이것도 저장하지 않는다. 탭을 새로 열면 다시 받는다
 type AppConsent = {
   version: string    // 동의서 내용 바뀌면 올린다. 낮으면 재동의
   agreedAt: string
@@ -159,7 +159,7 @@ vercel deploy   정적 자산 + 서버리스 함수
 | 항목 | 처리 |
 |---|---|
 | `ANTHROPIC_API_KEY` | 서버 환경변수만. 클라이언트 번들에 절대 안 넣는다 |
-| 생년월일 | 브라우저 밖으로 안 나감. localStorage 에만 저장 |
+| 생년월일 | 브라우저 밖으로 안 나감. 디스크에도 안 남고 탭 메모리에만 있다 |
 | 공유 링크 | 계산 결과만 담는다. 생년월일 원본은 URL 에 절대 안 넣는다 |
 | 동의 | 최초 1회 앱 동의 + 팀원별 대리 입력 확인. 상세는 06-privacy.md |
 | API 입력 검증 | `birthDate` 같은 원본 필드 감지되면 400 거부. 실수 방지 장치 |
