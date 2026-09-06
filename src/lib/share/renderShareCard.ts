@@ -2,7 +2,7 @@ import { ELEMENTS, ELEMENT_LABEL } from '../saju/constants'
 import type { Element } from '../saju/types'
 import { SOLO_LEAD, isSolo, needsBlock } from '../report/solo'
 import type { TeamReport } from '../report/teamReport'
-import { ELEMENT_HEX, illustFor } from '../ui/elementStyle'
+import { ELEMENT_HEX, ELEMENT_HEX_DEEP, illustFor } from '../ui/elementStyle'
 
 /**
  * 공유 카드를 canvas 로 직접 그린다.
@@ -29,7 +29,6 @@ const C = {
   ink: '#17140F',
   inkSoft: '#6B6355',
   rule: '#DDD4C2',
-  cinnabar: '#D93A26',
 }
 
 const SERIF = '"Nanum Myeongjo", "Apple SD Gothic Neo", serif'
@@ -104,6 +103,7 @@ function drawRadar(
   cx: number,
   cy: number,
   radius: number,
+  accent: string,
 ) {
   const MAX = 50
   const at = (i: number, ratio: number) => {
@@ -139,9 +139,10 @@ function drawRadar(
     else ctx.lineTo(x, y)
   })
   ctx.closePath()
-  ctx.fillStyle = 'rgba(217, 58, 38, 0.16)'
+  // 강조색을 16% 로 깔아준다. hex 뒤 두 자리가 알파다
+  ctx.fillStyle = `${accent}29`
   ctx.fill()
-  ctx.strokeStyle = C.cinnabar
+  ctx.strokeStyle = accent
   ctx.lineWidth = 4
   ctx.stroke()
 
@@ -180,6 +181,9 @@ function layout(
   const { analysis, archetype, dominant, lacking } = report
   const solo = isSolo(analysis)
   const needs = needsBlock(solo, archetype)
+  // 화면과 같은 규칙. 주도 오행이 카드 강조색이 된다
+  const accent = ELEMENT_HEX[analysis.elements.dominant]
+  const accentDeep = ELEMENT_HEX_DEEP[analysis.elements.dominant]
   const inner = W - PAD * 2
   const paint = (fn: () => void) => {
     if (draw) fn()
@@ -198,7 +202,7 @@ function layout(
     ctx.save()
     ctx.translate(W - PAD - 34, y - 24)
     ctx.rotate((-4 * Math.PI) / 180)
-    ctx.fillStyle = C.cinnabar
+    ctx.fillStyle = accent
     roundRect(ctx, -34, -34, 68, 68, 8)
     ctx.fill()
     ctx.fillStyle = '#fff'
@@ -215,7 +219,7 @@ function layout(
   y += solo ? 62 : 84
   if (solo) {
     paint(() => {
-      ctx.fillStyle = C.cinnabar
+      ctx.fillStyle = accentDeep
       ctx.font = serif(26, 700)
       ctx.fillText(SOLO_LEAD, PAD, y)
     })
@@ -264,7 +268,9 @@ function layout(
       ctx.drawImage(illust, PAD + (inner / 2 - w) / 2, rowCy - h / 2, w, h)
     }
   })
-  paint(() => drawRadar(ctx, analysis.elements.percents, PAD + inner * 0.74, rowCy, RADAR_RADIUS))
+  paint(() =>
+    drawRadar(ctx, analysis.elements.percents, PAD + inner * 0.74, rowCy, RADAR_RADIUS, accent),
+  )
   y = rowTop + ROW_H + 46
 
   // 넘치는 기운 / 비어 있는 곳
@@ -311,11 +317,11 @@ function layout(
     ctx.lineWidth = 2
     ctx.stroke()
 
-    ctx.fillStyle = C.cinnabar
+    ctx.fillStyle = accent
     roundRect(ctx, PAD, boxTop + 20, 5, boxH - 40, 3)
     ctx.fill()
 
-    ctx.fillStyle = C.cinnabar
+    ctx.fillStyle = accentDeep
     ctx.font = serif(25, 700)
     ctx.fillText('處方 · 이번 주에 해볼 것', PAD + 42, boxTop + 56)
 

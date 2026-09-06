@@ -54,7 +54,7 @@ export function SajuElementBars({ percents, flags, showMeaning = false }: Props)
                 className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium"
                 style={{
                   background: 'var(--accent-wash)',
-                  color: 'var(--accent)',
+                  color: 'var(--accent-deep)',
                 }}
               >
                 {FLAG_LABEL[flag]}

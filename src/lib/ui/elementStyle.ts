@@ -19,6 +19,19 @@ export const ELEMENT_HEX: Record<Element, string> = {
 }
 
 /**
+ * 글자용 진한 오방색. index.css 의 --accent-deep 과 같은 값이다.
+ * 오방색 원본은 한지색 배경에서 土 2.99:1, 金 3.86:1 이라 글자로 쓰면 4.5:1 에 못 미친다.
+ * 공유 카드는 항상 밝은 배경이라 라이트 기준 값만 있으면 된다.
+ */
+export const ELEMENT_HEX_DEEP: Record<Element, string> = {
+  木: '#1F5A4C',
+  火: '#A82A19',
+  土: '#8A6220',
+  金: '#565B61',
+  水: '#2B3A55',
+}
+
+/**
  * 팀 유형에 붙는 일러스트.
  * 이미지는 いらすとや(irasutoya.com) 무료 소재를 내려받아 public/illust 에 두었다.
  *

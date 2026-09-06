@@ -25,7 +25,8 @@ export function ResultPage() {
   ]
 
   return (
-    <div className="flex flex-col gap-7">
+    // 넘치는 기운이 그 팀의 성격이라 주도 오행으로 화면 색을 정한다
+    <div className="flex flex-col gap-7" data-element={report.analysis.elements.dominant}>
       <div className="flex items-center justify-between gap-2">
         <div className="flex gap-5">
           {tabs.map(([key, label]) => (
