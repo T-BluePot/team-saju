@@ -1,6 +1,7 @@
 export { PersonalView } from './PersonalView'
 export { ResultExampleNotice } from './ResultExampleNotice'
 export { TeamAnalysis } from './TeamAnalysis'
+export { TeamEnergyCards } from './TeamEnergyCards'
 export { TeamHeadline } from './TeamHeadline'
 export { TeamIllustration } from './TeamIllustration'
 export { TeamReportDetail } from './TeamReportDetail'
