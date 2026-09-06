@@ -1,6 +1,6 @@
-import { ELEMENTS, ELEMENT_LABEL } from '../lib/saju/constants'
-import { ELEMENT_COLOR } from '../lib/ui/elementStyle'
-import type { ElementScores } from '../lib/saju/types'
+import { ELEMENTS, ELEMENT_LABEL } from '../../lib/saju/constants'
+import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
+import type { ElementScores } from '../../lib/saju/types'
 
 type Props = {
   percents: ElementScores
@@ -20,7 +20,7 @@ function point(index: number, ratio: number, radius: number, center: number) {
 }
 
 /** 오행 5각 레이더. 차트 라이브러리 대신 직접 그린다 */
-export function ElementRadar({ percents, size = 240, showLabels = true }: Props) {
+export function SajuElementRadar({ percents, size = 240, showLabels = true }: Props) {
   const center = size / 2
   const radius = size / 2 - (showLabels ? 34 : 10)
 
@@ -66,9 +66,9 @@ export function ElementRadar({ percents, size = 240, showLabels = true }: Props)
 
       <polygon
         points={shape}
-        fill="var(--cinnabar)"
+        fill="var(--accent)"
         fillOpacity={0.22}
-        stroke="var(--cinnabar)"
+        stroke="var(--accent)"
         strokeWidth={2}
         strokeLinejoin="round"
       />

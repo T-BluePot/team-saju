@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
-import type { SajuChart } from '../lib/saju/types'
-import { ELEMENT_COLOR } from '../lib/ui/elementStyle'
-import { STEM_ELEMENT } from '../lib/saju/constants'
+import type { SajuChart } from '../../lib/saju/types'
+import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
+import { STEM_ELEMENT } from '../../lib/saju/constants'
 
 /** 계산은 이미 끝나 있다. 이건 뜸을 들이는 화면이다 */
 const LINES = [
@@ -95,7 +95,7 @@ export function LoadingView({ charts, onDone }: Props) {
               key={i}
               className="size-1.5 rounded-full"
               style={{
-                background: 'var(--cinnabar)',
+                background: 'var(--accent)',
                 animation: `pulse-soft 1.1s ease-in-out ${i * 0.18}s infinite`,
               }}
             />

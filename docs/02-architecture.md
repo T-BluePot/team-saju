@@ -69,17 +69,29 @@ team-saju/
       elements.ts        오행 분포, 강약
       tenGods.ts         십신
       team.ts            팀 합성, 페어 케미
-    lib/report/ruleBased.ts
+    lib/report/       룰 기반 리포트, 유형(archetype) 정의
+    lib/share/        공유 카드 캔버스 렌더링
+    lib/ui/           오행 색, 일러스트 매핑 같은 화면용 상수
     store/teamStore.ts
     components/
-      input/   MemberForm, MemberList
-      chart/   PillarCard, ElementRadar, ElementBar
-      team/    TeamMap, PairMatrix, BalanceGauge
-      report/  ReportView
-    pages/
+      Common/   프리미티브. Button Card Chip Field Section 등. 색은 전부
+                index.css 의 CSS 변수만 본다. 화면 코드는 여기 있는 것만 쓴다
+      Layout/   AppHeader, AppNotice — App.tsx 껍데기 조각
+      Saju/     팀 탭과 개인 탭이 같이 쓰는 도메인 컴포넌트
+                SajuElementRadar, SajuElementBars, SajuPillarCard
+      Input/    입력 화면. InputConsentModal, InputMemberForm, InputMemberList
+      Loading/  LoadingView
+      Result/   결과 화면. TeamHeadline, TeamIllustration, TeamAnalysis,
+                TeamReportDetail, TeamShareCard, TeamReportView, PersonalView
+    pages/      화면 단위 컨테이너. LandingPage, InputPage, LoadingPage, ResultPage
+    App.tsx     헤더 + 화면 분기 + 하단 저장 고지만 남긴 얇은 껍데기
     index.css     Tailwind v4 + 디자인 토큰
   vite.config.ts  dev 서버용 API 미들웨어 포함
 ```
+
+`components/` 바로 아래에는 파일을 두지 않는다. 전부 위 폴더 중 하나에 속하고,
+각 폴더는 `index.ts` 배럴로 내보낸다. 이름은 접두로 소속을 드러낸다
+(`Common`, `Saju`, `Input`, `Loading`, `Result`, `Team*`).
 
 ## 데이터 계약
 
