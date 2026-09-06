@@ -41,6 +41,13 @@
   --accent-deep: var(--cinnabar-deep);
   --accent-wash: var(--cinnabar-wash);
 
+  /*
+   * --accent-deep 을 면으로 깔았을 때 그 위에 얹는 글자색.
+   * 라이트에서는 면이 진하니 흰 글자, 다크에서는 면이 밝으니 어두운 글자다.
+   * 밝은 면에 흰 글자를 얹으면 다크에서 2.21:1 까지 떨어진다.
+   */
+  --on-accent: #fff;
+
   /* 주의 톤. 대리 입력 배지처럼 짚고 넘어가야 하는 자리에 */
   --warn: #8a6a12;
   --warn-wash: #fdf1d0;
@@ -70,6 +77,9 @@
        위 정의 하나로 어두운 --cinnabar 를 알아서 따라간다 */
     --warn: #e0b955;
     --warn-wash: #2e2410;
+
+    /* 다크는 --accent-deep 이 밝은 면이라 어두운 글자를 얹는다 */
+    --on-accent: var(--paper);
 
     --el-wood: #58a892;
     --el-fire: #ef5a44;
@@ -117,8 +127,9 @@ body {
 
 /*
  * 인장. 붉은 사각 도장 느낌. 결과 화면 안에서는 오행색을 따라간다.
- * 흰 글자를 얹으니 면색은 --accent 가 아니라 --accent-deep 을 쓴다.
- * 오방색 원본 위에 흰 글자를 놓으면 土 3.04:1, 金 3.92:1 로 안 읽힌다.
+ * 면색은 --accent 가 아니라 --accent-deep 이고 글자는 --on-accent 다.
+ * 오방색 원본 위에 흰 글자를 놓으면 라이트에서 土 3.04:1, 金 3.92:1 로 안 읽히고,
+ * 다크는 --accent-deep 자체가 밝아서 흰 글자면 土 2.21:1 까지 떨어진다.
  */
 .seal {
   display: inline-flex;
@@ -126,7 +137,7 @@ body {
   justify-content: center;
   font-family: var(--font-serif);
   font-weight: 800;
-  color: #fff;
+  color: var(--on-accent);
   background: var(--accent-deep);
   border-radius: 4px;
   letter-spacing: 0.08em;

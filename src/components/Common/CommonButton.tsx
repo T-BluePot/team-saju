@@ -4,8 +4,10 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
  * 버튼 프리미티브.
  *
  * 색은 CSS 변수만 쓴다. 결과 화면에서는 주도 오행에 따라 강조색이 갈린다.
- * primary 는 흰 글자를 얹으니 면색으로 --accent-deep 을 쓴다.
- * 오방색 원본 위에 흰 글자를 놓으면 土 3.04:1, 金 3.92:1 로 안 읽힌다.
+ * primary 는 면색으로 --accent-deep 을 쓰고 글자는 --on-accent 다.
+ * 오방색 원본 위에 흰 글자를 놓으면 라이트에서 土 3.04:1, 金 3.92:1 로 안 읽힌다.
+ * 다크는 --accent-deep 자체가 밝아서 흰 글자면 2.21:1 까지 떨어진다.
+ * 그래서 글자색도 테마를 따라 뒤집는다.
  */
 export type CommonButtonVariant = 'primary' | 'ghost' | 'quiet'
 
@@ -37,7 +39,7 @@ function styleFor(variant: CommonButtonVariant, fullBleed: boolean) {
     outlineColor: 'var(--accent)',
   }
   if (variant === 'primary') {
-    return { ...base, background: 'var(--accent-deep)', color: '#fff' }
+    return { ...base, background: 'var(--accent-deep)', color: 'var(--on-accent)' }
   }
   if (variant === 'ghost') {
     return {
