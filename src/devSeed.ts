@@ -1,4 +1,5 @@
-import { emptyDraft, useTeamStore, type Draft } from './store/teamStore'
+import { SAMPLE_TEAM, SAMPLE_TEAM_NAME, type SampleSeed } from './lib/report/sample'
+import { emptyDraft, useTeamStore } from './store/teamStore'
 
 /**
  * 개발 모드에서만 도는 데모 시드.
@@ -10,20 +11,15 @@ import { emptyDraft, useTeamStore, type Draft } from './store/teamStore'
  * 프로덕션 번들에는 들어가지 않는다. main.tsx 에서 import.meta.env.DEV 로 막는다.
  */
 
-type Seed = Pick<Draft, 'name' | 'birthDate' | 'birthHour'>
-
-/** 실존 인물이 아니다. 오행이 한쪽으로 쏠리게 골라 결과가 균형형으로 안 빠지게 했다 */
-const SAMPLE: Seed[] = [
-  { name: '은우', birthDate: '1990-06-15', birthHour: 12 },
-  { name: '서림', birthDate: '1988-06-20', birthHour: 14 },
-  { name: '효경', birthDate: '1995-07-01', birthHour: 10 },
-]
+/** 표본은 예시 리포트와 같은 걸 쓴다. 두 벌을 들고 있을 이유가 없다 */
+type Seed = SampleSeed
+const SAMPLE = SAMPLE_TEAM
 
 function seedMembers(only = SAMPLE.length): boolean {
   const store = useTeamStore.getState()
   store.reset()
   store.agree()
-  store.setTeamName('푸른핫가마')
+  store.setTeamName(SAMPLE_TEAM_NAME)
 
   for (const seed of SAMPLE.slice(0, only)) {
     const error = useTeamStore.getState().addMember({
@@ -49,6 +45,12 @@ export function seedFilledInput(): void {
   if (seedMembers()) useTeamStore.setState({ view: 'input' })
 }
 
+/** 예시 리포트 화면. 배너가 붙은 상태를 캡쳐하려면 여기로 */
+export function seedExample(): void {
+  useTeamStore.getState().reset()
+  useTeamStore.getState().showExample()
+}
+
 /** 물 기운이 앞서는 팀. 유형별 강조색이 갈리는 걸 보려면 여기로 */
 const WATER_SAMPLE: Seed[] = [
   { name: '지호', birthDate: '1992-12-08', birthHour: 23 },
@@ -60,7 +62,7 @@ export function seedWater(): void {
   const store = useTeamStore.getState()
   store.reset()
   store.agree()
-  store.setTeamName('푸른핫가마')
+  store.setTeamName(SAMPLE_TEAM_NAME)
   for (const seed of WATER_SAMPLE) {
     const error = useTeamStore.getState().addMember({
       ...emptyDraft(),
@@ -98,7 +100,7 @@ export function seedInput(): void {
   const store = useTeamStore.getState()
   store.reset()
   store.agree()
-  store.setTeamName('푸른핫가마')
+  store.setTeamName(SAMPLE_TEAM_NAME)
   useTeamStore.setState({ view: 'input' })
 }
 
@@ -112,7 +114,7 @@ export function seedConsent(): void {
  * `#demo` 결과, `#demo-input` 입력, `#demo-loading` 로딩,
  * `#demo-consent` 동의 모달, `#demo-personal` 개인 명식 탭, `#demo-solo` 1인 결과,
  * `#demo-filled` 팀원이 들어 있는 입력 화면, `#demo-removed` 되돌리기가 뜬 상태,
- * `#demo-water` 다른 오행이 주도하는 팀 (강조색 비교용)
+ * `#demo-water` 다른 오행이 주도하는 팀 (강조색 비교용), `#demo-example` 예시 리포트
  */
 export function applyDemoHash(): void {
   if (window.location.hash === '#demo') seedDemo()
@@ -124,4 +126,5 @@ export function applyDemoHash(): void {
   if (window.location.hash === '#demo-filled') seedFilledInput()
   if (window.location.hash === '#demo-removed') seedRemoved()
   if (window.location.hash === '#demo-water') seedWater()
+  if (window.location.hash === '#demo-example') seedExample()
 }

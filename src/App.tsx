@@ -22,7 +22,11 @@ export default function App() {
         {view === 'result' && <ResultPage />}
       </main>
       <AppNotice />
-      {!consented && view !== 'landing' && (
+      {/*
+        동의는 개인정보를 넣을 때 받는다. 예시 리포트를 보는 데 받을 이유가 없다.
+        입력 화면 말고는 넣을 곳도 없으니 view 로 좁힌다.
+      */}
+      {!consented && view === 'input' && (
         <InputConsentModal onAgree={agree} onDecline={goLanding} />
       )}
     </div>

@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react'
 
-import { PersonalView, TeamNextStep, TeamReportView } from '../components/Result'
+import {
+  PersonalView,
+  ResultExampleNotice,
+  TeamNextStep,
+  TeamReportView,
+} from '../components/Result'
 import { buildTeamReport } from '../lib/report/teamReport'
 import { useTeamStore } from '../store/teamStore'
 
@@ -9,6 +14,7 @@ export function ResultPage() {
   const teamName = useTeamStore((s) => s.teamName)
   const goBack = useTeamStore((s) => s.goBack)
   const reset = useTeamStore((s) => s.reset)
+  const isExample = useTeamStore((s) => s.isExample)
   // 해시에 personal 이 있으면 개인 탭으로 연다. 캡쳐할 때 클릭을 안 거쳐도 되고,
   // 나중에 링크로 특정 탭을 열 때도 이 자리를 쓴다
   const [tab, setTab] = useState<'team' | 'personal'>(() =>
@@ -27,6 +33,7 @@ export function ResultPage() {
   return (
     // 넘치는 기운이 그 팀의 성격이라 주도 오행으로 화면 색을 정한다
     <div className="flex flex-col gap-7" data-element={report.analysis.elements.dominant}>
+      {isExample && <ResultExampleNotice onStart={reset} />}
       <div className="flex items-center justify-between gap-2">
         <div className="flex gap-5">
           {tabs.map(([key, label]) => (
