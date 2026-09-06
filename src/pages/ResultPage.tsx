@@ -34,7 +34,7 @@ export function ResultPage() {
               type="button"
               onClick={() => setTab(key)}
               aria-pressed={tab === key}
-              className="serif min-h-11 pb-1.5 text-base font-bold"
+              className="serif flex min-h-11 items-end pb-1.5 text-base font-bold"
               style={{
                 color: tab === key ? 'var(--ink)' : 'var(--ink-soft)',
                 borderBottom:
