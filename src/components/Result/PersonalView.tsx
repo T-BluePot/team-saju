@@ -23,7 +23,8 @@ export function PersonalView({
   const chart = charts[selected]
   if (!chart) return null
 
-  const { pillars, dayMaster, elements, strength, traits, tenGods, corrections } = chart
+  const { pillars, dayMaster, elements, strength, traits, tenGods, voidBranches, corrections } =
+    chart
   const strengthInfo = STRENGTH_LABEL[strength.level]
   const myPairs = pairs.filter(
     (p) => p.aId === chart.member.id || p.bId === chart.member.id,
@@ -72,6 +73,17 @@ export function PersonalView({
           </strong>
           . 사주에서 나 자신에 해당하는 글자예요
         </p>
+
+        {/*
+          공망. 빈 칸이라는 뜻이지 나쁜 게 아니다.
+          운을 점치는 데 쓰지 않는다. 그냥 이 사주에서 안 채워진 자리다
+        */}
+        {voidBranches.length > 0 && (
+          <p className="mt-1.5 text-sm" style={{ color: 'var(--ink-soft)' }}>
+            공망은 <strong style={{ color: 'var(--ink)' }}>{voidBranches.join(' ')}</strong>.
+            이 사주에서 비어 있는 칸이에요
+          </p>
+        )}
 
         <div className="mt-5">
           <SajuElementBars percents={elements.percents} />
