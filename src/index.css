@@ -233,6 +233,25 @@ body {
 }
 
 /*
+ * 카드로 고르는 라디오의 포커스 링.
+ *
+ * 안의 input 이 sr-only 라 브라우저가 그려주는 링이 화면 밖에 그려진다.
+ * 키보드로 다니는 사람에게 지금 어느 카드에 서 있는지가 안 보여서 바깥 라벨에 옮겨 그린다.
+ */
+.pick:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/*
+ * `dialog` 는 `showModal()` 로 연다. 포커스 가두기와 Esc 가 공짜로 딸려오는 대신
+ * 뒷막은 `::backdrop` 으로만 칠할 수 있다. 인라인 스타일이 닿지 않는 자리다.
+ */
+dialog::backdrop {
+  background: color-mix(in srgb, #17140f 55%, transparent);
+}
+
+/*
  * 결과 유형별 강조색.
  *
  * 팀의 주도 오행으로 화면 색이 바뀐다. 넘치는 기운이 그 팀의 성격이라서다.
