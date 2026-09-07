@@ -44,7 +44,19 @@ export function LandingConsent({ consented, onChange }: Props) {
   }
   const closeDetail = () => ref.current?.close()
 
-  // 캡쳐할 때 클릭을 안 거쳐도 되게 해시로 연다. ResultPage 의 탭과 같은 방식이다
+  /**
+   * 뒷막을 눌러 닫을 때 누르기 시작한 자리도 같이 본다.
+   *
+   * `click` 만 보면 본문에서 드래그를 시작해 뒷막에서 손을 뗐을 때 target 이 공통 조상인
+   * `dialog` 가 되어 걸린다. 개인정보 문구를 긁어서 복사하려다 창이 닫힌다.
+   */
+  const downOnBackdrop = useRef(false)
+
+  /**
+   * `#...consent` 로 들어오면 바로 연다. 개인정보 고지 딥링크이고,
+   * 덤으로 캡쳐할 때 클릭을 안 거쳐도 된다. `ResultPage` 의 탭과 같은 방식이라
+   * 개발 모드로 막지 않는다.
+   */
   useEffect(() => {
     if (window.location.hash.includes('consent')) openDetail()
   }, [])
@@ -77,9 +89,11 @@ export function LandingConsent({ consented, onChange }: Props) {
       */}
       <dialog
         ref={ref}
-        // 배경을 눌러도 닫힌다. 안쪽을 누르면 target 이 자식이라 여기 안 걸린다
+        onMouseDown={(e) => {
+          downOnBackdrop.current = e.target === ref.current
+        }}
         onClick={(e) => {
-          if (e.target === ref.current) closeDetail()
+          if (downOnBackdrop.current && e.target === ref.current) closeDetail()
         }}
         aria-labelledby="privacy-title"
         className="m-auto mb-0 w-full max-w-md rounded-t-[28px] p-0 sm:mb-auto sm:rounded-[28px]"

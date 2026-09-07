@@ -48,6 +48,14 @@
    */
   --on-accent: #fff;
 
+  /*
+   * 모달 뒷막.
+   *
+   * **테마를 따라가면 안 된다.** 다크에서도 뒤가 어두워져야 앞이 떠 보인다.
+   * `--ink` 를 쓰면 다크에서 뒷막이 밝아져서 반대로 간다. 그래서 두 테마가 같은 값이다.
+   */
+  --scrim: color-mix(in srgb, #17140f 55%, transparent);
+
   /* 주의 톤. 대리 입력 배지처럼 짚고 넘어가야 하는 자리에 */
   --warn: #8a6a12;
   --warn-wash: #fdf1d0;
@@ -248,7 +256,7 @@ body {
  * 뒷막은 `::backdrop` 으로만 칠할 수 있다. 인라인 스타일이 닿지 않는 자리다.
  */
 dialog::backdrop {
-  background: color-mix(in srgb, #17140f 55%, transparent);
+  background: var(--scrim);
 }
 
 /*

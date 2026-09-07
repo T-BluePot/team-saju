@@ -186,7 +186,7 @@ export const useTeamStore = create<State>((set, get) => ({
     // addMember 가 isExample 을 끄니 마지막에 다시 켠다
     set({ view: 'result', isExample: true })
   },
-  /** 동의를 거절했을 때 돌아갈 곳. 넣던 내용은 지우고 처음 화면으로 */
+  /** 머리글 로고로 처음 화면에 돌아온다. 넣던 내용은 지운다 */
   goLanding: () =>
     set({
       view: 'landing',

@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { AppHeader, AppNotice } from './components/Layout'
 import { InputPage } from './pages/InputPage'
 import { LandingPage } from './pages/LandingPage'
@@ -15,6 +17,17 @@ import { useTeamStore } from './store/teamStore'
  */
 export default function App() {
   const view = useTeamStore((s) => s.view)
+
+  /**
+   * 화면이 바뀌면 맨 위로 올린다.
+   *
+   * 예시 리포트에서 동의 없이 "내 팀으로 해보기" 를 누르면 랜딩으로 돌아오는데,
+   * 스크롤이 그대로라 첫 화면이 중간부터 보였다. 왜 되돌아왔는지도 모르는 판에
+   * 화면까지 반쯤 잘려 있으면 길을 잃는다.
+   */
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [view])
 
   return (
     <div className="min-h-screen">

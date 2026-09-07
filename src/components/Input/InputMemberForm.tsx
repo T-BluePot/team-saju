@@ -199,7 +199,7 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
           name="consent"
           checked={draft.consentSource === 'delegated'}
           onChange={() => set('consentSource', 'delegated')}
-          title="동의를 받고 대신 입력합니다"
+          title="본인에게 동의를 받고 대신 입력합니다"
           desc="팀원에게 알리고 허락을 받았습니다"
         />
         {draft.consentSource === 'delegated' && (

@@ -17,7 +17,9 @@ export function LandingPage() {
   ]
 
   return (
-    <div className="flex flex-col gap-9 pt-6">
+    // `main` 의 `pb-28` 을 상쇄한다. 안 그러면 끝까지 내렸을 때 sticky 가 제 자리로
+    // 내려앉으면서 바닥에서 112px 떠오르고, 버튼 아래에 한지 결이 다시 드러난다
+    <div className="-mb-28 flex flex-col gap-9 pt-6">
       <div>
         <p className="serif text-sm" style={{ color: 'var(--accent-deep)' }}>
           四柱로 보는 팀 궁합
