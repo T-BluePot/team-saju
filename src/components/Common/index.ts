@@ -12,6 +12,7 @@ export {
   CommonCheckLabel,
   CommonField,
   CommonFieldGroup,
+  CommonPickCard,
   CommonSelect,
   CommonTextInput,
 } from './CommonField'

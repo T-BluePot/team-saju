@@ -1,4 +1,5 @@
 import { CommonButton } from '../components/Common'
+import { LandingConsent } from '../components/Landing'
 import { ARCHETYPES } from '../lib/report/archetypes'
 import { LANDING_TASTE } from '../lib/report/sample'
 import { useTeamStore } from '../store/teamStore'
@@ -6,6 +7,8 @@ import { useTeamStore } from '../store/teamStore'
 export function LandingPage() {
   const goInput = useTeamStore((s) => s.goInput)
   const showExample = useTeamStore((s) => s.showExample)
+  const consented = useTeamStore((s) => s.consented)
+  const setConsent = useTeamStore((s) => s.setConsent)
 
   const steps: Array<[string, string, string]> = [
     ['一', '팀원을 넣습니다', '이름과 생년월일. 시간은 몰라도 됩니다'],
@@ -14,7 +17,9 @@ export function LandingPage() {
   ]
 
   return (
-    <div className="flex flex-col gap-9 py-6">
+    // `main` 의 `pb-28` 을 상쇄한다. 안 그러면 끝까지 내렸을 때 sticky 가 제 자리로
+    // 내려앉으면서 바닥에서 112px 떠오르고, 버튼 아래에 한지 결이 다시 드러난다
+    <div className="-mb-28 flex flex-col gap-9 pt-6">
       <div>
         <p className="serif text-sm" style={{ color: 'var(--accent-deep)' }}>
           四柱로 보는 팀 궁합
@@ -81,20 +86,47 @@ export function LandingPage() {
         ))}
       </ol>
 
-      <div className="flex flex-col gap-2.5">
-        <CommonButton type="button" variant="primary" serif onClick={goInput}>
+      <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+        재미로 보는 콘텐츠입니다. 채용이나 평가에 쓰라고 만든 게 아닙니다.
+        <br />
+        입력한 정보는 아무데도 저장되지 않고 새로고침하면 사라집니다.
+      </p>
+
+      {/*
+        시작 버튼은 바닥에 붙여둔다. 흐름 안에 두면 유형 목록과 三단 설명에 밀려
+        접힌 자리 밑으로 내려가고, 첫 화면에서 뭘 하면 되는지가 안 보인다.
+        머리글처럼 반투명으로 뒀더니 三단 설명이 버튼 위로 비쳐서 지저분했다.
+        머리글은 뒤로 지나가는 게 얼마 없지만 여기는 면이 넓다. 불투명하게 덮는다.
+
+        바닥에 딱 붙이고 아래 패딩으로 `AppNotice` 높이를 먹는다. 입력 화면처럼
+        `bottom-12` 로 띄우면 바와 고지 사이 48px 이 뚫려서 본문이 그 틈으로 지나간다.
+        버튼 하나일 때는 티가 안 났는데 여기는 면이 넓어서 바로 보인다.
+      */}
+      <div
+        className="sticky bottom-0 -mx-5 flex flex-col gap-2.5 px-5 pb-12 pt-3"
+        style={{
+          background: 'var(--paper)',
+          borderTop: '1px solid var(--rule)',
+        }}
+      >
+        <LandingConsent consented={consented} onChange={setConsent} />
+        {/*
+          동의 전에는 못 누른다. 바로 위 체크박스가 왜 막혔는지를 말해준다.
+          예시 리포트는 개인정보를 안 넣으니 그대로 열어둔다.
+        */}
+        <CommonButton
+          type="button"
+          variant="primary"
+          serif
+          onClick={goInput}
+          disabled={!consented}
+        >
           팀 만들기
         </CommonButton>
         <CommonButton type="button" variant="ghost" onClick={showExample}>
           예시 리포트 먼저 보기
         </CommonButton>
       </div>
-
-      <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-        재미로 보는 콘텐츠입니다. 채용이나 평가에 쓰라고 만든 게 아닙니다.
-        <br />
-        입력한 정보는 아무데도 저장되지 않고 새로고침하면 사라집니다.
-      </p>
     </div>
   )
 }

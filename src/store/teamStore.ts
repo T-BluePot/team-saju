@@ -46,7 +46,7 @@ type State = {
   removed: { member: MemberInput; chart: SajuChart; index: number } | null
   view: 'landing' | 'input' | 'loading' | 'result'
 
-  agree: () => void
+  setConsent: (next: boolean) => void
   setTeamName: (name: string) => void
   addMember: (draft: Draft) => string | null
   removeMember: (id: string) => void
@@ -59,6 +59,18 @@ type State = {
   finishLoading: () => void
   goBack: () => void
   reset: () => void
+}
+
+/**
+ * 입력 화면에 설 수 있는가.
+ *
+ * 동의는 랜딩의 체크박스 하나로만 받는다. 그러니 동의 없이 입력 화면에 서 있는
+ * 상태가 아예 없어야 한다. 예시 리포트의 "내 팀으로 해보기" 가 `reset()` 을 부르는데
+ * 예시는 동의 없이 보는 화면이라 여기가 유일하게 새는 자리였다.
+ * 화면 진입점마다 검사하지 않고 한 곳에서 막는다.
+ */
+function entryView(consented: boolean): 'input' | 'landing' {
+  return consented ? 'input' : 'landing'
 }
 
 function draftToInput(draft: Draft): MemberInput {
@@ -90,7 +102,7 @@ export const useTeamStore = create<State>((set, get) => ({
   removed: null,
   view: 'landing',
 
-  agree: () => set({ consented: true }),
+  setConsent: (next) => set({ consented: next }),
   setTeamName: (teamName) => set({ teamName }),
 
   addMember: (draft) => {
@@ -152,7 +164,8 @@ export const useTeamStore = create<State>((set, get) => ({
 
   dismissRemoved: () => set({ removed: null }),
 
-  goInput: () => set({ view: 'input', removed: null, isExample: false }),
+  goInput: () =>
+    set((s) => ({ view: entryView(s.consented), removed: null, isExample: false })),
 
   /**
    * 표본 팀으로 결과를 보여준다.
@@ -173,7 +186,7 @@ export const useTeamStore = create<State>((set, get) => ({
     // addMember 가 isExample 을 끄니 마지막에 다시 켠다
     set({ view: 'result', isExample: true })
   },
-  /** 동의를 거절했을 때 돌아갈 곳. 넣던 내용은 지우고 처음 화면으로 */
+  /** 머리글 로고로 처음 화면에 돌아온다. 넣던 내용은 지운다 */
   goLanding: () =>
     set({
       view: 'landing',
@@ -185,14 +198,14 @@ export const useTeamStore = create<State>((set, get) => ({
     }),
   goResult: () => set({ view: 'loading', removed: null }),
   finishLoading: () => set({ view: 'result' }),
-  goBack: () => set({ view: 'input', removed: null }),
+  goBack: () => set((s) => ({ view: entryView(s.consented), removed: null })),
   reset: () =>
-    set({
+    set((s) => ({
       teamName: '',
       members: [],
       charts: [],
       removed: null,
       isExample: false,
-      view: 'input',
-    }),
+      view: entryView(s.consented),
+    })),
 }))

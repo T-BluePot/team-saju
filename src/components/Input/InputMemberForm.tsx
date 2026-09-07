@@ -6,6 +6,7 @@ import {
   CommonCheckLabel,
   CommonField,
   CommonFieldGroup,
+  CommonPickCard,
   CommonSelect,
   CommonTextInput,
 } from '../Common'
@@ -186,23 +187,21 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
         </span>
       </CommonCheckLabel>
 
-      <CommonFieldGroup legend="누구 정보인가요" boxed>
-        <CommonCheckLabel
-          type="radio"
+      <CommonFieldGroup legend="누구 정보인가요">
+        <CommonPickCard
           name="consent"
           checked={draft.consentSource === 'self'}
           onChange={() => set('consentSource', 'self')}
-        >
-          본인 정보입니다
-        </CommonCheckLabel>
-        <CommonCheckLabel
-          type="radio"
+          title="본인 정보입니다"
+          desc="내 생년월일시를 넣습니다"
+        />
+        <CommonPickCard
           name="consent"
           checked={draft.consentSource === 'delegated'}
           onChange={() => set('consentSource', 'delegated')}
-        >
-          본인에게 동의를 받고 대신 입력합니다
-        </CommonCheckLabel>
+          title="본인에게 동의를 받고 대신 입력합니다"
+          desc="팀원에게 알리고 허락을 받았습니다"
+        />
         {draft.consentSource === 'delegated' && (
           <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
             팀원에게 생년월일시를 넣는다고 알리고 동의를 받으셨나요. 동의 없이 타인의

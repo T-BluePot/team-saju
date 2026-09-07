@@ -101,6 +101,72 @@ export function CommonCheckLabel({
   )
 }
 
+/**
+ * 카드로 고르는 라디오.
+ *
+ * 라디오 점은 작고, 고른 게 뭔지 한눈에 안 들어온다. 본인 정보인지 대리 입력인지는
+ * 개인정보를 다루는 근거가 갈리는 자리라 흘려보고 고르면 안 된다.
+ * 면 전체를 누르게 하고 고른 쪽에 색을 준다.
+ *
+ * 안에는 진짜 `input[type=radio]` 를 둔다. 그래야 같은 `name` 끼리 묶여서
+ * 화살표로 옮겨 다니고, 스크린리더가 "2개 중 1번" 을 읽어준다.
+ * 포커스 링은 `sr-only` 라 안 보이니 `.pick` 이 바깥 라벨에 그려준다.
+ */
+export function CommonPickCard({
+  name,
+  checked,
+  onChange,
+  title,
+  desc,
+}: {
+  name: string
+  checked: boolean
+  onChange: () => void
+  title: string
+  desc: string
+}) {
+  return (
+    <label
+      className="pick flex cursor-pointer gap-3 rounded-xl px-4 py-3.5"
+      style={{
+        background: checked ? 'var(--accent-wash)' : 'var(--paper)',
+        border: `1px solid ${checked ? 'var(--accent)' : 'var(--rule)'}`,
+      }}
+    >
+      <input
+        type="radio"
+        name={name}
+        checked={checked}
+        onChange={onChange}
+        className="sr-only"
+      />
+      <span
+        aria-hidden
+        className="mt-1 grid size-5 shrink-0 place-items-center rounded-full"
+        style={{ border: `1.5px solid ${checked ? 'var(--accent-deep)' : 'var(--rule)'}` }}
+      >
+        {checked && (
+          <span
+            className="size-2.5 rounded-full"
+            style={{ background: 'var(--accent-deep)' }}
+          />
+        )}
+      </span>
+      <span className="flex flex-col gap-1">
+        <span
+          className="serif text-lg font-bold leading-snug"
+          style={checked ? { color: 'var(--accent-deep)' } : undefined}
+        >
+          {title}
+        </span>
+        <span className="text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+          {desc}
+        </span>
+      </span>
+    </label>
+  )
+}
+
 /** 묶음 입력. 양음력, 태어난 시간처럼 선택지가 몇 개 없을 때 */
 export function CommonFieldGroup({
   legend,

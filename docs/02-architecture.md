@@ -81,9 +81,10 @@ team-saju/
       Common/   프리미티브. Button Card Chip Field Section 등. 색은 전부
                 index.css 의 CSS 변수만 본다. 화면 코드는 여기 있는 것만 쓴다
       Layout/   AppHeader, AppNotice — App.tsx 껍데기 조각
+      Landing/  첫 화면 조각. LandingConsent (동의 체크박스 + 상세 모달)
       Saju/     팀 탭과 개인 탭이 같이 쓰는 도메인 컴포넌트
                 SajuElementRadar, SajuElementBars, SajuPillarCard
-      Input/    입력 화면. InputConsentModal, InputMemberForm, InputMemberList
+      Input/    입력 화면. InputMemberForm, InputMemberList, InputUndoToast
       Loading/  LoadingView
       Result/   결과 화면. TeamHeadline, TeamIllustration, TeamAnalysis,
                 TeamReportDetail, TeamShareCard, TeamReportView, PersonalView

@@ -48,6 +48,14 @@
    */
   --on-accent: #fff;
 
+  /*
+   * 모달 뒷막.
+   *
+   * **테마를 따라가면 안 된다.** 다크에서도 뒤가 어두워져야 앞이 떠 보인다.
+   * `--ink` 를 쓰면 다크에서 뒷막이 밝아져서 반대로 간다. 그래서 두 테마가 같은 값이다.
+   */
+  --scrim: color-mix(in srgb, #17140f 55%, transparent);
+
   /* 주의 톤. 대리 입력 배지처럼 짚고 넘어가야 하는 자리에 */
   --warn: #8a6a12;
   --warn-wash: #fdf1d0;
@@ -230,6 +238,25 @@ body {
   .press:active {
     transform: none;
   }
+}
+
+/*
+ * 카드로 고르는 라디오의 포커스 링.
+ *
+ * 안의 input 이 sr-only 라 브라우저가 그려주는 링이 화면 밖에 그려진다.
+ * 키보드로 다니는 사람에게 지금 어느 카드에 서 있는지가 안 보여서 바깥 라벨에 옮겨 그린다.
+ */
+.pick:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/*
+ * `dialog` 는 `showModal()` 로 연다. 포커스 가두기와 Esc 가 공짜로 딸려오는 대신
+ * 뒷막은 `::backdrop` 으로만 칠할 수 있다. 인라인 스타일이 닿지 않는 자리다.
+ */
+dialog::backdrop {
+  background: var(--scrim);
 }
 
 /*

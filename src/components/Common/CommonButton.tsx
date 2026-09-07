@@ -21,8 +21,13 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 // 전이는 .press 가 갖는다. 여기 transition 유틸을 두면 레이어 순서상 덮여서 죽은 선언이 된다
+/*
+ * 투명도를 깎지 않는다. `disabled:opacity-40` 은 주요 버튼을 한지 위에서 2.1:1 로
+ * 만든다. 랜딩에서 동의 전 "팀 만들기" 가 이 상태로 첫인상을 차지하게 되면서
+ * 뭘 눌러야 하는지가 안 읽혔다. 투명도 대신 색을 따로 준다.
+ */
 const BASE =
-  'inline-flex items-center justify-center select-none disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-2'
+  'inline-flex items-center justify-center select-none disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-2'
 
 /** 눌리는 반응. index.css 의 .press 를 공유한다 */
 const PRESS = 'press'
@@ -34,9 +39,24 @@ const SHAPE = {
   bleedQuiet: 'w-full py-4 text-sm font-medium',
 } as const
 
-function styleFor(variant: CommonButtonVariant, fullBleed: boolean) {
+function styleFor(
+  variant: CommonButtonVariant,
+  fullBleed: boolean,
+  disabled: boolean,
+) {
   const base: React.CSSProperties = {
     outlineColor: 'var(--accent)',
+  }
+  // 눌리지 않는다는 건 색으로 말한다. 면을 한 단 내리고 글자를 흐린 먹으로 둔다
+  if (disabled) {
+    return {
+      ...base,
+      background: 'var(--paper-deep)',
+      color: 'var(--ink-soft)',
+      border: variant === 'ghost' ? '1px solid var(--rule)' : undefined,
+      borderTop:
+        fullBleed && variant === 'quiet' ? '1px solid var(--rule)' : undefined,
+    }
   }
   if (variant === 'primary') {
     return { ...base, background: 'var(--accent-deep)', color: 'var(--on-accent)' }
@@ -80,7 +100,7 @@ export function CommonButton({
     <button
       {...rest}
       className={classes}
-      style={{ ...styleFor(variant, fullBleed), ...style }}
+      style={{ ...styleFor(variant, fullBleed, rest.disabled === true), ...style }}
     >
       {children}
     </button>
