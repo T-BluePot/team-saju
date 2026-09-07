@@ -1,0 +1,138 @@
+import { useEffect, useRef } from 'react'
+
+import { CommonButton, CommonCheckLabel } from '../Common'
+
+const ITEMS: Array<[string, string]> = [
+  ['받는 것', '이름 또는 별칭, 생년월일. 태어난 시간은 선택'],
+  ['쓰는 곳', '사주 계산과 팀 리포트를 만드는 데만'],
+  ['남기는 곳', '없음. 서버로도 안 보내고 브라우저에도 안 남깁니다'],
+  ['지우는 법', '새로고침하면 그냥 사라집니다'],
+]
+
+type Props = {
+  consented: boolean
+  onChange: (next: boolean) => void
+}
+
+/**
+ * 개인정보 동의. 문서 06-privacy.md
+ *
+ * 전에는 입력 화면에 들어서면 전면 모달이 가로막았다. 화면을 한 겹 더 쌓아놓고
+ * 읽지도 않을 문서를 들이미는 꼴이라, 첫 화면에서 체크박스 한 줄로 받고
+ * 자세한 내용은 원하는 사람만 열어보게 바꿨다.
+ *
+ * 다크패턴을 쓰지 않는다. 체크는 기본값이 꺼짐이고 저절로 켜지지 않는다.
+ */
+export function LandingConsent({ consented, onChange }: Props) {
+  const ref = useRef<HTMLDialogElement>(null)
+
+  /**
+   * 열림 상태를 React 에 두지 않는다. `dialog` 자신이 이미 그걸 알고 있다.
+   *
+   * 처음엔 `useState` 로 거울처럼 들고 effect 로 맞췄는데, Esc 로 닫으면 브라우저가
+   * 직접 닫아서 state 는 열린 채로 남는다. 그러면 다음에 상세 보기를 눌러도
+   * 같은 값이라 effect 가 안 돌아서 **영영 안 열린다.**
+   *
+   * `close` 이벤트로 맞추려 했지만 이 이벤트는 버블링을 안 해서 React 의 `onClose`
+   * 로 안 잡히고, 엘리먼트에 직접 걸어도 안 오는 브라우저가 있었다.
+   * 거울을 없애면 어긋날 것도 없다.
+   */
+  const openDetail = () => {
+    const el = ref.current
+    // 이미 열려 있는데 다시 부르면 InvalidStateError 가 난다
+    if (el && !el.open) el.showModal()
+  }
+  const closeDetail = () => ref.current?.close()
+
+  // 캡쳐할 때 클릭을 안 거쳐도 되게 해시로 연다. ResultPage 의 탭과 같은 방식이다
+  useEffect(() => {
+    if (window.location.hash.includes('consent')) openDetail()
+  }, [])
+
+  return (
+    <>
+      <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5">
+        <CommonCheckLabel
+          checked={consented}
+          onChange={(e) => onChange(e.target.checked)}
+          className="min-h-11"
+        >
+          생년월일시 처리에 동의합니다
+        </CommonCheckLabel>
+        {/* 라벨 밖에 둔다. 안에 넣으면 눌렀을 때 체크가 같이 토글된다 */}
+        <button
+          type="button"
+          onClick={openDetail}
+          className="press min-h-11 rounded px-1 text-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ color: 'var(--ink-soft)', outlineColor: 'var(--accent)' }}
+        >
+          상세 보기
+        </button>
+      </div>
+
+      {/*
+        `showModal()` 로 연다. 포커스 가두기, Esc 로 닫기, 배경 위 최상단 배치가
+        전부 딸려온다. 직접 만들면 그 셋을 손으로 짜야 하고, 전에 쓰던 모달은
+        포커스를 안 가둬서 뒤쪽 폼에 키보드로 들어갈 수 있었다.
+      */}
+      <dialog
+        ref={ref}
+        // 배경을 눌러도 닫힌다. 안쪽을 누르면 target 이 자식이라 여기 안 걸린다
+        onClick={(e) => {
+          if (e.target === ref.current) closeDetail()
+        }}
+        aria-labelledby="privacy-title"
+        className="m-auto mb-0 w-full max-w-md rounded-t-[28px] p-0 sm:mb-auto sm:rounded-[28px]"
+        style={{
+          maxHeight: '92vh',
+          background: 'var(--paper)',
+          border: '1px solid var(--rule)',
+          color: 'var(--ink)',
+        }}
+      >
+        <div className="flex max-h-[92vh] flex-col">
+          <div className="flex-1 overflow-y-auto px-7 pb-6 pt-8">
+            <span className="seal px-2 py-1 text-[11px]" style={{ transform: 'rotate(-4deg)' }}>
+              告知
+            </span>
+
+            <h2 id="privacy-title" className="serif mt-4 text-2xl font-extrabold">
+              생년월일시를 이렇게 다룹니다
+            </h2>
+
+            <hr className="rule my-6" />
+
+            <dl className="flex flex-col gap-4">
+              {ITEMS.map(([term, desc]) => (
+                <div key={term} className="flex gap-4">
+                  <dt
+                    className="serif w-16 shrink-0 text-sm font-bold"
+                    style={{ color: 'var(--accent-deep)' }}
+                  >
+                    {term}
+                  </dt>
+                  <dd className="flex-1 text-sm leading-relaxed">{desc}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <p
+              className="mt-6 border-l-2 pl-3 text-xs leading-relaxed"
+              style={{ borderColor: 'var(--accent)', color: 'var(--ink-soft)' }}
+            >
+              만 14세 이상만 이용할 수 있습니다. 재미로 보는 콘텐츠이고 채용이나 평가에
+              쓰라고 만든 게 아닙니다. 동의를 안 하셔도 되는데, 생년월일이 없으면 계산
+              자체가 안 됩니다.
+            </p>
+          </div>
+
+          <div className="shrink-0">
+            <CommonButton type="button" variant="quiet" fullBleed onClick={closeDetail}>
+              닫기
+            </CommonButton>
+          </div>
+        </div>
+      </dialog>
+    </>
+  )
+}

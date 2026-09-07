@@ -18,7 +18,7 @@ const SAMPLE = SAMPLE_TEAM
 function seedMembers(only = SAMPLE.length): boolean {
   const store = useTeamStore.getState()
   store.reset()
-  store.agree()
+  store.setConsent(true)
   store.setTeamName(SAMPLE_TEAM_NAME)
 
   for (const seed of SAMPLE.slice(0, only)) {
@@ -55,7 +55,7 @@ const BALANCED_SAMPLE: SampleSeed[] = [
 export function seedBalanced(): void {
   const store = useTeamStore.getState()
   store.reset()
-  store.agree()
+  store.setConsent(true)
   store.setTeamName(SAMPLE_TEAM_NAME)
   for (const seed of BALANCED_SAMPLE) {
     const error = useTeamStore.getState().addMember({
@@ -87,7 +87,7 @@ const WATER_SAMPLE: Seed[] = [
 export function seedWater(): void {
   const store = useTeamStore.getState()
   store.reset()
-  store.agree()
+  store.setConsent(true)
   store.setTeamName(SAMPLE_TEAM_NAME)
   for (const seed of WATER_SAMPLE) {
     const error = useTeamStore.getState().addMember({
@@ -125,20 +125,20 @@ export function seedLoading(): void {
 export function seedInput(): void {
   const store = useTeamStore.getState()
   store.reset()
-  store.agree()
+  store.setConsent(true)
   store.setTeamName(SAMPLE_TEAM_NAME)
   useTeamStore.setState({ view: 'input' })
 }
 
-/** 동의 모달이 뜬 상태로 세운다. 동의를 안 한 채 입력 화면에 있으면 모달이 뜬다 */
+/** 동의를 안 한 랜딩. 해시에 consent 가 있으면 상세 모달도 같이 열린다 */
 export function seedConsent(): void {
   useTeamStore.getState().reset()
-  useTeamStore.setState({ consented: false, view: 'input' })
+  useTeamStore.setState({ consented: false, view: 'landing' })
 }
 
 /**
  * `#demo` 결과, `#demo-input` 입력, `#demo-loading` 로딩,
- * `#demo-consent` 동의 모달, `#demo-personal` 개인 명식 탭, `#demo-solo` 1인 결과,
+ * `#demo-consent` 랜딩과 개인정보 상세 모달, `#demo-personal` 개인 명식 탭, `#demo-solo` 1인 결과,
  * `#demo-filled` 팀원이 들어 있는 입력 화면, `#demo-removed` 되돌리기가 뜬 상태,
  * `#demo-water` 다른 오행이 주도하는 팀, `#demo-example` 예시 리포트,
  * `#demo-balanced` 균형형 팀

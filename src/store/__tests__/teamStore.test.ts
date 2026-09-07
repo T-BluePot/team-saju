@@ -16,7 +16,7 @@ function add(name: string, birthDate = '1990-06-15') {
 describe('teamStore 삭제와 되돌리기', () => {
   beforeEach(() => {
     useTeamStore.getState().reset()
-    useTeamStore.getState().agree()
+    useTeamStore.getState().setConsent(true)
   })
 
   it('members 와 charts 가 같은 순서로 쌓인다', () => {
