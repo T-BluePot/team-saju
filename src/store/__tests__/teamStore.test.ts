@@ -115,3 +115,47 @@ describe('teamStore 삭제와 되돌리기', () => {
     expect(useTeamStore.getState().removed).toBeNull()
   })
 })
+
+/**
+ * 이 PR 이전에는 App.tsx 가 전역 모달로 입력 화면을 가로막았다.
+ * 그 안전망을 걷고 entryView 한 곳으로 옮겼으니, 렌더 조건이 하던 일을
+ * 여기가 대신한다. 누가 reset 을 set({ view: 'input' }) 으로 되돌려도
+ * 화면 테스트가 없어서 아무도 못 잡는다.
+ */
+describe('동의 없이 입력 화면에 서지 않는다', () => {
+  beforeEach(() => {
+    useTeamStore.getState().reset()
+    useTeamStore.getState().setConsent(false)
+  })
+
+  it.each(['goInput', 'goBack', 'reset'] as const)('%s 는 랜딩으로 보낸다', (fn) => {
+    useTeamStore.getState()[fn]()
+    expect(useTeamStore.getState().view).toBe('landing')
+  })
+
+  it.each(['goInput', 'goBack', 'reset'] as const)(
+    '동의했으면 %s 가 입력으로 보낸다',
+    (fn) => {
+      useTeamStore.getState().setConsent(true)
+      useTeamStore.getState()[fn]()
+      expect(useTeamStore.getState().view).toBe('input')
+    },
+  )
+
+  it('예시를 보다가 내 팀으로 넘어가려 하면 랜딩으로 돌아온다', () => {
+    // 예시는 동의 없이 보는 화면이라 여기가 유일하게 새던 자리였다.
+    // 배너의 "내 팀으로 해보기" 가 reset 을 부른다
+    useTeamStore.getState().showExample()
+    expect(useTeamStore.getState().view).toBe('result')
+    expect(useTeamStore.getState().isExample).toBe(true)
+
+    useTeamStore.getState().reset()
+    expect(useTeamStore.getState().view).toBe('landing')
+    expect(useTeamStore.getState().members).toHaveLength(0)
+  })
+
+  it('예시를 보는 동안에도 동의는 꺼진 채다', () => {
+    useTeamStore.getState().showExample()
+    expect(useTeamStore.getState().consented).toBe(false)
+  })
+})
