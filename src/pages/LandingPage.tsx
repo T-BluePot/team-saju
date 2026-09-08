@@ -25,7 +25,9 @@ export function LandingPage() {
           {landingCopy.titleBottom}
         </h1>
         <p className="mt-5 text-base leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-          {landingCopy.lead}
+          {landingCopy.leadTop}
+          <br />
+          {landingCopy.leadBottom}
         </p>
       </div>
 
@@ -80,7 +82,7 @@ export function LandingPage() {
         ))}
       </ol>
 
-      <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+      <p className="text-center text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
         {landingCopy.noticeTop}
         <br />
         {landingCopy.noticeBottom}

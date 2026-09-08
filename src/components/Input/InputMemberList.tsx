@@ -2,7 +2,6 @@ import { CommonCard, CommonChip } from '../Common'
 import { memberListCopy } from '../../lib/copy'
 import type { SajuChart } from '../../lib/saju/types'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
-import { MAX_MEMBERS } from '../../store/teamStore'
 
 type Props = {
   charts: SajuChart[]
@@ -17,9 +16,6 @@ export function InputMemberList({ charts, onRemove }: Props) {
     <div>
       <p className="serif mb-2.5 text-sm font-bold">
         {memberListCopy.count(charts.length)}
-        <span className="ml-1.5 text-xs font-normal" style={{ color: 'var(--ink-soft)' }}>
-          {memberListCopy.max(MAX_MEMBERS)}
-        </span>
       </p>
       <ul className="flex flex-wrap gap-2">
         {charts.map((c) => (

@@ -14,7 +14,7 @@ export function ResultExampleNotice({ onStart }: { onStart: () => void }) {
       style={{ background: 'var(--accent-wash)' }}
     >
       <p className="text-sm leading-relaxed" style={{ color: 'var(--accent-deep)' }}>
-        <b>{exampleNoticeCopy.lead}</b> {exampleNoticeCopy.body}
+        {exampleNoticeCopy.notice}
       </p>
       <CommonButton
         type="button"

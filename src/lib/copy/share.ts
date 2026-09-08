@@ -2,14 +2,14 @@
 
 export const shareCardCopy = {
   heading: '이미지로 공유하기',
-  note: '팀 유형과 오행 분포만 담깁니다. 이름과 생년월일은 안 들어가요',
+  note: '공유 이미지에는 이름과 생년월일이 포함되지 않습니다.',
   previewAlt: '공유 카드 미리보기',
-  longPressHint: '저장이 안 되면 이 이미지를 길게 눌러도 됩니다',
+  longPressHint: '저장이 되지 않으면 이미지를 길게 눌러 저장해 주세요.',
   preview: '미리보기',
-  busy: '만드는 중',
-  share: '이미지 공유',
-  download: '이미지 저장',
-  failed: '이미지를 못 만들었습니다. 화면을 새로고침하고 다시 해보세요',
+  busy: '이미지 만드는 중',
+  share: '공유하기',
+  download: '저장하기',
+  failed: '이미지를 만들지 못했습니다. 새로고침 후 다시 시도해 주세요.',
 } as const
 
 /**
@@ -22,8 +22,8 @@ export const shareCanvasCopy = {
   solo: '아직 혼자',
   size: (size: number) => `${size}명`,
   excess: '넘치는 기운',
-  lacking: '비어 있는 곳',
-  prescription: '處方 · 이번 주에 해볼 것',
+  lacking: '비어 있는 기운',
+  prescription: '이번 주에 해볼 것',
   balance: (balance: number) => `균형 ${balance}점`,
   balanceWithPairs: (balance: number, generating: number, same: number, tension: number) =>
     `균형 ${balance}점 · 상생 ${generating}쌍 · 비슷한 결 ${same}쌍 · 긴장 ${tension}쌍`,
