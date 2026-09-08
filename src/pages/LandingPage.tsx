@@ -16,7 +16,10 @@ export function LandingPage() {
     // 내려앉으면서 바닥에서 112px 떠오르고, 버튼 아래에 한지 결이 다시 드러난다
     <div className="-mb-28 flex flex-col gap-9 pt-6">
       <div>
-        <h1 className="serif text-[2.4rem] font-extrabold leading-[1.2] sm:text-5xl">
+        <p className="serif text-sm" style={{ color: 'var(--accent-deep)' }}>
+          {landingCopy.eyebrow}
+        </p>
+        <h1 className="serif mt-4 text-[2.4rem] font-extrabold leading-[1.2] sm:text-5xl">
           {landingCopy.titleTop}
           <br />
           {landingCopy.titleBottom}
