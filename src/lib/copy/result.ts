@@ -50,8 +50,8 @@ export const analysisCopy = {
   even: '다섯 가지 성향이 고르게 나타납니다. 특정한 방식에 치우치지 않아 상황에 따라 유연하게 움직일 수 있는 팀입니다. 필요할 때는 우선할 방식을 명확히 정하면 팀의 방향을 잡는 데 도움이 됩니다.',
   // 축 이름이 굵게 들어가는 자리라 문장을 조각으로 나눠 둔다.
   // 앞에 붙는 조사는 `lib/text/josa.ts` 가 붙인다. 축이 늘어도 안 깨진다
-  thickSuffix: ' 가장 두드러집니다.',
-  thinSuffix: ' 상대적으로 적게 나타납니다.',
+  thickSuffix: '가장 두드러집니다.',
+  thinSuffix: '상대적으로 적게 나타납니다.',
 } as const
 
 export const detailCopy = {

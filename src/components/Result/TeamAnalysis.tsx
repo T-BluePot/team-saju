@@ -94,13 +94,13 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
         <div className="mt-4 flex flex-col gap-3">
           <p className="text-sm leading-relaxed">
             <b>{and(reading.topAxes)}</b>
-            {josaOf(reading.topAxes)}
+            {josaOf(reading.topAxes)}{' '}
             {analysisCopy.thickSuffix} {reading.strength}
           </p>
           <div>
             <p className="text-sm leading-relaxed">
               <b>{and(reading.bottomAxes)}</b>
-              {josaOf(reading.bottomAxes)}
+              {josaOf(reading.bottomAxes)}{' '}
               {analysisCopy.thinSuffix} {reading.gap}
             </p>
             <p
