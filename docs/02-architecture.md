@@ -76,6 +76,8 @@ team-saju/
     lib/share/        공유 카드 캔버스 렌더링
     lib/ui/           오행 색, 일러스트 매핑 같은 화면용 상수
     lib/text/         조사 붙이기 같은 순수 문자열 유틸. 아무것도 import 하지 않는다
+    lib/copy/         화면에 보이는 문구. 화면 단위 파일 8개와 배럴.
+                      lib/text/ 외에는 아무것도 import 하지 않는다
     store/teamStore.ts
     components/
       Common/   프리미티브. Button Card Chip Field Section 등. 색은 전부
@@ -104,6 +106,52 @@ team-saju/
 `components/` 바로 아래에는 파일을 두지 않는다. 전부 위 폴더 중 하나에 속하고,
 각 폴더는 `index.ts` 배럴로 내보낸다. 이름은 접두로 소속을 드러낸다
 (`Common`, `Saju`, `Input`, `Loading`, `Result`, `Team*`).
+
+## 화면 문구
+
+화면에 보이는 문구는 컴포넌트에 두지 않고 `src/lib/copy/` 에 모은다. 문구 한 벌을
+손보려고 파일을 스무 개씩 열지 않아도 되고, `ethics-reviewer` 와 `/ethics-check` 가
+볼 곳이 한 디렉터리로 좁혀진다.
+
+```
+src/lib/copy/
+  common.ts    AppHeader, AppNotice, 공통 버튼, 브랜드명
+  landing.ts   LandingPage, LandingConsent
+  input.ts     InputPage, InputMemberForm, InputMemberList, InputUndoToast
+  loading.ts   LoadingView
+  result.ts    ResultPage, Result/**, Saju/** 의 UI 라벨
+  personal.ts  PersonalView
+  share.ts     TeamShareCard, lib/share/renderShareCard.ts
+  errors.ts    store/teamStore.ts 검증 메시지
+  index.ts     배럴
+```
+
+옮기는 것과 남기는 것의 기준은 하나다.
+**이 문장을 고칠 때 계산 로직이나 `docs/` 명세를 같이 고쳐야 하면 남긴다.**
+
+옮긴다. 화면 제목, 섹션 제목과 부제, 라벨, 버튼, placeholder, hint, 안내와 고지 문구,
+동의 항목, 로딩 문구, 에러 메시지, `aria-label`, 이미지 `alt`, 내려받는 파일 이름.
+
+남긴다. `lib/report/**` 전부, `lib/saju/**` 전부, `SajuPillarCard` 의 연주 월주 일주 시주와
+지장간, `SajuElementBars` 의 넘침 부족 비어 있음. 명리 용어라 카피가 아니라 도메인
+어휘이고 `docs/03-saju-spec.md` 에 묶여 있다.
+
+작성 규칙은 넷이다.
+
+- 고정 문자열은 `as const`. 값이 끼어드는 문장은 문자열이 아니라 함수로 둔다
+- 마크업이 섞인 문장은 ReactNode 를 반환하지 않는다. 텍스트 조각을 각각 필드로 두고
+  조립은 컴포넌트가 한다. copy 가 React 를 알면 카피가 아니라 컴포넌트가 된다
+- `solo` 같은 분기는 함수로 감싸지 않고 `subtitleSolo` `subtitleTeam` 처럼 두 키로
+  나눈다. 문자열이 상수로 그대로 보여야 `BANNED_PHRASES` 검사가 값을 훑는다
+- `lib/copy/**` 는 `lib/text/**` 외에 아무것도 import 하지 않는다. 그래서
+  `ELEMENT_LABEL` 을 조립해 만드는 `aria-label` 은 완성된 조각을 받는 함수로 두고,
+  테이블 조회는 컴포넌트에 남긴다
+
+인라인 한글이 다시 생기면 `lib/copy/__tests__/noInlineCopy.test.ts` 가 깨진다.
+`components/`, `pages/`, `store/`, `lib/share/`, `lib/ui/` 다섯 곳을 본다. 예외는 배열로
+두고 항목마다 왜 예외인지 주석을 단다. 예외가 늘어나는 게 눈에 보여야 한다.
+
+i18n 라이브러리는 쓰지 않는다. 이유는 `docs/05-roadmap.md` 결정 로그에 있다.
 
 ## 데이터 계약
 
