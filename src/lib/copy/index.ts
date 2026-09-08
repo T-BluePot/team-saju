@@ -8,6 +8,7 @@ export {
 } from './input'
 export { consentCopy, landingCopy } from './landing'
 export { loadingCopy } from './loading'
+export { personalCopy, strengthCopy } from './personal'
 export {
   analysisCopy,
   detailCopy,

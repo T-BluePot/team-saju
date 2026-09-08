@@ -4,14 +4,9 @@ import { CommonCard, CommonChip } from '../Common'
 import { SajuElementBars, SajuEmptyPillar, SajuPillarCard, SajuTraitBars } from '../Saju'
 import { ELEMENT_LABEL, TEN_GODS } from '../../lib/saju/constants'
 import type { PairChemistry, SajuChart } from '../../lib/saju/types'
+import { personalCopy, strengthCopy } from '../../lib/copy'
 import { pairCopy } from '../../lib/report/pairs'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
-
-const STRENGTH_LABEL = {
-  strong: { name: '신강', note: '주도적이고 추진력이 있어요. 대신 고집이 셀 수 있어요' },
-  balanced: { name: '중화', note: '균형이 잡혀 있고 적응이 빨라요' },
-  weak: { name: '신약', note: '협력형이에요. 환경에 민감하고 조율을 잘해요' },
-} as const
 
 export function PersonalView({
   charts,
@@ -26,7 +21,7 @@ export function PersonalView({
 
   const { pillars, dayMaster, elements, strength, traits, tenGods, voidBranches, corrections } =
     chart
-  const strengthInfo = STRENGTH_LABEL[strength.level]
+  const strengthInfo = strengthCopy[strength.level]
   const myPairs = pairs.filter(
     (p) => p.aId === chart.member.id || p.bId === chart.member.id,
   )
@@ -56,7 +51,9 @@ export function PersonalView({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-lg font-bold">{chart.member.name}</h3>
           <CommonChip tone={chart.member.consent.source === 'delegated' ? 'warn' : 'neutral'} size="sm">
-            {chart.member.consent.source === 'delegated' ? '대리 입력' : '본인 입력'}
+            {chart.member.consent.source === 'delegated'
+              ? personalCopy.sourceDelegated
+              : personalCopy.sourceSelf}
           </CommonChip>
         </div>
 
@@ -72,16 +69,15 @@ export function PersonalView({
           팀원 전환 탭이 있어서 남의 명식도 같은 화면에 보인다. 평가로 쓰이면 안 된다
         */}
         <p className="mt-3 text-xs" style={{ color: 'var(--ink-soft)' }}>
-          기둥마다 지장간, 기운의 단계, 납음을 적었어요. 단계는 그 글자에서 기운이 어디쯤
-          있는지 보여주는 거지 좋고 나쁨을 가르는 게 아니에요
+          {personalCopy.pillarNote}
         </p>
 
         <p className="mt-3 text-sm" style={{ color: 'var(--ink-soft)' }}>
-          일간은{' '}
+          {personalCopy.dayMasterPrefix}{' '}
           <strong style={{ color: ELEMENT_COLOR[dayMaster.element] }}>
             {dayMaster.stem} {ELEMENT_LABEL[dayMaster.element]}
           </strong>
-          . 사주에서 나 자신에 해당하는 글자예요
+          {personalCopy.dayMasterSuffix}
         </p>
 
         {/*
@@ -90,8 +86,9 @@ export function PersonalView({
         */}
         {voidBranches.length > 0 && (
           <p className="mt-1.5 text-sm" style={{ color: 'var(--ink-soft)' }}>
-            공망은 <strong style={{ color: 'var(--ink)' }}>{voidBranches.join(' ')}</strong>.
-            이 사주에서 비어 있는 칸이에요. 나쁜 뜻은 아니에요
+            {personalCopy.voidPrefix}{' '}
+            <strong style={{ color: 'var(--ink)' }}>{voidBranches.join(' ')}</strong>
+            {personalCopy.voidSuffix}
           </p>
         )}
 
@@ -103,7 +100,7 @@ export function PersonalView({
           <p className="text-sm">
             <strong>{strengthInfo.name}</strong>
             <span className="ml-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
-              지수 {strength.index} · 간이 판정
+              {personalCopy.strengthIndex(strength.index)}
             </span>
           </p>
           <p className="mt-1 text-sm" style={{ color: 'var(--ink-soft)' }}>
@@ -111,12 +108,12 @@ export function PersonalView({
           </p>
         </div>
 
-        <h4 className="mt-6 text-sm font-bold">협업 성향</h4>
+        <h4 className="mt-6 text-sm font-bold">{personalCopy.traitsHeading}</h4>
         <div className="mt-2.5">
           <SajuTraitBars traits={traits} />
         </div>
 
-        <h4 className="mt-6 text-sm font-bold">십신</h4>
+        <h4 className="mt-6 text-sm font-bold">{personalCopy.tenGodsHeading}</h4>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
           {TEN_GODS.filter((g) => tenGods[g] > 0).map((g) => (
             <CommonChip key={g}>
@@ -127,7 +124,7 @@ export function PersonalView({
 
         {myPairs.length > 0 && (
           <>
-            <h4 className="mt-6 text-sm font-bold">다른 팀원과의 조합</h4>
+            <h4 className="mt-6 text-sm font-bold">{personalCopy.pairsHeading}</h4>
             <ul className="mt-2.5 flex flex-col gap-2">
               {myPairs.map((p) => {
                 const copy = pairCopy(p)
@@ -156,7 +153,7 @@ export function PersonalView({
         {corrections.length > 0 && (
           <details className="mt-6">
             <summary className="cursor-pointer text-sm font-medium">
-              계산 근거 보기
+              {personalCopy.corrections}
             </summary>
             <ul className="mt-2.5 flex flex-col gap-2">
               {corrections.map((c) => (
