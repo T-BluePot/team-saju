@@ -7,3 +7,4 @@ export {
   undoToastCopy,
 } from './input'
 export { consentCopy, landingCopy } from './landing'
+export { loadingCopy } from './loading'
