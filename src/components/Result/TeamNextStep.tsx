@@ -1,4 +1,5 @@
 import { CommonButton } from '../Common'
+import { nextStepCopy, resultCopy } from '../../lib/copy'
 
 /**
  * 결과 맨 아래. 여기가 막다른 길이면 안 된다.
@@ -21,13 +22,11 @@ export function TeamNextStep({
   return (
     <div className="flex flex-col items-center gap-3 pt-2">
       <p className="text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
-        {full
-          ? '여덟 명이 꽉 찼습니다. 사람을 바꿔 넣으면 결과가 달라집니다'
-          : '한 명 더 넣으면 팀 유형이 바뀔 수도 있습니다'}
+        {full ? nextStepCopy.full : nextStepCopy.more}
       </p>
       <div className="flex w-full gap-2.5">
         <CommonButton type="button" variant="ghost" className="flex-1" onClick={onEdit}>
-          팀원 수정
+          {resultCopy.editMembers}
         </CommonButton>
         <CommonButton
           type="button"
@@ -35,7 +34,7 @@ export function TeamNextStep({
           className="flex-1 whitespace-nowrap"
           onClick={onRestart}
         >
-          다른 팀으로 다시
+          {nextStepCopy.restart}
         </CommonButton>
       </div>
     </div>

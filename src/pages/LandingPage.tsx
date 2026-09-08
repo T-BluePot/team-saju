@@ -1,5 +1,6 @@
 import { CommonButton } from '../components/Common'
 import { LandingConsent } from '../components/Landing'
+import { landingCopy } from '../lib/copy'
 import { ARCHETYPES } from '../lib/report/archetypes'
 import { LANDING_TASTE } from '../lib/report/sample'
 import { useTeamStore } from '../store/teamStore'
@@ -10,34 +11,27 @@ export function LandingPage() {
   const consented = useTeamStore((s) => s.consented)
   const setConsent = useTeamStore((s) => s.setConsent)
 
-  const steps: Array<[string, string, string]> = [
-    ['一', '팀원을 넣습니다', '이름과 생년월일. 시간은 몰라도 됩니다'],
-    ['二', '코드가 계산합니다', '절기 기준으로 여덟 글자를 뽑습니다'],
-    ['三', '팀 리포트가 나옵니다', '유형, 강점, 이번 주에 해볼 것까지'],
-  ]
-
   return (
     // `main` 의 `pb-28` 을 상쇄한다. 안 그러면 끝까지 내렸을 때 sticky 가 제 자리로
     // 내려앉으면서 바닥에서 112px 떠오르고, 버튼 아래에 한지 결이 다시 드러난다
     <div className="-mb-28 flex flex-col gap-9 pt-6">
       <div>
         <p className="serif text-sm" style={{ color: 'var(--accent-deep)' }}>
-          四柱로 보는 팀 궁합
+          {landingCopy.eyebrow}
         </p>
         <h1 className="serif mt-4 text-[2.4rem] font-extrabold leading-[1.2] sm:text-5xl">
-          우리 팀은
+          {landingCopy.titleTop}
           <br />
-          어떤 팀일까
+          {landingCopy.titleBottom}
         </h1>
         <p className="mt-5 text-base leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-          팀원 생년월일시를 넣으면 팀 전체의 오행 조합을 보고 어떤 유형인지, 뭐가
-          비었는지 알려드립니다
+          {landingCopy.lead}
         </p>
       </div>
 
       <div>
         <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-          이런 유형이 나옵니다
+          {landingCopy.tasteLabel}
         </p>
         <ul className="mt-3 flex flex-wrap gap-2">
           {LANDING_TASTE.map((name) => (
@@ -56,7 +50,7 @@ export function LandingPage() {
             className="rounded-full px-3.5 py-1.5 text-sm"
             style={{ background: 'var(--paper-deep)', color: 'var(--ink-soft)' }}
           >
-            그리고 {ARCHETYPES.length - LANDING_TASTE.length}가지 더
+            {landingCopy.tasteMore(ARCHETYPES.length - LANDING_TASTE.length)}
           </li>
         </ul>
       </div>
@@ -64,7 +58,7 @@ export function LandingPage() {
       <hr className="rule-double" />
 
       <ol className="flex flex-col">
-        {steps.map(([num, title, note], i) => (
+        {landingCopy.steps.map(([num, title, note], i) => (
           <li
             key={title}
             className="flex gap-5 py-4"
@@ -87,9 +81,9 @@ export function LandingPage() {
       </ol>
 
       <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-        재미로 보는 콘텐츠입니다. 채용이나 평가에 쓰라고 만든 게 아닙니다.
+        {landingCopy.noticeTop}
         <br />
-        입력한 정보는 아무데도 저장되지 않고 새로고침하면 사라집니다.
+        {landingCopy.noticeBottom}
       </p>
 
       {/*
@@ -121,10 +115,10 @@ export function LandingPage() {
           onClick={goInput}
           disabled={!consented}
         >
-          팀 만들기
+          {landingCopy.ctaStart}
         </CommonButton>
         <CommonButton type="button" variant="ghost" onClick={showExample}>
-          예시 리포트 먼저 보기
+          {landingCopy.ctaExample}
         </CommonButton>
       </div>
     </div>

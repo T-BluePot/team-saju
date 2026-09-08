@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+import { undoToastCopy } from '../../lib/copy'
 import { useTeamStore } from '../../store/teamStore'
 
 /** 되돌릴 수 있는 시간. 이 뒤에는 조용히 사라진다 */
@@ -36,7 +37,7 @@ export function InputUndoToast() {
     >
       {/* 라이브 리전은 알리는 자리다. 조작하는 버튼은 밖에 둔다 */}
       <span role="status" className="text-sm">
-        {removed.member.name} 뺐어요
+        {undoToastCopy.removed(removed.member.name)}
       </span>
       <button
         type="button"
@@ -44,7 +45,7 @@ export function InputUndoToast() {
         className="press serif min-h-11 shrink-0 rounded-lg px-4 text-sm font-bold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{ color: 'var(--paper)', outlineColor: 'var(--paper)' }}
       >
-        되돌리기
+        {undoToastCopy.undo}
       </button>
     </div>
   )

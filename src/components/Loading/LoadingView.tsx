@@ -1,23 +1,9 @@
 import { useEffect, useState } from 'react'
 
+import { loadingCopy } from '../../lib/copy'
 import type { SajuChart } from '../../lib/saju/types'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 import { STEM_ELEMENT } from '../../lib/saju/constants'
-
-/** 계산은 이미 끝나 있다. 이건 뜸을 들이는 화면이다 */
-const LINES = [
-  '붓에 먹을 묻히는 중',
-  '만세력 책장을 넘기는 중',
-  '입춘 지났는지 확인하는 중',
-  '천간이랑 지지를 짝지어 주는 중',
-  '월지에게 요즘 계절을 물어보는 중',
-  '지장간 속을 뒤지는 중',
-  '오행을 저울에 올려보는 중',
-  '일간한테 요새 어떠냐고 묻는 중',
-  '십신들 자리를 배치하는 중',
-  '어르신이 돋보기를 닦는 중',
-  '헛기침 한 번 하는 중',
-]
 
 const LINE_MS = 900
 
@@ -67,7 +53,7 @@ export function LoadingView({ charts, onDone }: Props) {
     }, stepMs)
 
     const roller = setInterval(() => {
-      setLineIndex((i) => (i + 1) % LINES.length)
+      setLineIndex((i) => (i + 1) % loadingCopy.lines.length)
     }, LINE_MS)
 
     const finish = setTimeout(onDone, revealMsFor(rounds) + 700)
@@ -111,7 +97,7 @@ export function LoadingView({ charts, onDone }: Props) {
 
       <div className="flex flex-col items-center gap-3">
         <p className="serif text-lg" style={{ color: 'var(--ink)' }}>
-          {LINES[lineIndex]}
+          {loadingCopy.lines[lineIndex]}
         </p>
         <div className="flex gap-1.5">
           {[0, 1, 2].map((i) => (
@@ -129,8 +115,8 @@ export function LoadingView({ charts, onDone }: Props) {
 
       <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
         {charts.length <= 1 || !sample
-          ? '명식을 살펴보고 있습니다'
-          : `${sample.member.name} 명식을 보는 중`}
+          ? loadingCopy.captionSolo
+          : loadingCopy.caption(sample.member.name)}
       </p>
     </div>
   )

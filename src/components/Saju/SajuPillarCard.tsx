@@ -1,6 +1,7 @@
 import { ELEMENT_LABEL, STEM_ELEMENT, STRONG_STAGES } from '../../lib/saju/constants'
 import type { Pillar } from '../../lib/saju/types'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
+import { sajuCopy } from '../../lib/copy'
 
 const KIND_LABEL: Record<Pillar['kind'], string> = {
   year: '연주',
@@ -66,9 +67,9 @@ export function SajuEmptyPillar() {
         시주
       </span>
       <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-        시간
+        {sajuCopy.hourUnknownLabel}
         <br />
-        미상
+        {sajuCopy.hourUnknownValue}
       </span>
     </div>
   )

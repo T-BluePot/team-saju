@@ -1,3 +1,4 @@
+import { commonCopy } from '../../lib/copy'
 import { useTeamStore } from '../../store/teamStore'
 
 export function AppHeader() {
@@ -15,7 +16,9 @@ export function AppHeader() {
       <div className="mx-auto flex w-full max-w-2xl items-center justify-between px-5 py-3.5">
         <div className="flex items-center gap-2">
           <span className="seal size-6 text-[11px]">占</span>
-          <span className="serif text-base font-extrabold tracking-tight">팀사주</span>
+          <span className="serif text-base font-extrabold tracking-tight">
+            {commonCopy.brand}
+          </span>
         </div>
         {(view === 'result' || view === 'loading') && (
           <button
@@ -24,7 +27,7 @@ export function AppHeader() {
             className="press min-h-11 rounded-lg px-3.5 text-sm"
             style={{ border: '1px solid var(--rule)', color: 'var(--ink-soft)' }}
           >
-            처음부터
+            {commonCopy.restart}
           </button>
         )}
       </div>

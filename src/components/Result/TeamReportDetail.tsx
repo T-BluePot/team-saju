@@ -2,6 +2,7 @@ import { CommonChip, CommonRule, CommonSection, CommonSubHeading } from '../Comm
 import { TeamModifiers } from './TeamModifiers'
 import { isSolo, needsBlock } from '../../lib/report/solo'
 import type { TeamReport } from '../../lib/report/teamReport'
+import { detailCopy } from '../../lib/copy'
 
 export function TeamReportDetail({ report }: { report: TeamReport }) {
   const { analysis, archetype } = report
@@ -27,11 +28,9 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
 
   return (
     <CommonSection
-      index="二"
-      title="상세 보고서"
-      subtitle={
-        solo ? '이 기운이 팀이 되면 어떻게 되나' : '강점과 빈자리, 그리고 처방'
-      }
+      index={detailCopy.index}
+      title={detailCopy.title}
+      subtitle={solo ? detailCopy.subtitleSolo : detailCopy.subtitleTeam}
     >
       {solo && (
         <>
@@ -41,7 +40,7 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
       )}
 
       <CommonSubHeading>
-        {solo ? '이 기운이 만드는 강점' : '이 팀의 강점'}
+        {solo ? detailCopy.strengthsSolo : detailCopy.strengthsTeam}
       </CommonSubHeading>
       <ul className="mt-3 flex flex-col gap-2.5">
         {archetype.strengths.map((s) => (
@@ -54,7 +53,7 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
 
       <CommonRule />
 
-      <CommonSubHeading>놓치기 쉬운 것</CommonSubHeading>
+      <CommonSubHeading>{detailCopy.blindSpots}</CommonSubHeading>
       <ul className="mt-3 flex flex-col gap-5">
         {archetype.blindSpots.map((b, i) => (
           <li key={b}>
@@ -67,7 +66,7 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
                 className="serif mr-1.5 text-xs font-bold"
                 style={{ color: 'var(--accent-deep)' }}
               >
-                處方
+                {detailCopy.prescriptionSeal}
               </span>
               {archetype.prescriptions[i]}
             </p>
@@ -88,20 +87,23 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
       {hasPairs && (
         <>
           <CommonRule />
-          <CommonSubHeading>조합 집계</CommonSubHeading>
+          <CommonSubHeading>{detailCopy.pairsHeading}</CommonSubHeading>
           <div className="mt-3 flex flex-wrap gap-2">
             <CommonChip>
-              상생 <strong>{analysis.pairCounts.generating}</strong>쌍
+              {detailCopy.pairGenerating} <strong>{analysis.pairCounts.generating}</strong>
+              {detailCopy.pairUnit}
             </CommonChip>
             <CommonChip>
-              비슷한 결 <strong>{analysis.pairCounts.same}</strong>쌍
+              {detailCopy.pairSame} <strong>{analysis.pairCounts.same}</strong>
+              {detailCopy.pairUnit}
             </CommonChip>
             <CommonChip>
-              긴장감 있는 조합 <strong>{analysis.pairCounts.tension}</strong>쌍
+              {detailCopy.pairTension} <strong>{analysis.pairCounts.tension}</strong>
+              {detailCopy.pairUnit}
             </CommonChip>
           </div>
           <p className="mt-3 text-xs" style={{ color: 'var(--ink-soft)' }}>
-            누가 누구인지는 공유 이미지에 안 들어갑니다. 개인 탭에서만 보여요
+            {detailCopy.pairsNote}
           </p>
         </>
       )}

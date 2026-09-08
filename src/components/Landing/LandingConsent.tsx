@@ -1,13 +1,7 @@
 import { useEffect, useRef } from 'react'
 
+import { consentCopy } from '../../lib/copy'
 import { CommonButton, CommonCheckLabel } from '../Common'
-
-const ITEMS: Array<[string, string]> = [
-  ['받는 것', '이름 또는 별칭, 생년월일. 태어난 시간은 선택'],
-  ['쓰는 곳', '사주 계산과 팀 리포트를 만드는 데만'],
-  ['남기는 곳', '없음. 서버로도 안 보내고 브라우저에도 안 남깁니다'],
-  ['지우는 법', '새로고침하면 그냥 사라집니다'],
-]
 
 type Props = {
   consented: boolean
@@ -69,7 +63,7 @@ export function LandingConsent({ consented, onChange }: Props) {
           onChange={(e) => onChange(e.target.checked)}
           className="min-h-11"
         >
-          생년월일시 처리에 동의합니다
+          {consentCopy.checkbox}
         </CommonCheckLabel>
         {/* 라벨 밖에 둔다. 안에 넣으면 눌렀을 때 체크가 같이 토글된다 */}
         <button
@@ -78,7 +72,7 @@ export function LandingConsent({ consented, onChange }: Props) {
           className="press min-h-11 rounded px-1 text-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: 'var(--ink-soft)', outlineColor: 'var(--accent)' }}
         >
-          상세 보기
+          {consentCopy.openDetail}
         </button>
       </div>
 
@@ -107,17 +101,17 @@ export function LandingConsent({ consented, onChange }: Props) {
         <div className="flex max-h-[92vh] flex-col">
           <div className="flex-1 overflow-y-auto px-7 pb-6 pt-8">
             <span className="seal px-2 py-1 text-[11px]" style={{ transform: 'rotate(-4deg)' }}>
-              告知
+              {consentCopy.seal}
             </span>
 
             <h2 id="privacy-title" className="serif mt-4 text-2xl font-extrabold">
-              생년월일시를 이렇게 다룹니다
+              {consentCopy.title}
             </h2>
 
             <hr className="rule my-6" />
 
             <dl className="flex flex-col gap-4">
-              {ITEMS.map(([term, desc]) => (
+              {consentCopy.items.map(([term, desc]) => (
                 <div key={term} className="flex gap-4">
                   <dt
                     className="serif w-16 shrink-0 text-sm font-bold"
@@ -134,15 +128,13 @@ export function LandingConsent({ consented, onChange }: Props) {
               className="mt-6 border-l-2 pl-3 text-xs leading-relaxed"
               style={{ borderColor: 'var(--accent)', color: 'var(--ink-soft)' }}
             >
-              만 14세 이상만 이용할 수 있습니다. 재미로 보는 콘텐츠이고 채용이나 평가에
-              쓰라고 만든 게 아닙니다. 동의를 안 하셔도 되는데, 생년월일이 없으면 계산
-              자체가 안 됩니다.
+              {consentCopy.footnote}
             </p>
           </div>
 
           <div className="shrink-0">
             <CommonButton type="button" variant="quiet" fullBleed onClick={closeDetail}>
-              닫기
+              {consentCopy.close}
             </CommonButton>
           </div>
         </div>

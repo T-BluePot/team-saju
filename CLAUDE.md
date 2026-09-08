@@ -40,7 +40,8 @@ npm run lint
 | 영역 | 규칙 |
 |---|---|
 | `src/lib/saju/**` | 순수 함수만. `Date.now()`, `Math.random()`, 네트워크, DOM 접근 금지 |
-| `src/lib/text/**` | 조사 붙이기 같은 문자열 유틸. 아무것도 import 하지 않는다. 지금은 `lib/report/` 만 쓴다 |
+| `src/lib/text/**` | 조사 붙이기 같은 문자열 유틸. 아무것도 import 하지 않는다. `lib/report/` 와 `lib/copy/` 가 쓴다 |
+| `src/lib/copy/**` | 화면 문구. `lib/text/**` 외에 아무것도 import 하지 않는다. React 도 안 쓴다. 도메인 어휘 테이블은 여기 오지 않는다 |
 | 테스트 | 골든셋 기대값은 고치지 않는다. 깨지면 코드를 고친다 |
 | `src/components/**` | 반응형 375px부터, 다크모드, 폼 라벨 연결, 대비 4.5:1 |
 | 색 | `src/index.css` 의 CSS 변수만 쓴다. 하드코딩 금지 |
@@ -64,7 +65,7 @@ npm run lint
 |---|---|---|
 | `saju-engine` | 쓰기 | `src/lib/saju/**` 계산 로직 |
 | `saju-verifier` | 읽기 전용 | 계산 결과와 명세 대조 |
-| `saju-writer` | 쓰기 | 리포트 카피, 프롬프트, `src/lib/text/**` |
+| `saju-writer` | 쓰기 | 리포트 카피, 프롬프트, `src/lib/text/**`, `src/lib/copy/**` |
 | `ui-builder` | 쓰기 | 컴포넌트와 화면 |
 | `ethics-reviewer` | 읽기 전용 | 사용자에게 보이는 문자열 감사 |
 
