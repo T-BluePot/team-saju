@@ -79,6 +79,14 @@ describe('한자도 본다', () => {
     expect(scanSource(`const s = '宜'`, true)).toHaveLength(1)
   })
 
+  it('자모만 쓴 문구도 잡는다', () => {
+    expect(scanSource(`const a = 'ㅎㅎ'`, true)).toHaveLength(1)
+  })
+
+  it('보간 식 안의 문자열도 카피다', () => {
+    expect(scanSource("const a = `${x ? '한글' : ''}`", true)).toHaveLength(1)
+  })
+
   it('도장 글리프는 장식이라 넘어간다', () => {
     expect(scanSource(`const seal = '占'`, true)).toEqual([])
   })

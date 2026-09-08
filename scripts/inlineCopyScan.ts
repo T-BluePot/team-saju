@@ -69,8 +69,9 @@ export const ALLOWED_GLYPHS = ['占']
  * 화면에 나갈 수 있는 글자. 한글과 한자를 본다.
  *
  * 한자를 빼두면 `宜` `忌` `處方` `一二三` 같은 자리가 그냥 새어나간다.
+ * 자모(`ㅎㅎ` `ㅠㅠ`)도 넣는다. 음절만 보면 자모로만 쓴 문구가 안 걸린다.
  */
-const SCRIPTED = /[가-힣㐀-䶿一-鿿]/g
+const SCRIPTED = /[가-힣ㄱ-ㆎ㐀-䶿一-鿿]/g
 
 export interface Hit {
   line: number
@@ -107,8 +108,9 @@ interface Literal {
 /**
  * 화면에 나갈 수 있는 문자열 조각을 전부 모은다.
  *
- * JSX 사이의 글, 따옴표 문자열, 템플릿의 고정 부분을 본다. 템플릿 안의
- * `${...}` 는 값이 끼는 자리라 건너뛴다.
+ * JSX 사이의 글, 따옴표 문자열, 템플릿의 고정 부분을 본다. 템플릿의 `${...}` 는
+ * 계산된 값이라 건너뛰지만, 그 안에 문자열 리터럴이 있으면 그건 카피라 잡는다.
+ * `${cond ? '한글' : ''}` 의 '한글' 은 검사 대상이다.
  *
  * import 경로나 `className` 은 따로 거르지 않는다. 한글도 한자도 안 들어가서
  * 애초에 걸릴 일이 없다. 안 쓰는 예외 규칙을 두면 나중에 읽는 사람이 그게
@@ -215,7 +217,9 @@ export function scanRepo(applyAllowList: boolean): FileScan[] {
  * 계속 초록으로 통과한다.
  */
 export function copyFiles(): string[] {
-  return walk(COPY_DIR).filter((file) => file.endsWith('.ts'))
+  // 확장자로 거르지 않는다. copy 는 React 를 안 쓰기로 했지만 그걸 강제하는 검사가
+  // 따로 없어서, .tsx 를 조용히 빼면 그 파일만 금지어 검사를 안 받는다
+  return walk(COPY_DIR)
 }
 
 /**
