@@ -35,16 +35,26 @@ export function InputPage() {
         count={members.length}
       />
 
-      <CommonButton
-        type="button"
-        variant="primary"
-        serif
-        onClick={goResult}
-        disabled={members.length < 1}
-        className="sticky bottom-12"
-      >
-        {members.length < 1 ? inputCopy.submitEmpty : inputCopy.submit(members.length)}
-      </CommonButton>
+      {/*
+        버튼 라벨로 사정을 설명하지 않는다. 라벨이 상태마다 바뀌면 누르는 것이
+        뭔지가 흔들린다. 못 누르는 이유는 버튼 바로 위에서 말한다.
+      */}
+      <div className="sticky bottom-12 flex flex-col gap-2">
+        {members.length < 1 && (
+          <p className="text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
+            {inputCopy.submitHint}
+          </p>
+        )}
+        <CommonButton
+          type="button"
+          variant="primary"
+          serif
+          onClick={goResult}
+          disabled={members.length < 1}
+        >
+          {inputCopy.submit}
+        </CommonButton>
+      </div>
     </div>
   )
 }

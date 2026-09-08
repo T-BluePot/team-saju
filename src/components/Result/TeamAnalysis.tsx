@@ -6,6 +6,18 @@ import type { TeamReport } from '../../lib/report/teamReport'
 import { ELEMENT_LABEL } from '../../lib/saju/constants'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 import { analysisCopy } from '../../lib/copy'
+import { and, subject } from '../../lib/text/josa'
+
+/**
+ * 축 이름 뒤에 붙는 이/가.
+ *
+ * 이름은 굵게 나가고 조사는 안 굵어서 `<b>` 밖에 둬야 한다. `subject()` 가
+ * 붙여준 조사만 떼어 쓴다. 지금 다섯 축은 전부 받침이 있지만 축이 늘면 갈린다.
+ */
+function josaOf(axes: string[]): string {
+  const joined = and(axes)
+  return subject(joined).slice(joined.length)
+}
 
 export function TeamAnalysis({ report }: { report: TeamReport }) {
   const { analysis, dominant, lacking } = report
@@ -81,12 +93,14 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
       ) : (
         <div className="mt-4 flex flex-col gap-3">
           <p className="text-sm leading-relaxed">
-            <b>{reading.topAxes.join(analysisCopy.axisJoin)}</b>
+            <b>{and(reading.topAxes)}</b>
+            {josaOf(reading.topAxes)}
             {analysisCopy.thickSuffix} {reading.strength}
           </p>
           <div>
             <p className="text-sm leading-relaxed">
-              <b>{reading.bottomAxes.join(analysisCopy.axisJoin)}</b>
+              <b>{and(reading.bottomAxes)}</b>
+              {josaOf(reading.bottomAxes)}
               {analysisCopy.thinSuffix} {reading.gap}
             </p>
             <p

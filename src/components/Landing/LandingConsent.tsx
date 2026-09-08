@@ -128,7 +128,9 @@ export function LandingConsent({ consented, onChange }: Props) {
               className="mt-6 border-l-2 pl-3 text-xs leading-relaxed"
               style={{ borderColor: 'var(--accent)', color: 'var(--ink-soft)' }}
             >
-              {consentCopy.footnote}
+              {consentCopy.footnoteTop}
+              <br />
+              {consentCopy.footnoteBottom}
             </p>
           </div>
 

@@ -1,5 +1,6 @@
 import { CommonButton } from '../Common'
 import { nextStepCopy, resultCopy } from '../../lib/copy'
+import { MAX_MEMBERS } from '../../store/teamStore'
 
 /**
  * 결과 맨 아래. 여기가 막다른 길이면 안 된다.
@@ -17,12 +18,12 @@ export function TeamNextStep({
   onEdit: () => void
   onRestart: () => void
 }) {
-  const full = count >= 8
+  const full = count >= MAX_MEMBERS
 
   return (
     <div className="flex flex-col items-center gap-3 pt-2">
       <p className="text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
-        {full ? nextStepCopy.full : nextStepCopy.more}
+        {full ? nextStepCopy.full(MAX_MEMBERS) : nextStepCopy.more}
       </p>
       <div className="flex w-full gap-2.5">
         <CommonButton type="button" variant="ghost" className="flex-1" onClick={onEdit}>

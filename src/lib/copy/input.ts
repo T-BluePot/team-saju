@@ -2,10 +2,11 @@
 
 export const inputCopy = {
   teamNameLabel: '팀 이름',
-  teamNameHint: '공유 이미지에 들어갑니다. 편한 이름으로 적어주세요',
+  teamNameHint: '공유 이미지에 표시됩니다',
   teamNamePlaceholder: '우리 팀',
-  submitEmpty: '팀원을 1명 이상 넣어주세요',
-  submit: (count: number) => `${count}명 분석하기`,
+  // 버튼 라벨은 상태와 무관하게 고정한다. 왜 못 누르는지는 버튼 위에서 말한다
+  submitHint: '팀원을 1명 이상 추가해 주세요',
+  submit: '분석하기',
 } as const
 
 export const memberFormCopy = {
@@ -22,17 +23,17 @@ export const memberFormCopy = {
   minuteLabel: '분',
   hourOption: (hour: string) => `${hour}시`,
   minuteOption: (minute: string) => `${minute}분`,
-  hourUnknownNote: '시주를 빼고 세 기둥만 봅니다',
+  hourUnknownNote: '시주를 제외하고 계산합니다',
   trueSolarTime: '진태양시 보정',
-  trueSolarTimeNote: '시계가 태양보다 30분 빨라서 빼줍니다. 대부분 켜두면 됩니다',
-  sourceGroup: '누구 정보인가요',
-  sourceSelfTitle: '본인 정보입니다',
-  sourceSelfDesc: '내 생년월일시를 넣습니다',
-  sourceDelegatedTitle: '본인에게 동의를 받고 대신 입력합니다',
-  sourceDelegatedDesc: '팀원에게 알리고 허락을 받았습니다',
-  delegatedWarning:
-    '팀원에게 생년월일시를 넣는다고 알리고 동의를 받으셨나요. 동의 없이 타인의 개인정보를 입력하면 곤란해질 수 있습니다',
-  submit: '팀원 추가',
+  trueSolarTimeNote:
+    '태어난 시간을 실제 태양시 기준으로 보정합니다. 정확한 계산을 위해 켜두는 것을 권장합니다.',
+  sourceGroup: '누구의 정보인가요?',
+  sourceSelfTitle: '나',
+  sourceSelfDesc: '본인 정보를 입력합니다',
+  sourceDelegatedTitle: '팀원',
+  sourceDelegatedDesc: '팀원 본인의 동의를 받아 정보를 입력합니다',
+  delegatedWarning: '타인의 개인정보는 본인의 동의 없이 입력할 수 없습니다.',
+  submit: '추가하기',
   // 스크린리더에만 읽힌다. 화면에는 팀원 칩으로 이미 보인다
   addedFull: (name: string, count: number) => `${name} 추가했습니다. ${count}명으로 꽉 찼습니다`,
   added: (name: string, count: number) => `${name} 추가했습니다. 지금 ${count}명`,
@@ -40,12 +41,11 @@ export const memberFormCopy = {
 
 export const memberListCopy = {
   count: (count: number) => `팀원 ${count}명`,
-  max: (max: number) => `최대 ${max}명`,
   delegated: '대리',
   remove: (name: string) => `${name} 삭제`,
 } as const
 
 export const undoToastCopy = {
-  removed: (name: string) => `${name} 뺐어요`,
+  removed: (name: string) => `${name}님을 목록에서 삭제했습니다`,
   undo: '되돌리기',
 } as const
