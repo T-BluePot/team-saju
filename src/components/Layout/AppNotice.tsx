@@ -1,4 +1,5 @@
 import { commonCopy } from '../../lib/copy'
+
 const NOTICE = commonCopy.notice
 
 /**

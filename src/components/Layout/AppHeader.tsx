@@ -17,8 +17,8 @@ export function AppHeader() {
         <div className="flex items-center gap-2">
           <span className="seal size-6 text-[11px]">占</span>
           <span className="serif text-base font-extrabold tracking-tight">
-          {commonCopy.brand}
-        </span>
+            {commonCopy.brand}
+          </span>
         </div>
         {(view === 'result' || view === 'loading') && (
           <button

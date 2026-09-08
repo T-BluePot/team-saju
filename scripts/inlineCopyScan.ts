@@ -6,7 +6,17 @@
  * 두 곳이 다른 규칙으로 세면 테스트는 통과하는데 목록에는 남아 있는 상태가 생긴다.
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs'
-import { join } from 'node:path'
+import { dirname, join, sep } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+/**
+ * 저장소 루트. cwd 를 쓰지 않는다.
+ *
+ * 상대 경로로 열면 하위 디렉터리에서 돌리거나 러너가 root 를 다르게 잡았을 때
+ * 의미 있는 실패 대신 ENOENT 로 죽는다. 테스트는 수집 단계에서 터져서 어떤
+ * 검사가 왜 깨졌는지도 안 나온다.
+ */
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 
 /** 문구가 있으면 안 되는 곳. `src/lib/copy/` 자신은 당연히 대상이 아니다. */
 export const SCAN_DIRS = [
@@ -55,8 +65,14 @@ const HANGUL = /[가-힣]/g
 const BACKSLASH = String.fromCharCode(92)
 const NEWLINE = String.fromCharCode(10)
 
-/** 앞 글자가 이것들이면 그 `/` 는 나눗셈이 아니라 정규식의 시작이다. */
-const REGEX_PREV = /[(,=:[!&|?{};+\-*%~^<>]/
+/**
+ * 앞 글자가 이것들이면 그 `/` 는 나눗셈이 아니라 정규식의 시작이다.
+ *
+ * `<` 는 일부러 뺐다. 넣으면 JSX 닫는 태그 `</div>` 의 슬래시를 정규식 시작으로
+ * 읽고, 같은 줄에 달린 `//` 주석을 통째로 못 지운다. 문구가 하나도 없는데 가드
+ * 테스트가 실패한다. `<` 뒤에 정규식이 오는 코드는 실제로 없다.
+ */
+const REGEX_PREV = /[(,=:[!&|?{};+\-*%~^>]/
 
 /**
  * 주석을 공백으로 바꾼다. 줄 번호가 어긋나면 안 되니 줄바꿈은 남긴다.
@@ -132,10 +148,19 @@ export function stripComments(src: string): string {
         i += 2
         continue
       }
+      // 정규식은 한 줄을 못 넘는다. 문자 클래스가 안 닫혀도 줄에서 끊어야
+      // 오판이 파일 끝까지 번지지 않는다
+      if (c === NEWLINE) {
+        state = 'code'
+        inCharClass = false
+        out += c
+        i += 1
+        continue
+      }
       // 문자 클래스 안의 `/` 는 정규식을 끝내지 않는다
       if (c === '[') inCharClass = true
       else if (c === ']') inCharClass = false
-      else if (!inCharClass && (c === '/' || c === NEWLINE)) state = 'code'
+      else if (!inCharClass && c === '/') state = 'code'
       out += c
       i += 1
       continue
@@ -177,17 +202,20 @@ export function scanSource(source: string, applyAllowList: boolean): Hit[] {
   return hits
 }
 
-function walk(dir: string): string[] {
+/** 루트 기준 상대 경로로 돌려준다. 실패 메시지에 그대로 쓴다. */
+function walk(relDir: string): string[] {
   const found: string[] = []
-  for (const entry of readdirSync(dir)) {
-    const path = join(dir, entry).split(String.fromCharCode(92)).join('/')
-    if (statSync(path).isDirectory()) {
+
+  for (const entry of readdirSync(join(ROOT, relDir))) {
+    const rel = `${relDir}/${entry}`
+    if (statSync(join(ROOT, rel)).isDirectory()) {
       if (entry === '__tests__') continue
-      found.push(...walk(path))
+      found.push(...walk(rel))
       continue
     }
-    if (/\.tsx?$/.test(entry)) found.push(path)
+    if (/\.tsx?$/.test(entry)) found.push(rel)
   }
+
   return found
 }
 
@@ -197,7 +225,7 @@ export function scanRepo(applyAllowList: boolean): FileScan[] {
 
   for (const dir of SCAN_DIRS) {
     for (const file of walk(dir)) {
-      const hits = scanSource(readFileSync(file, 'utf8'), applyAllowList)
+      const hits = scanSource(read(file), applyAllowList)
       if (!hits.length) continue
       scans.push({
         file,
@@ -210,11 +238,20 @@ export function scanRepo(applyAllowList: boolean): FileScan[] {
   return scans.sort((a, b) => b.chars - a.chars)
 }
 
-/** `src/lib/copy/` 에 있는 카피 파일. 배럴은 다시 내보내기만 해서 뺀다. */
+/** 루트 기준 상대 경로를 읽는다. */
+export function read(relPath: string): string {
+  return readFileSync(join(ROOT, relPath.split('/').join(sep)), 'utf8')
+}
+
+/**
+ * `src/lib/copy/` 아래 모든 카피 파일.
+ *
+ * 하위 폴더까지 훑고 배럴도 뺀 것 없이 본다. 안 훑는 자리를 두면 result.ts 가
+ * 커져서 폴더로 쪼개진 날 그 안의 문구는 아무도 검사하지 않는데 테스트는
+ * 계속 초록으로 통과한다.
+ */
 export function copyFiles(): string[] {
-  return readdirSync(COPY_DIR)
-    .filter((entry) => entry.endsWith('.ts') && entry !== 'index.ts')
-    .map((entry) => `${COPY_DIR}/${entry}`)
+  return walk(COPY_DIR).filter((file) => file.endsWith('.ts'))
 }
 
 /**

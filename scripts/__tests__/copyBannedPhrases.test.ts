@@ -1,9 +1,7 @@
-import { readFileSync } from 'node:fs'
-
 import { describe, expect, it } from 'vitest'
 
 import { BANNED_PHRASES } from '../../src/lib/report/__tests__/bannedPhrases.ts'
-import { copyFiles, extractLiterals } from '../inlineCopyScan.ts'
+import { copyFiles, extractLiterals, read } from '../inlineCopyScan.ts'
 
 /**
  * 리포트 본문에 걸어둔 금지어를 화면 문구에도 건다.
@@ -19,7 +17,7 @@ describe('화면 문구', () => {
   })
 
   it.each(files)('%s 에 금지 표현이 없다', (file) => {
-    const literals = extractLiterals(readFileSync(file, 'utf8'))
+    const literals = extractLiterals(read(file))
 
     for (const literal of literals) {
       for (const banned of BANNED_PHRASES) {
