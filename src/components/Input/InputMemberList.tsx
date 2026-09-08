@@ -1,4 +1,5 @@
 import { CommonCard, CommonChip } from '../Common'
+import { memberListCopy } from '../../lib/copy'
 import type { SajuChart } from '../../lib/saju/types'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 import { MAX_MEMBERS } from '../../store/teamStore'
@@ -15,9 +16,9 @@ export function InputMemberList({ charts, onRemove }: Props) {
   return (
     <div>
       <p className="serif mb-2.5 text-sm font-bold">
-        팀원 {charts.length}명
+        {memberListCopy.count(charts.length)}
         <span className="ml-1.5 text-xs font-normal" style={{ color: 'var(--ink-soft)' }}>
-          최대 {MAX_MEMBERS}명
+          {memberListCopy.max(MAX_MEMBERS)}
         </span>
       </p>
       <ul className="flex flex-wrap gap-2">
@@ -38,13 +39,13 @@ export function InputMemberList({ charts, onRemove }: Props) {
             </span>
             {c.member.consent.source === 'delegated' && (
               <CommonChip tone="accent" size="sm">
-                대리
+                {memberListCopy.delegated}
               </CommonChip>
             )}
             <button
               type="button"
               onClick={() => onRemove(c.member.id)}
-              aria-label={`${c.member.name} 삭제`}
+              aria-label={memberListCopy.remove(c.member.name)}
               className="press flex size-8 items-center justify-center rounded-full text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{
                 background: 'var(--paper-deep)',

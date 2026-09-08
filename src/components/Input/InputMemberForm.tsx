@@ -10,6 +10,7 @@ import {
   CommonSelect,
   CommonTextInput,
 } from '../Common'
+import { memberFormCopy } from '../../lib/copy'
 import { MAX_MEMBERS, emptyDraft, type Draft } from '../../store/teamStore'
 
 type Props = {
@@ -62,8 +63,8 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
     const next = count + 1
     setAdded(
       next >= MAX_MEMBERS
-        ? `${name} 추가했습니다. ${next}명으로 꽉 찼습니다`
-        : `${name} 추가했습니다. 지금 ${next}명`,
+        ? memberFormCopy.addedFull(name, next)
+        : memberFormCopy.added(name, next),
     )
 
     // 진태양시는 팀 전체에 같은 선택인 경우가 대부분이라 직전 값을 들고 간다.
@@ -75,9 +76,9 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
 
   return (
     <CommonCard as="form" onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <h2 className="text-base font-bold">팀원 추가</h2>
+      <h2 className="text-base font-bold">{memberFormCopy.title}</h2>
 
-      <CommonField label="이름">
+      <CommonField label={memberFormCopy.nameLabel}>
         {(id) => (
           <CommonTextInput
             ref={nameRef}
@@ -85,12 +86,12 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
             value={draft.name}
             onChange={(e) => set('name', e.target.value)}
             maxLength={12}
-            placeholder="별칭도 괜찮아요"
+            placeholder={memberFormCopy.namePlaceholder}
           />
         )}
       </CommonField>
 
-      <CommonField label="생년월일">
+      <CommonField label={memberFormCopy.birthDateLabel}>
         {(id) => (
           <>
             <CommonTextInput
@@ -108,7 +109,7 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
                 checked={draft.calendar === 'solar'}
                 onChange={() => set('calendar', 'solar')}
               >
-                양력
+                {memberFormCopy.solar}
               </CommonCheckLabel>
               <CommonCheckLabel
                 type="radio"
@@ -116,14 +117,14 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
                 checked={draft.calendar === 'lunar'}
                 onChange={() => set('calendar', 'lunar')}
               >
-                음력
+                {memberFormCopy.lunar}
               </CommonCheckLabel>
               {draft.calendar === 'lunar' && (
                 <CommonCheckLabel
                   checked={draft.isLeapMonth}
                   onChange={(e) => set('isLeapMonth', e.target.checked)}
                 >
-                  윤달
+                  {memberFormCopy.leapMonth}
                 </CommonCheckLabel>
               )}
             </div>
@@ -131,17 +132,17 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
         )}
       </CommonField>
 
-      <CommonFieldGroup legend="태어난 시간">
+      <CommonFieldGroup legend={memberFormCopy.hourGroup}>
         <CommonCheckLabel
           checked={!draft.hourKnown}
           onChange={(e) => set('hourKnown', !e.target.checked)}
         >
-          시간을 몰라요
+          {memberFormCopy.hourUnknown}
         </CommonCheckLabel>
         {draft.hourKnown && (
           <div className="flex items-center gap-2">
             <label className="sr-only" htmlFor="hour">
-              시
+              {memberFormCopy.hourLabel}
             </label>
             <CommonSelect
               id="hour"
@@ -150,12 +151,12 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
             >
               {HOURS.map((h) => (
                 <option key={h} value={h}>
-                  {String(h).padStart(2, '0')}시
+                  {memberFormCopy.hourOption(String(h).padStart(2, '0'))}
                 </option>
               ))}
             </CommonSelect>
             <label className="sr-only" htmlFor="minute">
-              분
+              {memberFormCopy.minuteLabel}
             </label>
             <CommonSelect
               id="minute"
@@ -164,7 +165,7 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
             >
               {[0, 10, 20, 30, 40, 50].map((m) => (
                 <option key={m} value={m}>
-                  {String(m).padStart(2, '0')}분
+                  {memberFormCopy.minuteOption(String(m).padStart(2, '0'))}
                 </option>
               ))}
             </CommonSelect>
@@ -172,7 +173,7 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
         )}
         {!draft.hourKnown && (
           <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-            시주를 빼고 세 기둥만 봅니다
+            {memberFormCopy.hourUnknownNote}
           </p>
         )}
       </CommonFieldGroup>
@@ -181,31 +182,30 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
         checked={draft.useTrueSolarTime}
         onChange={(e) => set('useTrueSolarTime', e.target.checked)}
       >
-        진태양시 보정
+        {memberFormCopy.trueSolarTime}
         <span className="ml-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
-          시계가 태양보다 30분 빨라서 빼줍니다. 대부분 켜두면 됩니다
+          {memberFormCopy.trueSolarTimeNote}
         </span>
       </CommonCheckLabel>
 
-      <CommonFieldGroup legend="누구 정보인가요">
+      <CommonFieldGroup legend={memberFormCopy.sourceGroup}>
         <CommonPickCard
           name="consent"
           checked={draft.consentSource === 'self'}
           onChange={() => set('consentSource', 'self')}
-          title="본인 정보입니다"
-          desc="내 생년월일시를 넣습니다"
+          title={memberFormCopy.sourceSelfTitle}
+          desc={memberFormCopy.sourceSelfDesc}
         />
         <CommonPickCard
           name="consent"
           checked={draft.consentSource === 'delegated'}
           onChange={() => set('consentSource', 'delegated')}
-          title="본인에게 동의를 받고 대신 입력합니다"
-          desc="팀원에게 알리고 허락을 받았습니다"
+          title={memberFormCopy.sourceDelegatedTitle}
+          desc={memberFormCopy.sourceDelegatedDesc}
         />
         {draft.consentSource === 'delegated' && (
           <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-            팀원에게 생년월일시를 넣는다고 알리고 동의를 받으셨나요. 동의 없이 타인의
-            개인정보를 입력하면 곤란해질 수 있습니다
+            {memberFormCopy.delegatedWarning}
           </p>
         )}
       </CommonFieldGroup>
@@ -230,7 +230,7 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
       </p>
 
       <CommonButton type="submit" variant="primary" disabled={disabled}>
-        팀원 추가
+        {memberFormCopy.submit}
       </CommonButton>
     </CommonCard>
   )
