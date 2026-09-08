@@ -22,6 +22,18 @@ export const headlineCopy = {
 
 export const illustrationCopy = {
   caption: '일러스트',
+  /**
+   * 화면에 안 보이지만 스크린리더로 읽히는 카피다.
+   * 그림은 결핍 오행으로 고르니 alt 도 결핍 기준으로 묶는다.
+   */
+  altByLacking: {
+    木: '머리를 싸매고 있는 사람',
+    火: '회의 중에 조는 사람',
+    土: '손가락에 밀려 무너지는 도미노',
+    金: '결재 서류가 산더미로 쌓인 책상',
+    水: '앞만 보고 돌진하는 멧돼지',
+  },
+  altBalanced: '접시에 하나 남은 음식',
 } as const
 
 export const analysisCopy = {

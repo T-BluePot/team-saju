@@ -3,6 +3,7 @@ import type { Element } from '../saju/types'
 import { SOLO_LEAD, isSolo, needsBlock } from '../report/solo'
 import type { TeamReport } from '../report/teamReport'
 import { ELEMENT_HEX, ELEMENT_HEX_DEEP, illustFor } from '../ui/elementStyle'
+import { shareCanvasCopy } from '../copy'
 
 /**
  * 공유 카드를 canvas 로 직접 그린다.
@@ -196,7 +197,7 @@ function layout(
     ctx.fillStyle = C.inkSoft
     ctx.font = sans(28, 500)
     // 혼자면 "1명" 이 아니라 아직 혼자라고 적는다. 팀인 척하지 않는다
-    const who = solo ? '아직 혼자' : `${analysis.size}명`
+    const who = solo ? shareCanvasCopy.solo : shareCanvasCopy.size(analysis.size)
     ctx.fillText(`${analysis.teamName} · ${who}`, PAD, y)
 
     ctx.save()
@@ -278,9 +279,9 @@ function layout(
   paint(() => {
     ctx.font = sans(25, 500)
     ctx.fillStyle = C.inkSoft
-    ctx.fillText('넘치는 기운', PAD, y)
+    ctx.fillText(shareCanvasCopy.excess, PAD, y)
     ctx.textAlign = 'right'
-    ctx.fillText('비어 있는 곳', W - PAD, y)
+    ctx.fillText(shareCanvasCopy.lacking, W - PAD, y)
     ctx.textAlign = 'left'
   })
 
@@ -324,7 +325,7 @@ function layout(
 
     ctx.fillStyle = accentDeep
     ctx.font = serif(25, 700)
-    ctx.fillText('處方 · 이번 주에 해볼 것', PAD + 42, boxTop + 56)
+    ctx.fillText(shareCanvasCopy.prescription, PAD + 42, boxTop + 56)
 
     ctx.fillStyle = C.ink
     ctx.font = sans(29, 500)
@@ -362,10 +363,15 @@ function layout(
     ctx.font = sans(23, 400)
     // 혼자면 조합이 없다. 0쌍 0쌍 0쌍은 알려주는 게 없어서 균형 점수만 남긴다
     const stats = solo
-      ? `균형 ${analysis.balance}점`
-      : `균형 ${analysis.balance}점 · 상생 ${analysis.pairCounts.generating}쌍 · 비슷한 결 ${analysis.pairCounts.same}쌍 · 긴장 ${analysis.pairCounts.tension}쌍`
+      ? shareCanvasCopy.balance(analysis.balance)
+      : shareCanvasCopy.balanceWithPairs(
+          analysis.balance,
+          analysis.pairCounts.generating,
+          analysis.pairCounts.same,
+          analysis.pairCounts.tension,
+        )
     ctx.fillText(stats, PAD, footerTop)
-    ctx.fillText('팀사주 · 재미로 보는 콘텐츠입니다', PAD, footerTop + 36)
+    ctx.fillText(shareCanvasCopy.footer, PAD, footerTop + 36)
   })
 
   return footerTop + 36 + 56
@@ -415,5 +421,8 @@ const cleanName = (s: string) => s.replace(/[\\/:*?"<>|\s]+/g, '-')
 
 export function shareCardFileName(report: TeamReport): string {
   // 유형 이름에도 전부 공백이 들어 있다. 팀 이름만 씻으면 반만 씻는 셈이다
-  return `팀사주-${cleanName(report.analysis.teamName)}-${cleanName(report.archetype.name)}.png`
+  return shareCanvasCopy.fileName(
+    cleanName(report.analysis.teamName),
+    cleanName(report.archetype.name),
+  )
 }

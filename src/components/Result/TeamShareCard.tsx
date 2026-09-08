@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 
 import { CommonButton, CommonCard } from '../Common'
 import type { TeamReport } from '../../lib/report/teamReport'
+import { shareCardCopy } from '../../lib/copy'
 import {
   drawShareCard,
   shareCardBlob,
@@ -46,7 +47,7 @@ function isTouch(): boolean {
   return typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
 }
 
-const FAILED = '이미지를 못 만들었습니다. 화면을 새로고침하고 다시 해보세요'
+const FAILED = shareCardCopy.failed
 
 export function TeamShareCard({ report }: { report: TeamReport }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -129,22 +130,22 @@ export function TeamShareCard({ report }: { report: TeamReport }) {
   return (
     <CommonCard as="section" flush>
       <div className="p-6 sm:p-7">
-        <h3 className="serif text-lg font-bold">이미지로 공유하기</h3>
+        <h3 className="serif text-lg font-bold">{shareCardCopy.heading}</h3>
         <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-          팀 유형과 오행 분포만 담깁니다. 이름과 생년월일은 안 들어가요
+          {shareCardCopy.note}
         </p>
 
         {preview && (
           <>
             <img
               src={preview}
-              alt="공유 카드 미리보기"
+              alt={shareCardCopy.previewAlt}
               className="mt-5 w-full max-w-[280px] rounded-xl"
               style={{ border: '1px solid var(--rule)' }}
             />
             {touch && (
               <p className="mt-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
-                저장이 안 되면 이 이미지를 길게 눌러도 됩니다
+                {shareCardCopy.longPressHint}
               </p>
             )}
           </>
@@ -169,7 +170,7 @@ export function TeamShareCard({ report }: { report: TeamReport }) {
       </div>
 
       <CommonButton type="button" variant="quiet" fullBleed onClick={makePreview}>
-        미리보기
+        {shareCardCopy.preview}
       </CommonButton>
       <CommonButton
         type="button"
@@ -181,7 +182,11 @@ export function TeamShareCard({ report }: { report: TeamReport }) {
         onFocus={warm}
         onClick={save}
       >
-        {busy ? '만드는 중' : canShare ? '이미지 공유' : '이미지 저장'}
+        {busy
+          ? shareCardCopy.busy
+          : canShare
+            ? shareCardCopy.share
+            : shareCardCopy.download}
       </CommonButton>
     </CommonCard>
   )

@@ -1,4 +1,5 @@
 import type { Element } from '../saju/types'
+import { illustrationCopy } from '../copy'
 
 /** 오방색. 청(木) 적(火) 황(土) 백(金) 흑(水) */
 export const ELEMENT_COLOR: Record<Element, string> = {
@@ -40,17 +41,17 @@ export const ELEMENT_HEX_DEEP: Record<Element, string> = {
  * 신난 그림을 붙이면, 정작 문구는 브레이크가 없다고 하는데 그림만 혼자 웃는다.
  */
 const ILLUST_BY_LACKING: Record<Element, { src: string; alt: string }> = {
-  木: { src: '/illust/no-wood.png', alt: '머리를 싸매고 있는 사람' },
-  火: { src: '/illust/no-fire.png', alt: '회의 중에 조는 사람' },
-  土: { src: '/illust/no-earth.png', alt: '손가락에 밀려 무너지는 도미노' },
-  金: { src: '/illust/no-metal.png', alt: '결재 서류가 산더미로 쌓인 책상' },
-  水: { src: '/illust/no-water.png', alt: '앞만 보고 돌진하는 멧돼지' },
+  木: { src: '/illust/no-wood.png', alt: illustrationCopy.altByLacking.木 },
+  火: { src: '/illust/no-fire.png', alt: illustrationCopy.altByLacking.火 },
+  土: { src: '/illust/no-earth.png', alt: illustrationCopy.altByLacking.土 },
+  金: { src: '/illust/no-metal.png', alt: illustrationCopy.altByLacking.金 },
+  水: { src: '/illust/no-water.png', alt: illustrationCopy.altByLacking.水 },
 }
 
 /** 어디도 안 비어서 붙일 결핍이 없다. 아무도 안 집는 마지막 한 조각 */
 const BALANCED_ILLUST = {
   src: '/illust/no-lacking.png',
-  alt: '접시에 하나 남은 음식',
+  alt: illustrationCopy.altBalanced,
 }
 
 export function illustFor(archetypeId: string, lacking: Element) {

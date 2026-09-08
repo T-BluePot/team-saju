@@ -21,3 +21,4 @@ export {
   resultCopy,
   sajuCopy,
 } from './result'
+export { shareCanvasCopy, shareCardCopy } from './share'
