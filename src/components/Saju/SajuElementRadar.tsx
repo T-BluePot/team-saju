@@ -2,6 +2,7 @@ import { ELEMENTS, ELEMENT_LABEL } from '../../lib/saju/constants'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 import type { ElementScores } from '../../lib/saju/types'
 import { useReveal } from '../../lib/ui/useReveal'
+import { sajuCopy } from '../../lib/copy'
 
 type Props = {
   percents: ElementScores
@@ -41,7 +42,9 @@ export function SajuElementRadar({ percents, size = 240, showLabels = true }: Pr
       height={size}
       viewBox={`0 0 ${size} ${size}`}
       role="img"
-      aria-label={`팀 오행 분포. ${ELEMENTS.map((el) => `${ELEMENT_LABEL[el]} ${percents[el]}퍼센트`).join(', ')}`}
+      aria-label={sajuCopy.radarLabel(
+        ELEMENTS.map((el) => sajuCopy.radarPart(ELEMENT_LABEL[el], percents[el])),
+      )}
     >
       {grid.map((points, i) => (
         <polygon

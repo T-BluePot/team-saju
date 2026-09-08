@@ -8,3 +8,15 @@ export {
 } from './input'
 export { consentCopy, landingCopy } from './landing'
 export { loadingCopy } from './loading'
+export {
+  analysisCopy,
+  detailCopy,
+  energyCardsCopy,
+  exampleNoticeCopy,
+  headlineCopy,
+  illustrationCopy,
+  modifiersCopy,
+  nextStepCopy,
+  resultCopy,
+  sajuCopy,
+} from './result'

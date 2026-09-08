@@ -1,4 +1,5 @@
 import { CommonButton } from '../Common'
+import { exampleNoticeCopy } from '../../lib/copy'
 
 /**
  * 예시 리포트를 보고 있다는 표시.
@@ -13,7 +14,7 @@ export function ResultExampleNotice({ onStart }: { onStart: () => void }) {
       style={{ background: 'var(--accent-wash)' }}
     >
       <p className="text-sm leading-relaxed" style={{ color: 'var(--accent-deep)' }}>
-        <b>예시입니다.</b> 실제 사람이 아니라 만들어둔 표본 팀으로 뽑은 결과예요
+        <b>{exampleNoticeCopy.lead}</b> {exampleNoticeCopy.body}
       </p>
       <CommonButton
         type="button"
@@ -21,7 +22,7 @@ export function ResultExampleNotice({ onStart }: { onStart: () => void }) {
         className="shrink-0 whitespace-nowrap"
         onClick={onStart}
       >
-        내 팀으로 해보기
+        {exampleNoticeCopy.cta}
       </CommonButton>
     </div>
   )

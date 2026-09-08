@@ -1,6 +1,7 @@
 import { CommonCard } from '../Common'
 import type { TeamReport } from '../../lib/report/teamReport'
 import { ILLUST_SOURCE, ILLUST_SOURCE_URL, illustFor } from '../../lib/ui/elementStyle'
+import { illustrationCopy } from '../../lib/copy'
 
 export function TeamIllustration({ report }: { report: TeamReport }) {
   const { analysis, archetype } = report
@@ -17,7 +18,7 @@ export function TeamIllustration({ report }: { report: TeamReport }) {
         />
       </CommonCard>
       <figcaption className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>
-        일러스트{' '}
+        {illustrationCopy.caption}{' '}
         <a
           href={ILLUST_SOURCE_URL}
           target="_blank"

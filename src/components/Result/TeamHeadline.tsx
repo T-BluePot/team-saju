@@ -1,5 +1,6 @@
 import { SOLO_LEAD, SOLO_NOTE, isSolo } from '../../lib/report/solo'
 import type { TeamReport } from '../../lib/report/teamReport'
+import { headlineCopy } from '../../lib/copy'
 
 export function TeamHeadline({ report }: { report: TeamReport }) {
   const { analysis, archetype } = report
@@ -11,11 +12,11 @@ export function TeamHeadline({ report }: { report: TeamReport }) {
         className="seal animate-seal absolute right-0 top-0 size-11 text-base"
         aria-hidden="true"
       >
-        占
+        {headlineCopy.seal}
       </span>
 
       <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-        {analysis.teamName} · {solo ? '아직 혼자' : `${analysis.size}명`}
+        {analysis.teamName} · {solo ? headlineCopy.solo : headlineCopy.size(analysis.size)}
       </p>
 
       {solo && (

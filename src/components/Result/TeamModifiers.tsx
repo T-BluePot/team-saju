@@ -1,5 +1,6 @@
 import { CommonRule, CommonSubHeading } from '../Common'
 import type { TeamReport } from '../../lib/report/teamReport'
+import { modifiersCopy } from '../../lib/copy'
 
 /**
  * 유형 위에 얹는 변주.
@@ -16,9 +17,9 @@ export function TeamModifiers({ report }: { report: TeamReport }) {
     <>
       <CommonRule />
 
-      <CommonSubHeading>이 팀만의 변주</CommonSubHeading>
+      <CommonSubHeading>{modifiersCopy.heading}</CommonSubHeading>
       <p className="mt-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
-        같은 유형이어도 여기가 다르면 다른 팀입니다
+        {modifiersCopy.note}
       </p>
 
       <ul className="mt-3 flex flex-col gap-4">

@@ -3,6 +3,7 @@ import { energyCards } from '../../lib/report/energy'
 import { BALANCED_ARCHETYPE_ID } from '../../lib/saju/team'
 import type { TeamReport } from '../../lib/report/teamReport'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
+import { energyCardsCopy } from '../../lib/copy'
 
 /**
  * 데려오면 좋은 기운, 지금은 안 되는 기운.
@@ -27,13 +28,17 @@ export function TeamEnergyCards({ report }: { report: TeamReport }) {
   const cards = energyCards(dominant, lacking)
 
   return (
-    <CommonSection index="三" title="누굴 데려오면 되나" subtitle="아직 팀에 없는 기운입니다">
+    <CommonSection
+      index={energyCardsCopy.index}
+      title={energyCardsCopy.title}
+      subtitle={energyCardsCopy.subtitle}
+    >
       <div
         // scroll-pl 이 없으면 스냅이 첫 카드를 스크롤포트 시작에 붙여서 왼쪽 여백을 먹는다
         className="-mx-6 flex snap-x snap-mandatory scroll-pl-6 gap-3 overflow-x-auto px-6 pb-2 sm:-mx-7 sm:scroll-pl-7 sm:px-7"
         tabIndex={0}
         role="group"
-        aria-label="데려오면 좋은 기운과 지금은 안 되는 기운"
+        aria-label={energyCardsCopy.carousel}
       >
         {cards.map((card) => (
           <article
@@ -74,7 +79,7 @@ export function TeamEnergyCards({ report }: { report: TeamReport }) {
       </div>
 
       <p className="mt-3 text-xs" style={{ color: 'var(--ink-soft)' }}>
-        지금 팀원을 두고 하는 얘기가 아닙니다. 아직 없는 기운을 말합니다
+        {energyCardsCopy.note}
       </p>
     </CommonSection>
   )

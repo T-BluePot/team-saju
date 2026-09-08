@@ -8,6 +8,7 @@ import {
 } from '../components/Result'
 import { buildTeamReport } from '../lib/report/teamReport'
 import { useTeamStore } from '../store/teamStore'
+import { resultCopy } from '../lib/copy'
 
 export function ResultPage() {
   const charts = useTeamStore((s) => s.charts)
@@ -28,8 +29,8 @@ export function ResultPage() {
   if (charts.length === 0) return null
 
   const tabs: Array<['team' | 'personal', string]> = [
-    ['team', '팀 리포트'],
-    ['personal', '개인 명식'],
+    ['team', resultCopy.tabTeam],
+    ['personal', resultCopy.tabPersonal],
   ]
 
   return (
@@ -61,7 +62,7 @@ export function ResultPage() {
           className="press min-h-11 rounded-lg px-3.5 text-sm"
           style={{ border: '1px solid var(--rule)', color: 'var(--ink-soft)' }}
         >
-          팀원 수정
+          {resultCopy.editMembers}
         </button>
       </div>
 
