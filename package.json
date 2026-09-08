@@ -10,7 +10,8 @@
     "typecheck": "tsc -b",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "scan:copy": "node scripts/scan-inline-copy.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",

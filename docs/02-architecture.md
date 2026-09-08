@@ -147,9 +147,16 @@ src/lib/copy/
   `ELEMENT_LABEL` 을 조립해 만드는 `aria-label` 은 완성된 조각을 받는 함수로 두고,
   테이블 조회는 컴포넌트에 남긴다
 
-인라인 한글이 다시 생기면 `lib/copy/__tests__/noInlineCopy.test.ts` 가 깨진다.
-`components/`, `pages/`, `store/`, `lib/share/`, `lib/ui/` 다섯 곳을 본다. 예외는 배열로
-두고 항목마다 왜 예외인지 주석을 단다. 예외가 늘어나는 게 눈에 보여야 한다.
+인라인 한글이 다시 생기면 `scripts/__tests__/noInlineCopy.test.ts` 가 깨진다.
+`components/`, `pages/`, `store/`, `lib/share/`, `lib/ui/` 다섯 곳을 본다. 스캐너가 파일을
+읽어야 해서 `src/` 가 아니라 `scripts/` 에 둔다. `src` 쪽 tsconfig 에 node 타입을 열면
+`lib/saju/**` 의 순수 함수 규칙이 타입으로는 안 막힌다. 같은 스캐너를
+`npm run scan:copy` 가 목록 출력에 쓴다. 두 곳이 다른 규칙으로 세면 테스트는 통과하는데
+목록에는 남아 있는 상태가 생긴다.
+
+예외는 파일이 아니라 **낱말** 단위로 연다. 파일을 통째로 빼면 그 파일에 새로 들어온
+카피까지 같이 눈감아주게 된다. `ALLOWED_TERMS` 에 낱말마다 이유를 붙여 두고, 목록이
+늘어나는 게 눈에 보이게 한다.
 
 i18n 라이브러리는 쓰지 않는다. 이유는 `docs/05-roadmap.md` 결정 로그에 있다.
 
