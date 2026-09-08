@@ -37,6 +37,8 @@ export const ALLOWED_TERMS = [
   '비어 있음',
 ]
 
+export const COPY_DIR = 'src/lib/copy'
+
 export interface Hit {
   line: number
   text: string
@@ -206,4 +208,29 @@ export function scanRepo(applyAllowList: boolean): FileScan[] {
   }
 
   return scans.sort((a, b) => b.chars - a.chars)
+}
+
+/** `src/lib/copy/` 에 있는 카피 파일. 배럴은 다시 내보내기만 해서 뺀다. */
+export function copyFiles(): string[] {
+  return readdirSync(COPY_DIR)
+    .filter((entry) => entry.endsWith('.ts') && entry !== 'index.ts')
+    .map((entry) => `${COPY_DIR}/${entry}`)
+}
+
+/**
+ * 주석을 걷어낸 뒤 문자열 리터럴 안쪽만 뽑는다.
+ *
+ * 카피 검사를 파일 전문에 걸면 "왜 이렇게 뒀는지" 를 적어둔 주석까지 걸린다.
+ * 금지어를 설명하는 주석이 금지어 검사에 걸리는 건 곤란하다.
+ */
+export function extractLiterals(source: string): string[] {
+  const stripped = stripComments(source)
+  const pattern = /'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g
+  const found: string[] = []
+
+  for (const match of stripped.matchAll(pattern)) {
+    found.push(match[1] ?? match[2] ?? match[3] ?? '')
+  }
+
+  return found
 }
