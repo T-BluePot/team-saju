@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 
+import { errorCopy } from '../lib/copy'
 import { SAMPLE_TEAM, SAMPLE_TEAM_NAME } from '../lib/report/sample'
 import { buildChart, SajuInputError } from '../lib/saju/chart'
 import type { MemberInput, SajuChart } from '../lib/saju/types'
@@ -107,10 +108,10 @@ export const useTeamStore = create<State>((set, get) => ({
 
   addMember: (draft) => {
     const { members } = get()
-    if (members.length >= MAX_MEMBERS) return `팀원은 ${MAX_MEMBERS}명까지 넣을 수 있어요`
-    if (!draft.name.trim()) return '이름이나 별칭을 적어주세요'
-    if (!draft.birthDate) return '생년월일을 골라주세요'
-    if (!draft.consentSource) return '본인 정보인지 대신 입력하는지 골라주세요'
+    if (members.length >= MAX_MEMBERS) return errorCopy.tooMany(MAX_MEMBERS)
+    if (!draft.name.trim()) return errorCopy.noName
+    if (!draft.birthDate) return errorCopy.noBirthDate
+    if (!draft.consentSource) return errorCopy.noConsentSource
 
     const input = draftToInput(draft)
     let chart
@@ -118,7 +119,7 @@ export const useTeamStore = create<State>((set, get) => ({
       chart = buildChart(input)
     } catch (e) {
       if (e instanceof SajuInputError) return e.message
-      return '사주를 계산하지 못했어요. 날짜를 다시 확인해 주세요'
+      return errorCopy.chartFailed
     }
 
     set((s) => ({
