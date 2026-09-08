@@ -17,7 +17,7 @@ describe('화면 문구', () => {
   })
 
   it.each(files)('%s 에 금지 표현이 없다', (file) => {
-    const literals = extractLiterals(read(file))
+    const literals = extractLiterals(read(file), file)
 
     for (const literal of literals) {
       for (const banned of BANNED_PHRASES) {

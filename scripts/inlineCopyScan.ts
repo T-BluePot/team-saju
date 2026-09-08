@@ -1,20 +1,25 @@
 /**
- * 주석을 걷어낸 소스에서 한글이 남아 있는 자리를 찾는다.
+ * 소스에서 화면 문구가 남아 있는 자리를 찾는다.
  *
  * 화면 문구는 `src/lib/copy/` 에 모으기로 했다. 컴포넌트로 다시 새어나오는 걸
  * `__tests__/noInlineCopy.test.ts` 가 막고, 같은 스캐너를 `npm run scan:copy` 가 목록 출력에 쓴다.
  * 두 곳이 다른 규칙으로 세면 테스트는 통과하는데 목록에는 남아 있는 상태가 생긴다.
+ *
+ * 파싱은 TypeScript 에 맡긴다. 손으로 짠 주석 제거기를 쓰던 때는 JSX 닫는 태그를
+ * 정규식으로 오인해서, 문구가 하나도 없는데 가드가 실패하는 일이 있었다.
+ * 파서는 주석을 애초에 노드로 넘기지 않아서 그 부류가 통째로 사라진다.
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import ts from 'typescript'
+
 /**
  * 저장소 루트. cwd 를 쓰지 않는다.
  *
  * 상대 경로로 열면 하위 디렉터리에서 돌리거나 러너가 root 를 다르게 잡았을 때
- * 의미 있는 실패 대신 ENOENT 로 죽는다. 테스트는 수집 단계에서 터져서 어떤
- * 검사가 왜 깨졌는지도 안 나온다.
+ * 의미 있는 실패 대신 ENOENT 로 죽는다.
  */
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -27,9 +32,13 @@ export const SCAN_DIRS = [
   'src/lib/ui',
 ]
 
+export const COPY_DIR = 'src/lib/copy'
+
 /**
- * 한글이 남아도 되는 낱말. 파일 단위로 빼주면 그 파일에 새로 들어온 카피까지
- * 같이 눈감아주게 되므로 낱말로만 연다. 늘어나는 게 보여야 하니 이유를 붙인다.
+ * 남아도 되는 낱말. 명리 용어라 카피가 아니라 도메인 어휘다.
+ *
+ * 파일 단위로 빼주면 그 파일에 새로 들어온 카피까지 같이 눈감아주게 되므로
+ * 낱말로만 연다. 늘어나는 게 보여야 하니 이유를 붙인다.
  */
 export const ALLOWED_TERMS = [
   // 사주의 네 기둥. docs/03-saju-spec.md 의 용어다
@@ -47,7 +56,21 @@ export const ALLOWED_TERMS = [
   '비어 있음',
 ]
 
-export const COPY_DIR = 'src/lib/copy'
+/**
+ * 남아도 되는 글자. 읽는 문구가 아니라 도장 무늬다.
+ *
+ * `占` 은 `aria-hidden` 으로 달린 장식이고, 그중 하나는 `CommonSection` 프리미티브에
+ * 있다. 카피로 끌어오면 프리미티브가 `lib/copy` 를 import 하게 된다.
+ * 낱말과 목적이 달라서 목록을 나눠 둔다.
+ */
+export const ALLOWED_GLYPHS = ['占']
+
+/**
+ * 화면에 나갈 수 있는 글자. 한글과 한자를 본다.
+ *
+ * 한자를 빼두면 `宜` `忌` `處方` `一二三` 같은 자리가 그냥 새어나간다.
+ */
+const SCRIPTED = /[가-힣㐀-䶿一-鿿]/g
 
 export interface Hit {
   line: number
@@ -61,145 +84,91 @@ export interface FileScan {
   hits: Hit[]
 }
 
-const HANGUL = /[가-힣]/g
-const BACKSLASH = String.fromCharCode(92)
-const NEWLINE = String.fromCharCode(10)
-
-/**
- * 앞 글자가 이것들이면 그 `/` 는 나눗셈이 아니라 정규식의 시작이다.
- *
- * `<` 는 일부러 뺐다. 넣으면 JSX 닫는 태그 `</div>` 의 슬래시를 정규식 시작으로
- * 읽고, 같은 줄에 달린 `//` 주석을 통째로 못 지운다. 문구가 하나도 없는데 가드
- * 테스트가 실패한다. `<` 뒤에 정규식이 오는 코드는 실제로 없다.
- */
-const REGEX_PREV = /[(,=:[!&|?{};+\-*%~^>]/
-
-/**
- * 주석을 공백으로 바꾼다. 줄 번호가 어긋나면 안 되니 줄바꿈은 남긴다.
- *
- * 문자열과 정규식 안을 구분하지 않으면 `/[\/:*?"<>|]/` 같은 자리에서 따옴표를
- * 문자열 시작으로 읽고, 그 뒤 주석을 통째로 못 지운다. 실제로 renderShareCard.ts
- * 가 그 모양이라 세는 값이 29자 어긋났다.
- */
-export function stripComments(src: string): string {
-  let out = ''
-  let i = 0
-  let state = 'code'
-  let inCharClass = false
-
-  while (i < src.length) {
-    const c = src[i]
-    const n = src[i + 1]
-
-    if (state === 'code') {
-      if (c === '/' && n === '/') {
-        state = 'line'
-        out += '  '
-        i += 2
-        continue
-      }
-      if (c === '/' && n === '*') {
-        state = 'block'
-        out += '  '
-        i += 2
-        continue
-      }
-      if (c === '/' && REGEX_PREV.test(out.replace(/\s+$/, '').slice(-1) || '(')) {
-        state = 'regex'
-        inCharClass = false
-        out += c
-        i += 1
-        continue
-      }
-      if (c === "'") state = 'single'
-      else if (c === '"') state = 'double'
-      else if (c === '`') state = 'template'
-      out += c
-      i += 1
-      continue
-    }
-
-    if (state === 'line') {
-      if (c === NEWLINE) {
-        state = 'code'
-        out += c
-      } else {
-        out += ' '
-      }
-      i += 1
-      continue
-    }
-
-    if (state === 'block') {
-      if (c === '*' && n === '/') {
-        state = 'code'
-        out += '  '
-        i += 2
-        continue
-      }
-      out += c === NEWLINE ? c : ' '
-      i += 1
-      continue
-    }
-
-    if (state === 'regex') {
-      if (c === BACKSLASH) {
-        out += c + (n ?? '')
-        i += 2
-        continue
-      }
-      // 정규식은 한 줄을 못 넘는다. 문자 클래스가 안 닫혀도 줄에서 끊어야
-      // 오판이 파일 끝까지 번지지 않는다
-      if (c === NEWLINE) {
-        state = 'code'
-        inCharClass = false
-        out += c
-        i += 1
-        continue
-      }
-      // 문자 클래스 안의 `/` 는 정규식을 끝내지 않는다
-      if (c === '[') inCharClass = true
-      else if (c === ']') inCharClass = false
-      else if (!inCharClass && c === '/') state = 'code'
-      out += c
-      i += 1
-      continue
-    }
-
-    // 문자열 안
-    if (c === BACKSLASH) {
-      out += c + (n ?? '')
-      i += 2
-      continue
-    }
-    if (
-      (state === 'single' && c === "'") ||
-      (state === 'double' && c === '"') ||
-      (state === 'template' && c === '`')
-    ) {
-      state = 'code'
-    }
-    out += c
-    i += 1
-  }
-
-  return out
+/** 루트 기준 상대 경로를 읽는다. */
+export function read(relPath: string): string {
+  return readFileSync(join(ROOT, relPath.split('/').join(sep)), 'utf8')
 }
 
-/** 허용 낱말을 지운 뒤에도 한글이 남은 줄만 돌려준다. */
-export function scanSource(source: string, applyAllowList: boolean): Hit[] {
-  const lines = stripComments(source).split(NEWLINE)
-  const hits: Hit[] = []
+function parse(source: string, fileName: string): ts.SourceFile {
+  return ts.createSourceFile(
+    fileName,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
+  )
+}
 
-  lines.forEach((line, index) => {
-    const probe = applyAllowList
-      ? ALLOWED_TERMS.reduce((acc, term) => acc.split(term).join(''), line)
-      : line
-    const found = probe.match(HANGUL)
-    if (found) hits.push({ line: index + 1, text: line.trim(), chars: found.length })
-  })
+interface Literal {
+  line: number
+  value: string
+}
 
-  return hits
+/**
+ * 화면에 나갈 수 있는 문자열 조각을 전부 모은다.
+ *
+ * JSX 사이의 글, 따옴표 문자열, 템플릿의 고정 부분을 본다. 템플릿 안의
+ * `${...}` 는 값이 끼는 자리라 건너뛴다.
+ *
+ * import 경로나 `className` 은 따로 거르지 않는다. 한글도 한자도 안 들어가서
+ * 애초에 걸릴 일이 없다. 안 쓰는 예외 규칙을 두면 나중에 읽는 사람이 그게
+ * 무슨 사연이 있는 줄 안다.
+ */
+function collectLiterals(source: string, fileName: string): Literal[] {
+  const sourceFile = parse(source, fileName)
+  const found: Literal[] = []
+
+  const take = (node: ts.Node, value: string) => {
+    if (!value.trim()) return
+    const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile))
+    found.push({ line: line + 1, value })
+  }
+
+  const visit = (node: ts.Node) => {
+    if (ts.isJsxText(node)) take(node, node.text)
+    else if (ts.isStringLiteral(node)) take(node, node.text)
+    else if (ts.isNoSubstitutionTemplateLiteral(node)) take(node, node.text)
+    else if (ts.isTemplateExpression(node)) {
+      take(node.head, node.head.text)
+      for (const span of node.templateSpans) take(span.literal, span.literal.text)
+    }
+    ts.forEachChild(node, visit)
+  }
+
+  visit(sourceFile)
+  return found
+}
+
+/** 허용 목록을 지우고 남은 글자만 센다. */
+function countLeftover(value: string, applyAllowList: boolean): number {
+  const probe = applyAllowList
+    ? [...ALLOWED_TERMS, ...ALLOWED_GLYPHS].reduce(
+        (acc, term) => acc.split(term).join(''),
+        value,
+      )
+    : value
+
+  return (probe.match(SCRIPTED) ?? []).length
+}
+
+/** 문구가 남은 줄만 돌려준다. 한 줄에 여러 개면 합쳐서 한 건으로 센다. */
+export function scanSource(
+  source: string,
+  applyAllowList: boolean,
+  fileName = 'file.tsx',
+): Hit[] {
+  const lines = source.split('\n')
+  const byLine = new Map<number, number>()
+
+  for (const literal of collectLiterals(source, fileName)) {
+    const chars = countLeftover(literal.value, applyAllowList)
+    if (!chars) continue
+    byLine.set(literal.line, (byLine.get(literal.line) ?? 0) + chars)
+  }
+
+  return [...byLine.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([line, chars]) => ({ line, chars, text: (lines[line - 1] ?? '').trim() }))
 }
 
 /** 루트 기준 상대 경로로 돌려준다. 실패 메시지에 그대로 쓴다. */
@@ -219,13 +188,13 @@ function walk(relDir: string): string[] {
   return found
 }
 
-/** `applyAllowList` 를 끄면 명리 용어까지 전부 세어 이관 전 목록을 만든다. */
+/** `applyAllowList` 를 끄면 도메인 어휘까지 전부 세어 이관 전 목록을 만든다. */
 export function scanRepo(applyAllowList: boolean): FileScan[] {
   const scans: FileScan[] = []
 
   for (const dir of SCAN_DIRS) {
     for (const file of walk(dir)) {
-      const hits = scanSource(read(file), applyAllowList)
+      const hits = scanSource(read(file), applyAllowList, file)
       if (!hits.length) continue
       scans.push({
         file,
@@ -236,11 +205,6 @@ export function scanRepo(applyAllowList: boolean): FileScan[] {
   }
 
   return scans.sort((a, b) => b.chars - a.chars)
-}
-
-/** 루트 기준 상대 경로를 읽는다. */
-export function read(relPath: string): string {
-  return readFileSync(join(ROOT, relPath.split('/').join(sep)), 'utf8')
 }
 
 /**
@@ -255,19 +219,11 @@ export function copyFiles(): string[] {
 }
 
 /**
- * 주석을 걷어낸 뒤 문자열 리터럴 안쪽만 뽑는다.
+ * 문자열 리터럴 안쪽만 뽑는다. 금지어 검사가 쓴다.
  *
- * 카피 검사를 파일 전문에 걸면 "왜 이렇게 뒀는지" 를 적어둔 주석까지 걸린다.
+ * 파일 전문에 검사를 걸면 "왜 이렇게 뒀는지" 를 적어둔 주석까지 걸린다.
  * 금지어를 설명하는 주석이 금지어 검사에 걸리는 건 곤란하다.
  */
-export function extractLiterals(source: string): string[] {
-  const stripped = stripComments(source)
-  const pattern = /'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g
-  const found: string[] = []
-
-  for (const match of stripped.matchAll(pattern)) {
-    found.push(match[1] ?? match[2] ?? match[3] ?? '')
-  }
-
-  return found
+export function extractLiterals(source: string, fileName = 'file.ts'): string[] {
+  return collectLiterals(source, fileName).map((literal) => literal.value)
 }
