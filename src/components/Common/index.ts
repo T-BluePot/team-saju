@@ -22,6 +22,8 @@ export {
   CommonRule,
   CommonSeal,
   CommonBlock,
+  CommonEntry,
+  CommonEntryList,
   CommonPrescription,
   CommonSection,
   CommonSubHeading,

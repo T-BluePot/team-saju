@@ -1,6 +1,6 @@
-import { CommonRule, CommonSubHeading } from '../Common'
+import { CommonBlock, CommonEntry, CommonEntryList } from '../Common'
 import type { TeamReport } from '../../lib/report/teamReport'
-import { modifiersCopy } from '../../lib/copy'
+import { modifiersCopy, resultCopy } from '../../lib/copy'
 
 /**
  * 유형 위에 얹는 변주.
@@ -14,39 +14,23 @@ export function TeamModifiers({ report }: { report: TeamReport }) {
   if (report.modifiers.length === 0) return null
 
   return (
-    <>
-      <CommonRule />
-
-      <CommonSubHeading>{modifiersCopy.heading}</CommonSubHeading>
-      <p className="mt-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
-        {modifiersCopy.note}
-      </p>
-
+    <CommonBlock label={modifiersCopy.heading} description={modifiersCopy.note}>
       {/*
         분홍 칩을 걷었다. 변주가 서넛씩 붙는 자리라 칩이 줄마다 뜨면
         같은 강조가 반복돼서 정작 본문이 뒤로 물러난다.
-        라벨은 볼드로 두고 항목 경계는 점선으로만 긋는다.
       */}
-      <ul className="mt-3 flex flex-col">
-        {report.modifiers.map((m, i) => (
-          <li
-            key={m.id}
-            className={i === 0 ? 'pb-4' : 'py-4'}
-            style={i === 0 ? undefined : { borderTop: '1px dashed var(--rule-faint)' }}
-          >
-            <p className="text-sm font-bold">{m.label}</p>
-            <p className="mt-1.5 text-sm leading-relaxed">{m.line}</p>
-            {m.fix && (
-              <p
-                className="mt-2 rounded-xl px-4 py-3 text-sm leading-relaxed"
-                style={{ background: 'var(--paper-deep)', color: 'var(--ink-soft)' }}
-              >
-                {m.fix}
-              </p>
-            )}
-          </li>
+      <CommonEntryList divided>
+        {report.modifiers.map((m) => (
+          <div key={m.id}>
+            <p className="mb-1.5 text-sm font-bold" style={{ color: 'var(--accent-deep)' }}>
+              {m.label}
+            </p>
+            <CommonEntry fix={m.fix} fixMark={resultCopy.prescriptionMark}>
+              {m.line}
+            </CommonEntry>
+          </div>
         ))}
-      </ul>
-    </>
+      </CommonEntryList>
+    </CommonBlock>
   )
 }

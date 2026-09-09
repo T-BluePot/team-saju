@@ -1,3 +1,4 @@
+import { Children, Fragment } from 'react'
 import type { ReactNode } from 'react'
 
 import { CommonCard } from './CommonCard'
@@ -103,6 +104,108 @@ export function CommonPrescription({ mark, children }: { mark: string; children:
       <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
         {children}
       </p>
+    </div>
+  )
+}
+
+/**
+ * 항목이 쌓이는 자리.
+ *
+ * 간격은 여기서만 정한다. 항목이 저마다 첫째냐 아니냐로 위아래 패딩을 다르게
+ * 가지면 같은 카드 안에서 줄 간격이 자리마다 달라진다.
+ */
+export function CommonEntryList({
+  children,
+  divided = false,
+}: {
+  children: ReactNode
+  /** 항목 사이에 점선을 끼운다. 같은 종류가 나란히 설 때 쓴다 */
+  divided?: boolean
+}) {
+  const items = Children.toArray(children)
+
+  return (
+    <div className="flex flex-col gap-5">
+      {items.map((child, i) => (
+        <Fragment key={i}>
+          {/*
+            선을 항목의 테두리로 두지 않는다. 테두리로 두면 그 항목의 패딩이
+            선에 붙어서 위아래 간격이 달라 보인다. 선을 항목 사이에 따로
+            끼우면 gap 이 위아래를 똑같이 벌린다.
+          */}
+          {divided && i > 0 && (
+            <span
+              aria-hidden="true"
+              className="block"
+              style={{ borderTop: '1px dashed var(--rule-faint)' }}
+            />
+          )}
+          {child}
+        </Fragment>
+      ))}
+    </div>
+  )
+}
+
+/**
+ * 머리줄 하나에 본문 하나.
+ *
+ * 오행이든 성향 축이든 변주든 생김새가 같다. `火 넘침 45%` 와 `厚 추진 38%` 는
+ * 왼쪽에 한 글자 표식, 가운데 이름, 오른쪽 끝에 비율로 똑같이 읽힌다.
+ * 자리마다 따로 만들면 패딩이 갈라진다.
+ */
+export function CommonEntry({
+  mark,
+  markLabel,
+  markColor,
+  title,
+  value,
+  valueColor,
+  fix,
+  fixMark,
+  children,
+}: {
+  /** 한 글자 표식. 오행 한자거나 厚 薄 이다. 없는 자리도 있다 */
+  mark?: string
+  /** 표식을 읽어줄 말. 오행일 때만 있다 */
+  markLabel?: string
+  markColor?: string
+  /** 머리줄 이름. 본문만 있는 항목은 비운다 */
+  title?: string
+  value?: string
+  /** 비율 색. 두꺼운 축과 얇은 축은 표식과 같은 색으로 물들인다 */
+  valueColor?: string
+  /** 처방. 붙는 자리에만 온다 */
+  fix?: string
+  fixMark?: string
+  children: ReactNode
+}) {
+  return (
+    <div>
+      {title && (
+        <p className="mb-3 flex items-center gap-2">
+          {mark && (
+            <span
+              className="serif text-base font-bold leading-none"
+              style={{ color: markColor }}
+            >
+              <span aria-hidden={markLabel ? 'true' : undefined}>{mark}</span>
+              {markLabel && <span className="sr-only">{markLabel}</span>}
+            </span>
+          )}
+          <span className="serif text-base font-bold leading-tight">{title}</span>
+          {value && (
+            <span
+              className="ml-auto text-xs tabular-nums"
+              style={{ color: valueColor ?? 'var(--ink-soft)' }}
+            >
+              {value}
+            </span>
+          )}
+        </p>
+      )}
+      <p className="text-sm leading-relaxed">{children}</p>
+      {fix && fixMark && <CommonPrescription mark={fixMark}>{fix}</CommonPrescription>}
     </div>
   )
 }
