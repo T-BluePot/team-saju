@@ -1,10 +1,13 @@
-import { CommonSection } from '../Common'
+import { useState } from 'react'
+
+import { CommonBlock, CommonSection } from '../Common'
 import { SajuElementBars, SajuElementRadar, SajuTraitBars } from '../Saju'
 import { readTraits } from '../../lib/report/traits'
 import { useCountUp, useReveal } from '../../lib/ui/useReveal'
 import type { TeamReport } from '../../lib/report/teamReport'
+import type { Element } from '../../lib/saju/types'
 import { ELEMENT_LABEL } from '../../lib/saju/constants'
-import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
+import { ELEMENT_COLOR, FLAG_LABEL } from '../../lib/ui/elementStyle'
 import { analysisCopy } from '../../lib/copy'
 import { and, subject } from '../../lib/text/josa'
 
@@ -25,6 +28,7 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
   const solo = analysis.size === 1
   const { ref: balanceRef, shown: balanceShown } = useReveal<HTMLDivElement>()
   const balanceValue = useCountUp(analysis.balance, balanceShown)
+  const [helpOpen, setHelpOpen] = useState(false)
 
   return (
     <CommonSection
@@ -32,129 +36,191 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
       title={analysisCopy.title}
       subtitle={solo ? analysisCopy.subtitleSolo : analysisCopy.subtitleTeam}
     >
-      <div className="flex flex-col items-center gap-7 sm:flex-row">
-        <SajuElementRadar percents={analysis.elements.percents} size={230} />
-        <div className="w-full flex-1">
-          <SajuElementBars percents={analysis.elements.percents} flags={analysis.flags} />
-        </div>
-      </div>
-
-      {/*
-        회색 블록 두 장을 걷어냈다. 바로 위 오행 막대가 이미 면을 쓰고 있어서
-        그 아래 또 면을 깔면 같은 정보가 두 겹으로 쌓인 것처럼 보인다.
-        여기는 선 하나로만 나눈다.
-      */}
-      <div className="mt-7 flex flex-col">
-        <Stat
-          title={analysisCopy.excess}
-          value={`${dominant.element} ${ELEMENT_LABEL[dominant.element]} ${dominant.percent}%`}
-          note={dominant.meaning}
-          color={ELEMENT_COLOR[dominant.element]}
-        />
-        <Stat
-          title={analysisCopy.lacking}
-          value={`${lacking.element} ${ELEMENT_LABEL[lacking.element]} ${lacking.percent}%`}
-          note={lacking.effect}
-          color={ELEMENT_COLOR[lacking.element]}
-          divided
-        />
-      </div>
-
-      {/*
-        숫자를 오른쪽 끝으로 보내고 크게 둔다. 설명 앞에 숫자가 끼어 있으면
-        점수인지 문장의 일부인지가 안 갈린다.
-      */}
-      <div
-        ref={balanceRef}
-        className="mt-5 flex items-center justify-between gap-4"
-        style={{ borderTop: '1px solid var(--rule)', paddingTop: '1.25rem' }}
-      >
-        <span className="text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-          {analysisCopy.balanceNote}
-        </span>
-        <span
-          className="serif shrink-0 text-38 font-bold leading-none tabular-nums"
-          style={{ color: 'var(--accent-deep)' }}
-        >
-          {balanceValue}
-        </span>
-      </div>
-
-      <h4 className="serif mt-8 text-base font-bold">
-        {solo ? analysisCopy.traitsHeadingSolo : analysisCopy.traitsHeadingTeam}
-      </h4>
-      <p className="mt-1 text-sm" style={{ color: 'var(--ink-soft)' }}>
-        {solo ? analysisCopy.traitsNoteSolo : analysisCopy.traitsNoteTeam}
-      </p>
-      <div className="mt-3.5">
-        {/* 고르게 나온 팀은 짚을 축이 없다. 억지로 두 개를 굵게 하면 배열 순서가 새어 나온다 */}
-        <SajuTraitBars
-          traits={analysis.traits}
-          highlight={
-            reading.even ? undefined : [...reading.topAxes, ...reading.bottomAxes]
-          }
-        />
-      </div>
-
-      {reading.even ? (
-        <p className="mt-4 text-sm leading-relaxed">
-          {analysisCopy.even}
-        </p>
-      ) : (
-        <div className="mt-4 flex flex-col gap-3">
-          <p className="text-sm leading-relaxed">
-            <b>{and(reading.topAxes)}</b>
-            {josaOf(reading.topAxes)}{' '}
-            {analysisCopy.thickSuffix} {reading.strength}
-          </p>
-          <div>
-            <p className="text-sm leading-relaxed">
-              <b>{and(reading.bottomAxes)}</b>
-              {josaOf(reading.bottomAxes)}{' '}
-              {analysisCopy.thinSuffix} {reading.gap}
-            </p>
-            {/* 세로선 대신 면으로 둔다. 이 화면은 이미 선이 많다 */}
-            <p
-              className="mt-2 rounded-xl px-4 py-3 text-sm leading-relaxed"
-              style={{ background: 'var(--paper-deep)', color: 'var(--ink-soft)' }}
-            >
-              {reading.fix}
-            </p>
+      <CommonBlock label={analysisCopy.elementsBlock} first>
+        <div className="flex flex-col items-center gap-7 sm:flex-row">
+          <SajuElementRadar percents={analysis.elements.percents} size={230} />
+          <div className="w-full flex-1">
+            <SajuElementBars percents={analysis.elements.percents} flags={analysis.flags} />
           </div>
         </div>
-      )}
+
+        {/*
+          점수는 오른쪽 끝에 두고 설명은 물음표 뒤로 보낸다. 라벨 옆에 설명이
+          늘 붙어 있으면 한 줄이 길어져 정작 숫자가 안 보인다.
+        */}
+        <div ref={balanceRef} className="relative mt-5 flex items-center gap-3">
+          <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+            {analysisCopy.balanceLabel}
+          </span>
+          <span className="serif ml-auto text-base" style={{ color: 'var(--accent-deep)' }}>
+            <span className="text-2xl tabular-nums">{balanceValue}</span>
+            {analysisCopy.balanceUnit}
+          </span>
+          <button
+            type="button"
+            onClick={() => setHelpOpen((v) => !v)}
+            aria-expanded={helpOpen}
+            aria-label={analysisCopy.balanceHelp}
+            className="press grid size-5 shrink-0 place-items-center rounded-full text-11 focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{
+              border: '1px solid var(--rule)',
+              color: 'var(--ink-soft)',
+              outlineColor: 'var(--accent)',
+            }}
+          >
+            <span aria-hidden="true">?</span>
+          </button>
+          {helpOpen && (
+            <p
+              role="status"
+              className="absolute bottom-full right-0 z-20 mb-2 w-52 rounded-xl px-3 py-2 text-xs leading-relaxed"
+              style={{ background: 'var(--ink)', color: 'var(--paper)' }}
+            >
+              {analysisCopy.balanceHelp}
+            </p>
+          )}
+        </div>
+      </CommonBlock>
+
+      <CommonBlock label={analysisCopy.noticeBlock}>
+        <Notice
+          element={dominant.element}
+          state={FLAG_LABEL[analysis.flags[dominant.element]]}
+          percent={dominant.percent}
+          note={dominant.meaning}
+          first
+        />
+        <Notice
+          element={lacking.element}
+          state={FLAG_LABEL[analysis.flags[lacking.element]]}
+          percent={lacking.percent}
+          note={lacking.effect}
+        />
+      </CommonBlock>
+
+      <CommonBlock
+        label={solo ? analysisCopy.traitsHeadingSolo : analysisCopy.traitsHeadingTeam}
+        description={solo ? analysisCopy.traitsNoteSolo : analysisCopy.traitsNoteTeam}
+      >
+        <div className="mb-8">
+          {/* 고르게 나온 팀은 짚을 축이 없다. 억지로 두 개를 굵게 하면 배열 순서가 새어 나온다 */}
+          <SajuTraitBars
+            traits={analysis.traits}
+            highlight={reading.even ? undefined : [...reading.topAxes, ...reading.bottomAxes]}
+          />
+        </div>
+
+        {reading.even ? (
+          <p className="text-sm leading-relaxed">{analysisCopy.even}</p>
+        ) : (
+          <div className="flex flex-col gap-6">
+            <Reading
+              mark={analysisCopy.thickMark}
+              markColor="var(--strong-deep)"
+              axes={reading.topAxes}
+              percent={analysis.traits[reading.topAxes[0]]}
+              suffix={analysisCopy.thickSuffix}
+              body={reading.strength}
+            />
+            <Reading
+              mark={analysisCopy.thinMark}
+              markColor="var(--weak-deep)"
+              axes={reading.bottomAxes}
+              percent={analysis.traits[reading.bottomAxes[0]]}
+              suffix={analysisCopy.thinSuffix}
+              body={reading.gap}
+              fix={reading.fix}
+            />
+          </div>
+        )}
+      </CommonBlock>
     </CommonSection>
   )
 }
 
-function Stat({
-  title,
-  value,
+/** 눈에 띄는 오행 한 줄. 한자와 상태와 비율을 한 줄에 두고 설명을 아래 붙인다 */
+function Notice({
+  element,
+  state,
+  percent,
   note,
-  color,
-  divided = false,
+  first = false,
 }: {
-  title: string
-  value: string
+  element: Element
+  state: string
+  percent: number
   note: string
-  color: string
-  /** 두 번째 행부터 위에 선을 긋는다 */
-  divided?: boolean
+  first?: boolean
 }) {
   return (
     <div
-      className={divided ? 'pt-4' : ''}
-      style={divided ? { borderTop: '1px solid var(--rule-faint)' } : undefined}
+      className={first ? 'pb-2' : 'pt-2'}
+      style={first ? undefined : { borderTop: '1px dashed var(--rule-faint)' }}
     >
-      <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-        {title}
+      <p className="mb-3 flex items-center gap-2">
+        <span
+          className="serif text-base font-bold leading-none"
+          style={{ color: ELEMENT_COLOR[element] }}
+        >
+          <span aria-hidden="true">{element}</span>
+          <span className="sr-only">{ELEMENT_LABEL[element]}</span>
+        </span>
+        <span className="serif text-base font-bold leading-tight">{state}</span>
+        <span className="ml-auto text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>
+          {percent}%
+        </span>
       </p>
-      <p className="serif mt-1 text-xl font-bold" style={{ color }}>
-        {value}
+      <p className="text-sm leading-relaxed">{note}</p>
+    </div>
+  )
+}
+
+/** 축 해설 한 덩어리. 머리줄에 배지와 축 이름과 비율, 아래에 문장 */
+function Reading({
+  mark,
+  markColor,
+  axes,
+  percent,
+  suffix,
+  body,
+  fix,
+}: {
+  mark: string
+  markColor: string
+  axes: string[]
+  percent: number
+  suffix: string
+  body: string
+  fix?: string
+}) {
+  return (
+    <div>
+      <p className="mb-3 flex items-center gap-2">
+        <span className="serif text-base font-bold leading-none" style={{ color: markColor }}>
+          {mark}
+        </span>
+        <span className="serif text-base font-bold">{and(axes)}</span>
+        <span className="ml-auto text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>
+          {percent}%
+        </span>
       </p>
-      <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-        {note}
+      <p className="text-sm leading-relaxed">
+        <b>{and(axes)}</b>
+        {josaOf(axes)} {suffix} {body}
       </p>
+      {fix && (
+        <div className="mt-3 flex items-start gap-2.5">
+          <span
+            className="serif mt-px grid size-5 shrink-0 place-items-center rounded-full text-10 font-bold leading-none"
+            style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
+          >
+            {analysisCopy.prescriptionMark}
+          </span>
+          <p className="text-11 leading-relaxed" style={{ color: 'var(--ink-faint)' }}>
+            {fix}
+          </p>
+        </div>
+      )}
     </div>
   )
 }

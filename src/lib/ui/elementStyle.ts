@@ -1,5 +1,18 @@
-import type { Element } from '../saju/types'
+import type { Element, ElementFlag } from '../saju/types'
 import { illustrationCopy } from '../copy'
+
+/**
+ * 오행이 어느 단계인지.
+ *
+ * 명리 용어라 카피가 아니라 도메인 어휘다. 오행 막대와 분석 카드의
+ * 주목할 부분이 같은 말을 써야 해서 여기 둔다.
+ */
+export const FLAG_LABEL: Record<ElementFlag, string> = {
+  excess: '넘침',
+  lacking: '부족',
+  empty: '비어 있음',
+  normal: '',
+}
 
 /** 오방색. 청(木) 적(火) 황(土) 백(金) 흑(水) */
 export const ELEMENT_COLOR: Record<Element, string> = {

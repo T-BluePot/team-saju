@@ -20,6 +20,7 @@ export {
 export {
   CommonRule,
   CommonSeal,
+  CommonBlock,
   CommonSection,
   CommonSubHeading,
 } from './CommonSection'

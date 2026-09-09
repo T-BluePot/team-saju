@@ -49,6 +49,44 @@ export function CommonSection({
   )
 }
 
+/**
+ * 카드 안을 라벨 붙은 덩어리로 나눈다.
+ *
+ * 몸통을 라벨보다 한 칸 들여써서 어디까지가 그 라벨의 소관인지 보이게 한다.
+ * 들여쓰기가 없으면 라벨이 그냥 굵은 한 줄로만 읽히고, 아래 내용이 어느
+ * 라벨에 속하는지가 안 갈린다.
+ */
+export function CommonBlock({
+  label,
+  description,
+  first = false,
+  children,
+}: {
+  label: string
+  /** 라벨 바로 아래 붙는 한 줄 */
+  description?: string
+  /** 첫 블록은 윗선을 긋지 않는다 */
+  first?: boolean
+  children: ReactNode
+}) {
+  return (
+    <div
+      className={first ? 'pb-4' : 'py-4'}
+      style={first ? undefined : { borderTop: '1px solid var(--rule)' }}
+    >
+      <p className="mb-3 text-sm font-bold leading-5 tracking-tight">{label}</p>
+      <div className="pl-3">
+        {description && (
+          <p className="-mt-1 mb-3 text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+            {description}
+          </p>
+        )}
+        {children}
+      </div>
+    </div>
+  )
+}
+
 /** 카드 안에서 소제목을 나눌 때 */
 export function CommonSubHeading({ children }: { children: ReactNode }) {
   return <h4 className="serif text-base font-bold">{children}</h4>

@@ -1,18 +1,11 @@
 import { ELEMENTS, ELEMENT_LABEL, ELEMENT_TEAM_MEANING } from '../../lib/saju/constants'
 import { useReveal } from '../../lib/ui/useReveal'
-import type { ElementFlag, ElementScores } from '../../lib/saju/types'
-import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
-
-const FLAG_LABEL: Record<ElementFlag, string> = {
-  excess: '넘침',
-  lacking: '부족',
-  empty: '비어 있음',
-  normal: '',
-}
+import type { ElementScores } from '../../lib/saju/types'
+import { ELEMENT_COLOR, FLAG_LABEL } from '../../lib/ui/elementStyle'
 
 type Props = {
   percents: ElementScores
-  flags?: Record<string, ElementFlag>
+  flags?: Record<string, keyof typeof FLAG_LABEL>
   showMeaning?: boolean
 }
 

@@ -40,9 +40,13 @@ export const analysisCopy = {
   title: '분석',
   subtitleSolo: '기운을 살펴봤습니다',
   subtitleTeam: '팀의 기운을 살펴봤습니다',
-  excess: '넘치는 기운',
-  lacking: '비어 있는 곳',
-  balanceNote: '균형 점수. 100이면 다섯 기운이 완전히 고른 상태입니다',
+  /** 카드 안을 나누는 블록 라벨 */
+  elementsBlock: '오행 분포',
+  noticeBlock: '주목할 부분',
+  balanceLabel: '균형 점수',
+  balanceUnit: '점',
+  /** ? 를 누르면 뜨는 설명. 라벨 옆에 늘 붙어 있을 문장은 아니다 */
+  balanceHelp: '100이면 다섯 기운이 완전히 고른 상태입니다',
   traitsHeadingSolo: '일하는 방식',
   traitsHeadingTeam: '이 팀이 일하는 방식',
   traitsNoteSolo: '십신을 바탕으로 일하는 방식을 다섯 가지로 나누어 살펴봅니다',
@@ -52,6 +56,11 @@ export const analysisCopy = {
   // 앞에 붙는 조사는 `lib/text/josa.ts` 가 붙인다. 축이 늘어도 안 깨진다
   thickSuffix: '가장 두드러집니다.',
   thinSuffix: '상대적으로 적게 나타납니다.',
+  /** 머리줄 배지. 두꺼운 축과 얇은 축을 한 글자로 표시한다 */
+  thickMark: '厚',
+  thinMark: '薄',
+  /** 처방 도장. 상세 보고서와 같은 글자를 쓴다 */
+  prescriptionMark: '處',
 } as const
 
 export const detailCopy = {
@@ -62,7 +71,7 @@ export const detailCopy = {
   strengthsSolo: '이 기운이 만드는 강점',
   strengthsTeam: '이 팀의 강점',
   blindSpots: '놓치기 쉬운 부분',
-  prescriptionSeal: '處方',
+  prescriptionSeal: '處',
   pairsHeading: '팀원 간 조합',
   pairGenerating: '상생',
   pairSame: '비슷한 결',

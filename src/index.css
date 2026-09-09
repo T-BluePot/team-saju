@@ -65,6 +65,18 @@
    */
   --scrim: color-mix(in srgb, #17140f 55%, transparent);
 
+  /* 본문보다 한 단 더 물러난 글자. 출처, 각주 */
+  --ink-faint: color-mix(in srgb, var(--ink-soft) 62%, var(--paper));
+
+  /*
+   * 두꺼운 축과 얇은 축.
+   *
+   * 강조색은 결과 화면에서 주도 오행으로 갈리는데, 厚 와 薄 은 그것과 무관하게
+   * 늘 같은 두 색이어야 서로 반대라는 게 읽힌다. 그래서 따로 둔다.
+   */
+  --strong-deep: #2f5580;
+  --weak-deep: var(--cinnabar-deep);
+
   /* 주의 톤. 대리 입력 배지처럼 짚고 넘어가야 하는 자리에 */
   --warn: #8a6a12;
   --warn-wash: #fdf1d0;
@@ -85,6 +97,8 @@
     --ink: #f2ece0;
     --ink-soft: #a49a87;
     --rule: #352f25;
+    /* 라이트의 남색을 그대로 쓰면 어두운 종이 위에서 안 읽힌다 */
+    --strong-deep: #89b0da;
 
     --cinnabar: #ef5a44;
     --cinnabar-deep: #ff7a66;
