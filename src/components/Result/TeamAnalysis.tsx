@@ -1,4 +1,4 @@
-import { Children, useEffect, useRef, useState } from 'react'
+import { Children, Fragment, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { CommonBlock, CommonSection } from '../Common'
@@ -95,6 +95,7 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
               markColor="var(--strong-deep)"
               title={and(reading.topAxes)}
               value={`${analysis.traits[reading.topAxes[0]]}%`}
+              valueColor="var(--strong-deep)"
             >
               <b>{and(reading.topAxes)}</b>
               {josaOf(reading.topAxes)} {analysisCopy.thickSuffix} {reading.strength}
@@ -104,6 +105,7 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
               markColor="var(--weak-deep)"
               title={and(reading.bottomAxes)}
               value={`${analysis.traits[reading.bottomAxes[0]]}%`}
+              valueColor="var(--weak-deep)"
               fix={reading.fix}
             >
               <b>{and(reading.bottomAxes)}</b>
@@ -127,22 +129,29 @@ function EntryList({
   divided = false,
 }: {
   children: ReactNode
-  /** 항목 사이를 점선으로 가른다. 같은 종류가 나란히 설 때 쓴다 */
+  /** 항목 사이에 점선을 끼운다. 같은 종류가 나란히 설 때 쓴다 */
   divided?: boolean
 }) {
-  if (!divided) return <div className="flex flex-col gap-5">{children}</div>
+  const items = Children.toArray(children)
 
   return (
-    <div className="flex flex-col">
-      {Children.toArray(children).map((child, i) => (
-        <div
-          // 위아래 패딩을 같게 둔다. 첫째만 다르게 주면 줄 간격이 자리마다 갈린다
-          key={i}
-          className="py-3"
-          style={i === 0 ? undefined : { borderTop: '1px dashed var(--rule-faint)' }}
-        >
+    <div className="flex flex-col gap-5">
+      {items.map((child, i) => (
+        <Fragment key={i}>
+          {/*
+            선을 항목의 테두리로 두지 않는다. 테두리로 두면 그 항목의 패딩이
+            선에 붙어서 위아래 간격이 달라 보인다. 선을 항목 사이에 따로
+            끼우면 gap 이 위아래를 똑같이 벌린다.
+          */}
+          {divided && i > 0 && (
+            <span
+              aria-hidden="true"
+              className="block"
+              style={{ borderTop: '1px dashed var(--rule-faint)' }}
+            />
+          )}
           {child}
-        </div>
+        </Fragment>
       ))}
     </div>
   )
@@ -161,6 +170,7 @@ function Entry({
   markColor,
   title,
   value,
+  valueColor,
   fix,
   children,
 }: {
@@ -171,6 +181,8 @@ function Entry({
   markColor: string
   title: string
   value: string
+  /** 비율 색. 두꺼운 축과 얇은 축은 표식과 같은 색으로 물들인다 */
+  valueColor?: string
   /** 처방. 붙는 자리에만 온다 */
   fix?: string
   children: ReactNode
@@ -186,7 +198,10 @@ function Entry({
           {markLabel && <span className="sr-only">{markLabel}</span>}
         </span>
         <span className="serif text-base font-bold leading-tight">{title}</span>
-        <span className="ml-auto text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>
+        <span
+          className="ml-auto text-xs tabular-nums"
+          style={{ color: valueColor ?? 'var(--ink-soft)' }}
+        >
           {value}
         </span>
       </p>
