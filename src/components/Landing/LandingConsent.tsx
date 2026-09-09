@@ -57,7 +57,7 @@ export function LandingConsent({ consented, onChange }: Props) {
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5">
+      <div className="flex items-center gap-2">
         <CommonCheckLabel
           checked={consented}
           onChange={(e) => onChange(e.target.checked)}
@@ -69,7 +69,7 @@ export function LandingConsent({ consented, onChange }: Props) {
         <button
           type="button"
           onClick={openDetail}
-          className="press min-h-11 rounded px-1 text-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="press ml-auto shrink-0 rounded px-1 py-1 text-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: 'var(--ink-soft)', outlineColor: 'var(--accent)' }}
         >
           {consentCopy.openDetail}
@@ -90,7 +90,7 @@ export function LandingConsent({ consented, onChange }: Props) {
           if (downOnBackdrop.current && e.target === ref.current) closeDetail()
         }}
         aria-labelledby="privacy-title"
-        className="m-auto mb-0 w-full max-w-md rounded-t-[28px] p-0 sm:mb-auto sm:rounded-[28px]"
+        className="m-auto mb-0 w-full max-w-md rounded-t-3xl p-0 sm:mb-auto sm:rounded-3xl"
         style={{
           maxHeight: '92vh',
           background: 'var(--paper)',
@@ -110,24 +110,30 @@ export function LandingConsent({ consented, onChange }: Props) {
 
             <hr className="rule my-6" />
 
-            <dl className="flex flex-col gap-4">
-              {consentCopy.items.map(([term, desc]) => (
-                <div key={term} className="flex gap-4">
-                  <dt
-                    className="serif w-16 shrink-0 text-sm font-bold"
-                    style={{ color: 'var(--accent-deep)' }}
-                  >
+            {/*
+              라벨을 강조색으로 두면 네 항목이 전부 눈에 띄려고 다툰다.
+              읽는 순서는 라벨이 아니라 내용이라 라벨은 한 단 내리고,
+              항목 경계는 점선으로만 긋는다
+            */}
+            <dl className="flex flex-col">
+              {consentCopy.items.map(([term, desc], i) => (
+                <div
+                  key={term}
+                  className="grid gap-3 py-3 text-xs leading-relaxed"
+                  style={{
+                    gridTemplateColumns: '78px 1fr',
+                    borderTop: i === 0 ? undefined : '1px dashed var(--rule-faint)',
+                  }}
+                >
+                  <dt className="font-semibold" style={{ color: 'var(--ink-soft)' }}>
                     {term}
                   </dt>
-                  <dd className="flex-1 text-sm leading-relaxed">{desc}</dd>
+                  <dd className="m-0">{desc}</dd>
                 </div>
               ))}
             </dl>
 
-            <p
-              className="mt-6 border-l-2 pl-3 text-xs leading-relaxed"
-              style={{ borderColor: 'var(--accent)', color: 'var(--ink-soft)' }}
-            >
+            <p className="mt-6 text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
               {consentCopy.footnoteTop}
               <br />
               {consentCopy.footnoteBottom}
@@ -135,7 +141,7 @@ export function LandingConsent({ consented, onChange }: Props) {
           </div>
 
           <div className="shrink-0">
-            <CommonButton type="button" variant="quiet" fullBleed onClick={closeDetail}>
+            <CommonButton type="button" variant="ink" fullBleed onClick={closeDetail}>
               {consentCopy.close}
             </CommonButton>
           </div>

@@ -9,7 +9,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
  * 다크는 --accent-deep 자체가 밝아서 흰 글자면 2.21:1 까지 떨어진다.
  * 그래서 글자색도 테마를 따라 뒤집는다.
  */
-export type CommonButtonVariant = 'primary' | 'ghost' | 'quiet'
+export type CommonButtonVariant = 'primary' | 'ink' | 'ghost' | 'quiet'
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: CommonButtonVariant
@@ -60,6 +60,10 @@ function styleFor(
   }
   if (variant === 'primary') {
     return { ...base, background: 'var(--accent-deep)', color: 'var(--on-accent)' }
+  }
+  // 강조색을 안 쓰는 결정 버튼. 결과 화면에서 오행색이 갈려도 같은 먹으로 남는다
+  if (variant === 'ink') {
+    return { ...base, background: 'var(--ink)', color: 'var(--paper)' }
   }
   if (variant === 'ghost') {
     return {

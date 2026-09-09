@@ -33,6 +33,8 @@
   --ink: #17140f;
   --ink-soft: #6b6355;
   --rule: #ddd4c2;
+  /* 항목 사이를 점선으로 나눌 때. 실선 괘선보다 한 단 옅다 */
+  --rule-faint: color-mix(in srgb, var(--rule) 55%, var(--paper));
 
   /* 주사. 부적에 쓰는 다홍 */
   --cinnabar: #d93a26;
