@@ -22,7 +22,10 @@ export function TeamModifiers({ report }: { report: TeamReport }) {
       <CommonEntryList divided>
         {report.modifiers.map((m) => (
           <div key={m.id}>
-            <p className="mb-1.5 text-sm font-bold" style={{ color: 'var(--accent-deep)' }}>
+            <p
+              className="mb-1.5 text-xs font-bold tracking-wide"
+              style={{ color: 'var(--accent-deep)' }}
+            >
               {m.label}
             </p>
             <CommonEntry fix={m.fix} fixMark={resultCopy.prescriptionMark}>

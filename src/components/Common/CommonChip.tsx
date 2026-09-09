@@ -1,12 +1,17 @@
 import type { ReactNode } from 'react'
 
-type Tone = 'neutral' | 'accent' | 'warn'
+type Tone = 'neutral' | 'soft' | 'accent' | 'warn'
 
 const TONE: Record<Tone, React.CSSProperties> = {
+  /** 테두리만 있는 칩. 십신, 조합 집계, 동의 출처가 쓴다 */
   neutral: {
-    background: 'var(--paper-deep)',
     border: '1px solid var(--rule)',
-    color: 'var(--ink)',
+    color: 'var(--ink-soft)',
+  },
+  /** 면으로 채운 칩. 본문 옆에 붙는 꼬리표 자리라 테두리를 안 두른다 */
+  soft: {
+    background: 'var(--paper-deep)',
+    color: 'var(--ink-soft)',
   },
   accent: {
     background: 'var(--accent-wash)',
@@ -30,8 +35,7 @@ export function CommonChip({
   className?: string
   children: ReactNode
 }) {
-  const shape =
-    size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-3 py-1.5 text-sm'
+  const shape = size === 'sm' ? 'px-2 py-0.5 text-11' : 'px-3 py-1 text-xs'
   return (
     <span
       className={['inline-block rounded-full text-center font-medium', shape, className]

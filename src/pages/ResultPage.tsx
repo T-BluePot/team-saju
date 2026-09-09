@@ -48,7 +48,8 @@ export function ResultPage() {
         style={{
           top: 'var(--header-h)',
           background: 'var(--paper)',
-          borderBottom: '1px solid var(--rule)',
+          // 머리글 괘선이 61px 위에 이미 있다. 같은 굵기로 두면 두 줄이 겹쳐 보인다
+          borderBottom: '1px solid var(--rule-faint)',
         }}
       >
         {tabs.map(([key, label]) => (

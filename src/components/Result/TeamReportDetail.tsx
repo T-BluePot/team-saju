@@ -57,15 +57,24 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
         <CommonBlock label={detailCopy.pairsHeading}>
           <div className="flex flex-wrap gap-2">
             <CommonChip>
-              {detailCopy.pairGenerating} <strong>{analysis.pairCounts.generating}</strong>
+              {detailCopy.pairGenerating}{' '}
+              <strong style={{ color: 'var(--ink)' }}>
+                {analysis.pairCounts.generating}
+              </strong>
               {detailCopy.pairUnit}
             </CommonChip>
             <CommonChip>
-              {detailCopy.pairSame} <strong>{analysis.pairCounts.same}</strong>
+              {detailCopy.pairSame}{' '}
+              <strong style={{ color: 'var(--ink)' }}>
+                {analysis.pairCounts.same}
+              </strong>
               {detailCopy.pairUnit}
             </CommonChip>
             <CommonChip>
-              {detailCopy.pairTension} <strong>{analysis.pairCounts.tension}</strong>
+              {detailCopy.pairTension}{' '}
+              <strong style={{ color: 'var(--ink)' }}>
+                {analysis.pairCounts.tension}
+              </strong>
               {detailCopy.pairUnit}
             </CommonChip>
           </div>

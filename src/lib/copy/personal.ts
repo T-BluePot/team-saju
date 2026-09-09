@@ -10,6 +10,14 @@ export const personalCopy = {
   elementsBlock: '오행 분포',
   strengthBlock: '일간 강약',
   strengthKind: '간이 판정',
+  /**
+   * 명식표에서 십이운성 줄에 붙는 이름.
+   *
+   * 십신 지장간 납음은 명리 용어라 컴포넌트에 그대로 두는데 이것만 여기 있다.
+   * `단계` 는 용어가 아니라 십이운성을 용어 없이 부르기로 한 말이라서다.
+   * `pillarNote` 의 "기운의 단계" 와 같은 말을 가리킨다
+   */
+  stageLabel: '단계',
   sourceDelegated: '팀원 정보',
   sourceSelf: '본인 정보',
   pillarNote:

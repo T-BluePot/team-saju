@@ -7,7 +7,7 @@ import {
   CommonEntryList,
   CommonSection,
 } from '../Common'
-import { SajuElementBars, SajuEmptyPillar, SajuPillarCard, SajuTraitBars } from '../Saju'
+import { SajuElementBars, SajuPillarTable, SajuTraitBars } from '../Saju'
 import { ELEMENT_LABEL, STRENGTH_THRESHOLD, TEN_GODS } from '../../lib/saju/constants'
 import type { PairChemistry, SajuChart, Strength } from '../../lib/saju/types'
 import { personalCopy, strengthCopy } from '../../lib/copy'
@@ -77,12 +77,7 @@ export function PersonalView({
             </CommonChip>
           }
         >
-          <div className="grid grid-cols-4 gap-2">
-            <SajuPillarCard pillar={pillars.year} />
-            <SajuPillarCard pillar={pillars.month} />
-            <SajuPillarCard pillar={pillars.day} isDayMaster />
-            {pillars.hour ? <SajuPillarCard pillar={pillars.hour} /> : <SajuEmptyPillar />}
-          </div>
+          <SajuPillarTable pillars={pillars} />
 
           {/*
             십이운성에 프레이밍이 없으면 회색과 강조색이 좋고 나쁨처럼 읽힌다.
@@ -131,7 +126,7 @@ export function PersonalView({
           <div className="flex flex-wrap gap-1.5">
             {TEN_GODS.filter((g) => tenGods[g] > 0).map((g) => (
               <CommonChip key={g}>
-                {g} {tenGods[g]}
+                {g} <strong style={{ color: 'var(--ink)' }}>{tenGods[g]}</strong>
               </CommonChip>
             ))}
           </div>
@@ -152,7 +147,9 @@ export function PersonalView({
                       <b className="text-sm font-bold">
                         {p.aId === chart.member.id ? p.bName : p.aName}
                       </b>
-                      <CommonChip size="sm">{copy.label}</CommonChip>
+                      <CommonChip tone="soft" size="sm">
+                        {copy.label}
+                      </CommonChip>
                     </p>
                     <p className="text-sm leading-relaxed">{copy.direction}</p>
                   </div>
