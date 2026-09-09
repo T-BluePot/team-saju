@@ -58,18 +58,23 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
         {archetype.blindSpots.map((b, i) => (
           <li key={b}>
             <p className="text-sm leading-relaxed">{b}</p>
-            <p
-              className="mt-2 border-l-2 py-1 pl-3 text-sm leading-relaxed"
-              style={{ borderColor: 'var(--accent)' }}
+            {/*
+              세로선 대신 도장을 찍고 본문은 면에 올린다. 지적 바로 아래
+              붙는 처방이라 눈에 먼저 들어와야 하는데, 세로선은 인용처럼
+              읽혀서 앞 문장의 부속으로 보였다.
+            */}
+            <div
+              className="mt-2 flex items-start gap-3 rounded-xl px-4 py-3"
+              style={{ background: 'var(--paper-deep)' }}
             >
               <span
-                className="serif mr-1.5 text-xs font-bold"
-                style={{ color: 'var(--accent-deep)' }}
+                className="serif mt-px grid size-[22px] shrink-0 place-items-center rounded-full text-10 font-bold leading-none"
+                style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
               >
                 {detailCopy.prescriptionSeal}
               </span>
-              {archetype.prescriptions[i]}
-            </p>
+              <p className="text-sm leading-relaxed">{archetype.prescriptions[i]}</p>
+            </div>
           </li>
         ))}
       </ul>

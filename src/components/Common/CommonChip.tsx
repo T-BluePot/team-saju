@@ -34,7 +34,7 @@ export function CommonChip({
     size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-3 py-1.5 text-sm'
   return (
     <span
-      className={['inline-flex items-center rounded-full font-medium', shape, className]
+      className={['inline-block rounded-full text-center font-medium', shape, className]
         .filter(Boolean)
         .join(' ')}
       style={TONE[tone]}

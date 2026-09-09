@@ -22,20 +22,24 @@ export function TeamModifiers({ report }: { report: TeamReport }) {
         {modifiersCopy.note}
       </p>
 
-      <ul className="mt-3 flex flex-col gap-4">
-        {report.modifiers.map((m) => (
-          <li key={m.id}>
-            <span
-              className="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold"
-              style={{ background: 'var(--accent-wash)', color: 'var(--accent-deep)' }}
-            >
-              {m.label}
-            </span>
+      {/*
+        분홍 칩을 걷었다. 변주가 서넛씩 붙는 자리라 칩이 줄마다 뜨면
+        같은 강조가 반복돼서 정작 본문이 뒤로 물러난다.
+        라벨은 볼드로 두고 항목 경계는 점선으로만 긋는다.
+      */}
+      <ul className="mt-3 flex flex-col">
+        {report.modifiers.map((m, i) => (
+          <li
+            key={m.id}
+            className={i === 0 ? 'pb-4' : 'py-4'}
+            style={i === 0 ? undefined : { borderTop: '1px dashed var(--rule-faint)' }}
+          >
+            <p className="text-sm font-bold">{m.label}</p>
             <p className="mt-1.5 text-sm leading-relaxed">{m.line}</p>
             {m.fix && (
               <p
-                className="mt-1.5 border-l-2 pl-3 text-sm leading-relaxed"
-                style={{ borderColor: 'var(--accent)', color: 'var(--ink-soft)' }}
+                className="mt-2 rounded-xl px-4 py-3 text-sm leading-relaxed"
+                style={{ background: 'var(--paper-deep)', color: 'var(--ink-soft)' }}
               >
                 {m.fix}
               </p>
