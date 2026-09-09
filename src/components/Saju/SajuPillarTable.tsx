@@ -87,6 +87,17 @@ export function SajuPillarTable({ pillars }: { pillars: SajuChart['pillars'] }) 
   )
 }
 
+/** 줄 사이를 긋는 점선. 격자 전체를 가로지른다 */
+function Rule() {
+  return (
+    <span
+      aria-hidden="true"
+      className="col-span-full"
+      style={{ borderTop: '1px dashed var(--rule-faint)' }}
+    />
+  )
+}
+
 function Row({
   label,
   values,
@@ -101,6 +112,7 @@ function Row({
 }) {
   return (
     <>
+      <Rule />
       <Cell className="py-1.5 pr-1 text-left text-10">
         <span style={{ color: 'var(--ink-soft)' }}>{label}</span>
       </Cell>

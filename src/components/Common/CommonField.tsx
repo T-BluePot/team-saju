@@ -44,11 +44,16 @@ export function CommonFieldLabel({
    * 글자 규칙은 하나지만 여백은 두 값이다. 입력 필드는 라벨과 컨트롤이 한
    * 덩어리로 붙어 읽혀야 해서 8px, 카드 안 블록은 그 아래가 문단이라
    * 12px 이다. 같은 값으로 묶었더니 블록 쪽이 답답했다.
+   *
+   * `none` 은 옆에 딱지가 서는 자리다. 라벨이 여백을 들고 있으면 딱지가 그
+   * 여백까지 포함한 가운데에 놓여서 글자 줄보다 위로 뜬다. 여백은 바깥 줄이 준다.
    */
-  space?: 'field' | 'block'
+  space?: 'field' | 'block' | 'none'
 }) {
+  const gap = space === 'none' ? 'block' : space === 'block' ? 'mb-3 block' : 'mb-2 block'
+
   return (
-    <Tag htmlFor={htmlFor} className={space === 'block' ? 'mb-3 block' : 'mb-2 block'}>
+    <Tag htmlFor={htmlFor} className={gap}>
       <span className="serif block text-sm font-extrabold tracking-tight">{label}</span>
       {description && (
         <span

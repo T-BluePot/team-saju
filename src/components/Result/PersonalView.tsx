@@ -80,32 +80,44 @@ export function PersonalView({
           <SajuPillarTable pillars={pillars} />
 
           {/*
+            표를 읽는 법. 표에 딸린 각주라 제일 작고 흐리다.
             십이운성에 프레이밍이 없으면 회색과 강조색이 좋고 나쁨처럼 읽힌다.
             팀원 전환 탭이 있어서 남의 명식도 같은 화면에 보인다. 평가로 쓰이면 안 된다
           */}
-          <p className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+          <p
+            className="mt-3 pt-3 text-11 leading-relaxed"
+            style={{ borderTop: '1px dashed var(--rule)', color: 'var(--ink-soft)' }}
+          >
             {personalCopy.pillarNote}
           </p>
 
-          <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-            {personalCopy.dayMasterPrefix}{' '}
-            <strong style={{ color: ELEMENT_COLOR[dayMaster.element] }}>
-              {dayMaster.stem} {ELEMENT_LABEL[dayMaster.element]}
-            </strong>
-            {personalCopy.dayMasterSuffix}
-          </p>
-
           {/*
-            공망. 빈 칸이라는 뜻이지 나쁜 게 아니다.
-            운을 점치는 데 쓰지 않는다. 그냥 이 사주에서 안 채워진 자리다
+            이 명식에서 짚어둘 것. 표를 읽는 법이 아니라 표에서 읽어낸 내용이라
+            각주보다 한 단 위다. 크기와 색을 같이 올려서 각주와 안 섞이게 한다
           */}
-          {voidBranches.length > 0 && (
-            <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-              {personalCopy.voidPrefix}{' '}
-              <strong style={{ color: 'var(--ink)' }}>{voidBranches.join(' ')}</strong>
-              {personalCopy.voidSuffix}
+          <div
+            className="mt-4 flex flex-col gap-2.5 pt-4"
+            style={{ borderTop: '1px dashed var(--rule)' }}
+          >
+            <p className="text-sm leading-relaxed">
+              {personalCopy.dayMasterPrefix}{' '}
+              <strong style={{ color: ELEMENT_COLOR[dayMaster.element] }}>
+                {dayMaster.stem} {ELEMENT_LABEL[dayMaster.element]}
+              </strong>
+              {personalCopy.dayMasterSuffix}
             </p>
-          )}
+
+            {/*
+              공망. 빈 칸이라는 뜻이지 나쁜 게 아니다.
+              운을 점치는 데 쓰지 않는다. 그냥 이 사주에서 안 채워진 자리다
+            */}
+            {voidBranches.length > 0 && (
+              <p className="text-sm leading-relaxed">
+                {personalCopy.voidPrefix} <strong>{voidBranches.join(' ')}</strong>
+                {personalCopy.voidSuffix}
+              </p>
+            )}
+          </div>
         </CommonBlock>
 
         <CommonBlock label={personalCopy.elementsBlock}>
