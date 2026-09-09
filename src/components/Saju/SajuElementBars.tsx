@@ -20,7 +20,7 @@ export function SajuElementBars({ percents, flags, showMeaning = false }: Props)
         return (
           <li
             key={el}
-            className="flex items-center gap-3 rounded-lg px-2 py-1"
+            className="flex items-center gap-3 rounded-lg px-2 py-2"
             style={
               // 칩을 붙이는 대신 행 전체를 그 오행 색으로 옅게 깐다.
               // 칩은 줄 끝에 하나 더 붙는 요소라 다섯 줄이 다 시끄러워진다

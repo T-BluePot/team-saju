@@ -82,7 +82,8 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
           {/* 고르게 나온 팀은 짚을 축이 없다. 억지로 두 개를 굵게 하면 배열 순서가 새어 나온다 */}
           <SajuTraitBars
             traits={analysis.traits}
-            highlight={reading.even ? undefined : [...reading.topAxes, ...reading.bottomAxes]}
+            strong={reading.even ? undefined : reading.topAxes}
+            weak={reading.even ? undefined : reading.bottomAxes}
           />
         </div>
 
