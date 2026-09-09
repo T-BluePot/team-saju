@@ -299,7 +299,15 @@ body {
 /*
  * `dialog` 는 `showModal()` 로 연다. 포커스 가두기와 Esc 가 공짜로 딸려오는 대신
  * 뒷막은 `::backdrop` 으로만 칠할 수 있다. 인라인 스타일이 닿지 않는 자리다.
+ *
+ * 뒷막은 문서 트리 밖이라 `:root` 에 둔 변수가 안 내려오는 엔진이 있다. 그러면
+ * `var(--scrim)` 이 빈 값이 되어 뒷막이 투명해지고, 모달이 그냥 겹쳐 뜬 것처럼
+ * 보인다. 조용히 깨져서 눈치채기 어렵다. 여기서 한 번 더 정해둔다.
  */
+::backdrop {
+  --scrim: color-mix(in srgb, #17140f 55%, transparent);
+}
+
 dialog::backdrop {
   background: var(--scrim);
 }
@@ -660,6 +668,47 @@ details[open] > .summary-plain .chevron {
 
 @media (prefers-reduced-motion: reduce) {
   .chevron {
+    transition: none;
+  }
+}
+
+/*
+ * 펼쳐지는 자리.
+ *
+ * `grid-template-rows: 0fr -> 1fr` 로 늘린다. 높이를 미리 재지 않아도 되고
+ * `max-height` 로 어림잡을 때처럼 내용이 그 값을 넘어 잘리는 일도 없다.
+ * 안쪽은 조금 늦게 떠오른다. 액자가 다 열린 뒤에 내용이 들어와야 덜 어수선하다.
+ */
+.reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.open {
+  grid-template-rows: 1fr;
+}
+
+.reveal > * {
+  overflow: hidden;
+}
+
+.reveal-inner {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.3s 0.08s,
+    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.08s;
+}
+
+.reveal.open .reveal-inner {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-inner {
     transition: none;
   }
 }

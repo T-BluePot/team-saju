@@ -12,12 +12,15 @@ export function CommonSection({
   index,
   title,
   subtitle,
+  flush = false,
   children,
 }: {
   /** 一 二 三 같은 한자 번호 */
   index?: string
   title: string
   subtitle?: string
+  /** 안쪽 여백을 카드가 주지 않는다. 공유처럼 버튼이 모서리에 붙는 자리가 쓴다 */
+  flush?: boolean
   children: ReactNode
 }) {
   return (
@@ -46,7 +49,7 @@ export function CommonSection({
           </span>
         )}
       </div>
-      <CommonCard>{children}</CommonCard>
+      <CommonCard flush={flush}>{children}</CommonCard>
     </section>
   )
 }

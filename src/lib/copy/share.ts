@@ -1,8 +1,12 @@
 // 공유 섹션과 공유 카드 캔버스에 그리는 문자열.
 
 export const shareCardCopy = {
+  index: '四',
   heading: '이미지로 공유하기',
   note: '공유 이미지에는 이름과 생년월일이 포함되지 않습니다.',
+  emptyHint: '미리보기를 누르면 공유될 이미지를 볼 수 있습니다',
+  zoomHint: '눌러서 크게 볼 수 있어요',
+  close: '닫기',
   previewAlt: '공유 카드 미리보기',
   longPressHint: '저장이 되지 않으면 이미지를 길게 눌러 저장해 주세요.',
   preview: '미리보기',
