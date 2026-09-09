@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Children, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { CommonBlock, CommonSection } from '../Common'
@@ -52,7 +52,7 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
       </CommonBlock>
 
       <CommonBlock label={analysisCopy.noticeBlock}>
-        <EntryList>
+        <EntryList divided>
           <Entry
             mark={dominant.element}
             markLabel={ELEMENT_LABEL[dominant.element]}
@@ -122,8 +122,30 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
  * 간격은 여기서만 정한다. 항목이 저마다 첫째냐 아니냐로 위아래 패딩을 다르게
  * 가지면 같은 카드 안에서 줄 간격이 자리마다 달라진다.
  */
-function EntryList({ children }: { children: ReactNode }) {
-  return <div className="flex flex-col gap-5">{children}</div>
+function EntryList({
+  children,
+  divided = false,
+}: {
+  children: ReactNode
+  /** 항목 사이를 점선으로 가른다. 같은 종류가 나란히 설 때 쓴다 */
+  divided?: boolean
+}) {
+  if (!divided) return <div className="flex flex-col gap-5">{children}</div>
+
+  return (
+    <div className="flex flex-col">
+      {Children.toArray(children).map((child, i) => (
+        <div
+          // 위아래 패딩을 같게 둔다. 첫째만 다르게 주면 줄 간격이 자리마다 갈린다
+          key={i}
+          className="py-3"
+          style={i === 0 ? undefined : { borderTop: '1px dashed var(--rule-faint)' }}
+        >
+          {child}
+        </div>
+      ))}
+    </div>
+  )
 }
 
 /**
@@ -170,9 +192,9 @@ function Entry({
       </p>
       <p className="text-sm leading-relaxed">{children}</p>
       {fix && (
-        <div className="mt-3 flex items-start gap-2.5">
+        <div className="mt-3 flex items-center gap-2.5">
           <span
-            className="serif mt-px grid size-5 shrink-0 place-items-center rounded-full text-10 font-bold leading-none"
+            className="serif grid size-5 shrink-0 place-items-center rounded-full text-10 font-bold leading-none"
             style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
           >
             {analysisCopy.prescriptionMark}

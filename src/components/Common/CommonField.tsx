@@ -49,7 +49,7 @@ export function CommonFieldLabel({
 }) {
   return (
     <Tag htmlFor={htmlFor} className={space === 'block' ? 'mb-3 block' : 'mb-2 block'}>
-      <span className="serif block text-sm font-bold tracking-tight">{label}</span>
+      <span className="serif block text-sm font-extrabold tracking-tight">{label}</span>
       {description && (
         <span
           className="mt-0.5 block text-xs leading-relaxed"
