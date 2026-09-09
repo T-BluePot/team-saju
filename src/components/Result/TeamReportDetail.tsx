@@ -6,7 +6,7 @@ import {
   CommonSubHeading,
 } from '../Common'
 import { TeamModifiers } from './TeamModifiers'
-import { isSolo, needsBlock } from '../../lib/report/solo'
+import { isSolo } from '../../lib/report/solo'
 import type { TeamReport } from '../../lib/report/teamReport'
 import { detailCopy, resultCopy } from '../../lib/copy'
 
@@ -23,14 +23,6 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
   const solo = isSolo(analysis)
   // 2명 이상이면 조합이 반드시 하나는 나온다. 판정이 둘이면 나중에 갈라진다
   const hasPairs = !solo && analysis.pairs.length > 0
-  const needs = needsBlock(solo, archetype)
-
-  const needsSection = (
-    <>
-      <CommonSubHeading>{needs.heading}</CommonSubHeading>
-      <p className="serif mt-3 text-lg leading-relaxed">{needs.body}</p>
-    </>
-  )
 
   return (
     <CommonSection
@@ -38,13 +30,6 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
       title={detailCopy.title}
       subtitle={solo ? detailCopy.subtitleSolo : detailCopy.subtitleTeam}
     >
-      {solo && (
-        <>
-          {needsSection}
-          <CommonRule />
-        </>
-      )}
-
       <CommonSubHeading>
         {solo ? detailCopy.strengthsSolo : detailCopy.strengthsTeam}
       </CommonSubHeading>
@@ -70,13 +55,6 @@ export function TeamReportDetail({ report }: { report: TeamReport }) {
           </li>
         ))}
       </ul>
-
-      {!solo && (
-        <>
-          <CommonRule />
-          {needsSection}
-        </>
-      )}
 
       <TeamModifiers report={report} />
 

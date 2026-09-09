@@ -8,6 +8,10 @@ export const landingCopy = {
   leadBottom: '팀의 오행 조합과 비어 있는 기운을 살펴봅니다.',
   tasteLabel: '우리 팀은 어떤 유형일까요?',
   tasteMore: (rest: number) => `외 ${rest}가지 유형`,
+  // 족자를 한 장씩 넘긴다. 마지막 장은 그림 대신 남은 유형 수를 센다
+  tasteMoreNote: '팀원을 넣으면 우리 팀의 족자가 펼쳐집니다',
+  tastePrev: '이전 유형',
+  tasteNext: '다음 유형',
   steps: [
     [
       '一',

@@ -22,5 +22,6 @@ export {
   nextStepCopy,
   resultCopy,
   sajuCopy,
+  scrollCopy,
 } from './result'
 export { shareCanvasCopy, shareCardCopy } from './share'

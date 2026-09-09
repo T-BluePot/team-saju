@@ -21,6 +21,20 @@ export const headlineCopy = {
   size: (size: number) => `${size}명`,
 } as const
 
+/**
+ * 유형 족자. 첫 화면과 결과 화면이 같은 판을 걸어서 문구도 같이 쓴다.
+ */
+export const scrollCopy = {
+  /**
+   * 왜 그런 사람이 필요한지. 오행 한자를 색으로 보여주려고 문장을 앞뒤로 나눴다.
+   * 조사는 한자가 아니라 오행의 한글 이름이 정한다. 한자로는 받침을 못 센다
+   */
+  whyHead: '비어 있는 ',
+  whyTail: (josa: string) => `${josa} 채워 줄 사람입니다`,
+  whyBalanced: '오행이 고루 갖춰진 팀입니다',
+  seal: '四柱',
+} as const
+
 export const illustrationCopy = {
   caption: '일러스트',
   /**

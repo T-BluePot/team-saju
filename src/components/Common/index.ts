@@ -8,6 +8,7 @@
 export { CommonButton, type CommonButtonVariant } from './CommonButton'
 export { CommonCard, CommonWell } from './CommonCard'
 export { CommonChip } from './CommonChip'
+export { CommonScroll } from './CommonScroll'
 export {
   CommonCheckLabel,
   CommonField,

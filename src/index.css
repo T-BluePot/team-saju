@@ -81,6 +81,10 @@
   --warn: #8a6a12;
   --warn-wash: #fdf1d0;
 
+  /* 족자. 비단과 금선 */
+  --scroll-silk: #4a5b58;
+  --scroll-gold: #bfa678;
+
   /* 오방색 */
   --el-wood: #2f7d6b;
   --el-fire: #d93a26;
@@ -412,5 +416,187 @@ dialog.sheet[open]::backdrop {
    */
   [data-element='水'] {
     --accent-deep: #8098c4;
+  }
+}
+
+/*
+ * 족자.
+ *
+ * 유형을 걸어 보여주는 판이다. 랜딩에서 한 장씩 넘겨보고, 결과에서는 펼쳐진다.
+ * 둘이 같은 판을 쓴다.
+ *
+ * 봉과 비단과 종이가 겹치는 자리라 Tailwind 유틸로 흩어놓으면 읽기 어렵다.
+ * `.seal` 이나 `.press` 처럼 한 덩어리로 묶어 여기 둔다.
+ */
+.scroll {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+/*
+ * 위아래 봉. 좌우로 조금 삐져나와 축이 드러난다.
+ *
+ * 나뭇결과 놋쇠 마구리 색은 여기서만 쓰는 재질색이라 토큰으로 안 뺐다.
+ * 비단과 금선은 여러 규칙이 나눠 쓰니 `--scroll-silk` `--scroll-gold` 로 뺐다.
+ */
+.scroll-rod {
+  position: relative;
+  z-index: 3;
+  width: calc(100% + 20px);
+  height: 10px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #5a4a38 0%, #33291f 55%, #241c14 100%);
+  box-shadow:
+    0 3px 7px -2px rgb(23 20 15 / 42%),
+    0 1px 0 rgb(255 255 255 / 10%) inset;
+}
+
+/* 축 마구리 */
+.scroll-rod::before,
+.scroll-rod::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  background: #a8987a;
+}
+
+.scroll-rod::before {
+  left: -3px;
+}
+
+.scroll-rod::after {
+  right: -3px;
+}
+
+.scroll-silk {
+  width: 100%;
+  padding: 11px 10px 14px;
+  background: var(--scroll-silk);
+}
+
+.scroll-paper {
+  position: relative;
+  display: flex;
+  min-height: 352px;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 32px 24px;
+  background: var(--surface);
+  text-align: center;
+}
+
+/*
+ * 회문 모서리 넷과 그 사이를 잇는 금선.
+ * 모서리 안의 금색만 리터럴이다. data URI 안에서는 CSS 변수를 못 읽는다
+ */
+.scroll-frame {
+  position: absolute;
+  z-index: 2;
+  inset: 10px;
+  pointer-events: none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='23'%20height='23'%20viewBox='0%200%2023%2023'%3E%3Cg%20fill='none'%20stroke='%23bfa678'%20stroke-width='1'%3E%3Cpath%20d='M23%200.5H14.5V21.5H7.5V0.5H0.5V7.5'/%3E%3Cpath%20d='M0.5%2014.5V23'/%3E%3Cpath%20d='M0.5%207.5H21.5V14.5H0.5'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='23'%20height='23'%20viewBox='0%200%2023%2023'%3E%3Cg%20fill='none'%20stroke='%23bfa678'%20stroke-width='1'%20transform='translate(23,0)%20scale(-1,1)'%3E%3Cpath%20d='M23%200.5H14.5V21.5H7.5V0.5H0.5V7.5'/%3E%3Cpath%20d='M0.5%2014.5V23'/%3E%3Cpath%20d='M0.5%207.5H21.5V14.5H0.5'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='23'%20height='23'%20viewBox='0%200%2023%2023'%3E%3Cg%20fill='none'%20stroke='%23bfa678'%20stroke-width='1'%20transform='translate(0,23)%20scale(1,-1)'%3E%3Cpath%20d='M23%200.5H14.5V21.5H7.5V0.5H0.5V7.5'/%3E%3Cpath%20d='M0.5%2014.5V23'/%3E%3Cpath%20d='M0.5%207.5H21.5V14.5H0.5'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='23'%20height='23'%20viewBox='0%200%2023%2023'%3E%3Cg%20fill='none'%20stroke='%23bfa678'%20stroke-width='1'%20transform='translate(23,23)%20scale(-1,-1)'%3E%3Cpath%20d='M23%200.5H14.5V21.5H7.5V0.5H0.5V7.5'/%3E%3Cpath%20d='M0.5%2014.5V23'/%3E%3Cpath%20d='M0.5%207.5H21.5V14.5H0.5'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(var(--scroll-gold), var(--scroll-gold)),
+    linear-gradient(var(--scroll-gold), var(--scroll-gold)),
+    linear-gradient(var(--scroll-gold), var(--scroll-gold)),
+    linear-gradient(var(--scroll-gold), var(--scroll-gold));
+  background-repeat: no-repeat;
+  background-size:
+    23px 23px,
+    23px 23px,
+    23px 23px,
+    23px 23px,
+    calc(100% - 46px) 1px,
+    calc(100% - 46px) 1px,
+    1px calc(100% - 46px),
+    1px calc(100% - 46px);
+  background-position:
+    0 0,
+    100% 0,
+    0 100%,
+    100% 100%,
+    23px 0,
+    23px 100%,
+    0 23px,
+    100% 23px;
+}
+
+/* 금선 가운데 마름모 */
+.scroll-rule {
+  display: flex;
+  width: 100%;
+  height: 12px;
+  align-items: center;
+  gap: 44px;
+  margin: 24px 0 20px;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='34'%20height='12'%20viewBox='0%200%2034%2012'%3E%3Cg%20fill='none'%20stroke='%23bfa678'%20stroke-width='1'%20stroke-linejoin='miter'%3E%3Cpath%20d='M17%201L22.5%206L17%2011L11.5%206Z'/%3E%3Cpath%20d='M6.5%203L9.5%206L6.5%209L3.5%206Z'/%3E%3Cpath%20d='M27.5%203L30.5%206L27.5%209L24.5%206Z'/%3E%3C/g%3E%3C/svg%3E")
+    center / 34px 12px no-repeat;
+}
+
+.scroll-rule::before,
+.scroll-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--scroll-gold);
+}
+
+/* 펼침. --p 는 0에서 1 */
+.scroll-stage {
+  position: relative;
+  width: 100%;
+}
+
+.scroll-curtain {
+  clip-path: inset(0 0 calc((1 - min(var(--p, 1), 1)) * 100%) 0);
+}
+
+/*
+ * 아래 봉은 걷히는 끝단을 따라 내려온다.
+ *
+ * 시안은 비단만 `rotateX` 로 눕히고 봉은 눕히지 않아서, 천이 누운 만큼 봉이
+ * 떠 보이고 흔들림이 잦아들 때 한 번에 붙었다. 눕히는 걸 뺐다. 걷히는 자리가
+ * 그대로 보이는 편이 낫고 봉이 뜰 일도 없다.
+ */
+.scroll-stage .scroll-rod.bottom {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--p, 1) * 100%);
+  transform: translate(-50%, -6px) rotate(calc(var(--wave, 0) * 0.7deg));
+}
+
+/* 천을 타고 내려가는 결 */
+.scroll-ripple {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  height: 34%;
+  top: calc(var(--rp, 0.5) * 100%);
+  transform: translateY(-50%);
+  opacity: var(--ro, 0);
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgb(23 20 15 / 0%) 0%,
+    rgb(23 20 15 / 22%) 45%,
+    rgb(255 255 255 / 10%) 62%,
+    rgb(23 20 15 / 0%) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-stage .scroll-rod.bottom,
+  .scroll-ripple {
+    transition: none;
   }
 }

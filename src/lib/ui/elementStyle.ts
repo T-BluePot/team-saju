@@ -67,8 +67,9 @@ const BALANCED_ILLUST = {
   alt: illustrationCopy.altBalanced,
 }
 
-export function illustFor(archetypeId: string, lacking: Element) {
-  if (archetypeId === 'balanced') return BALANCED_ILLUST
+export function illustFor(archetypeId: string, lacking: Element | null) {
+  // 균형형은 결핍이 없다. 랜딩 족자가 유형 표를 그대로 훑어서 null 이 들어온다
+  if (archetypeId === 'balanced' || lacking === null) return BALANCED_ILLUST
   return ILLUST_BY_LACKING[lacking]
 }
 

@@ -1,9 +1,7 @@
 import { CommonButton } from '../components/Common'
 import { AppBottomBar } from '../components/Layout'
-import { LandingConsent } from '../components/Landing'
+import { LandingConsent, LandingTasteScroll } from '../components/Landing'
 import { landingCopy } from '../lib/copy'
-import { ARCHETYPES } from '../lib/report/archetypes'
-import { LANDING_TASTE } from '../lib/report/sample'
 import { useTeamStore } from '../store/teamStore'
 
 export function LandingPage() {
@@ -28,30 +26,17 @@ export function LandingPage() {
         </p>
       </div>
 
+      {/*
+        유형을 알약으로 늘어놓으면 이름만 스치고 지나간다. 한 장씩 걸어두면
+        한 유형을 끝까지 읽는다. 판은 결과 화면 것과 같다.
+      */}
       <div>
         <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
           {landingCopy.tasteLabel}
         </p>
-        <ul className="mt-3 flex flex-wrap gap-2">
-          {LANDING_TASTE.map((name) => (
-            <li
-              key={name}
-              className="serif rounded-full px-3.5 py-1.5 text-sm font-bold"
-              style={{
-                background: 'var(--accent-wash)',
-                color: 'var(--accent-deep)',
-              }}
-            >
-              {name}
-            </li>
-          ))}
-          <li
-            className="rounded-full px-3.5 py-1.5 text-sm"
-            style={{ background: 'var(--paper-deep)', color: 'var(--ink-soft)' }}
-          >
-            {landingCopy.tasteMore(ARCHETYPES.length - LANDING_TASTE.length)}
-          </li>
-        </ul>
+        <div className="mt-4">
+          <LandingTasteScroll />
+        </div>
       </div>
 
       <hr className="rule-double" />
