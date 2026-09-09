@@ -1,4 +1,4 @@
-import { CommonSection, CommonWell } from '../Common'
+import { CommonSection } from '../Common'
 import { SajuElementBars, SajuElementRadar, SajuTraitBars } from '../Saju'
 import { readTraits } from '../../lib/report/traits'
 import { useCountUp, useReveal } from '../../lib/ui/useReveal'
@@ -39,7 +39,12 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
         </div>
       </div>
 
-      <div className="mt-7 grid gap-3 sm:grid-cols-2">
+      {/*
+        회색 블록 두 장을 걷어냈다. 바로 위 오행 막대가 이미 면을 쓰고 있어서
+        그 아래 또 면을 깔면 같은 정보가 두 겹으로 쌓인 것처럼 보인다.
+        여기는 선 하나로만 나눈다.
+      */}
+      <div className="mt-7 flex flex-col">
         <Stat
           title={analysisCopy.excess}
           value={`${dominant.element} ${ELEMENT_LABEL[dominant.element]} ${dominant.percent}%`}
@@ -51,22 +56,27 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
           value={`${lacking.element} ${ELEMENT_LABEL[lacking.element]} ${lacking.percent}%`}
           note={lacking.effect}
           color={ELEMENT_COLOR[lacking.element]}
+          divided
         />
       </div>
 
+      {/*
+        숫자를 오른쪽 끝으로 보내고 크게 둔다. 설명 앞에 숫자가 끼어 있으면
+        점수인지 문장의 일부인지가 안 갈린다.
+      */}
       <div
         ref={balanceRef}
-        className="mt-3 flex items-baseline gap-3 rounded-xl px-4 py-3"
-        style={{ background: 'var(--paper-deep)' }}
+        className="mt-5 flex items-center justify-between gap-4"
+        style={{ borderTop: '1px solid var(--rule)', paddingTop: '1.25rem' }}
       >
+        <span className="text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+          {analysisCopy.balanceNote}
+        </span>
         <span
-          className="serif text-2xl font-bold tabular-nums"
+          className="serif shrink-0 text-38 font-bold leading-none tabular-nums"
           style={{ color: 'var(--accent-deep)' }}
         >
           {balanceValue}
-        </span>
-        <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-          {analysisCopy.balanceNote}
         </span>
       </div>
 
@@ -103,9 +113,10 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
               {josaOf(reading.bottomAxes)}{' '}
               {analysisCopy.thinSuffix} {reading.gap}
             </p>
+            {/* 세로선 대신 면으로 둔다. 이 화면은 이미 선이 많다 */}
             <p
-              className="mt-1.5 border-l-2 pl-3 text-sm leading-relaxed"
-              style={{ borderColor: 'var(--accent)', color: 'var(--ink-soft)' }}
+              className="mt-2 rounded-xl px-4 py-3 text-sm leading-relaxed"
+              style={{ background: 'var(--paper-deep)', color: 'var(--ink-soft)' }}
             >
               {reading.fix}
             </p>
@@ -121,23 +132,29 @@ function Stat({
   value,
   note,
   color,
+  divided = false,
 }: {
   title: string
   value: string
   note: string
   color: string
+  /** 두 번째 행부터 위에 선을 긋는다 */
+  divided?: boolean
 }) {
   return (
-    <CommonWell>
+    <div
+      className={divided ? 'pt-4' : ''}
+      style={divided ? { borderTop: '1px solid var(--rule-faint)' } : undefined}
+    >
       <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
         {title}
       </p>
       <p className="serif mt-1 text-xl font-bold" style={{ color }}>
         {value}
       </p>
-      <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
+      <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
         {note}
       </p>
-    </CommonWell>
+    </div>
   )
 }

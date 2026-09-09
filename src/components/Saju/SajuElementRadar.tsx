@@ -93,37 +93,23 @@ export function SajuElementRadar({ percents, size = 240, showLabels = true }: Pr
           strokeLinejoin="round"
         />
 
-        {ELEMENTS.map((el, i) => {
-          const [x, y] = point(i, Math.min(percents[el] / MAX, 1), radius, center)
-          return <circle key={el} cx={x} cy={y} r={4} fill={ELEMENT_COLOR[el]} />
-        })}
       </g>
 
       {showLabels &&
         ELEMENTS.map((el, i) => {
           const [x, y] = point(i, 1.2, radius, center)
           return (
-            <g key={el}>
-              <text
-                x={x}
-                y={y - 3}
-                textAnchor="middle"
-                fontSize={14}
-                fontWeight={700}
-                fill={ELEMENT_COLOR[el]}
-              >
-                {el}
-              </text>
-              <text
-                x={x}
-                y={y + 12}
-                textAnchor="middle"
-                fontSize={11}
-                fill="var(--ink-soft)"
-              >
-                {percents[el]}%
-              </text>
-            </g>
+            <text
+              key={el}
+              x={x}
+              y={y + 4}
+              textAnchor="middle"
+              fontSize={14}
+              fontWeight={700}
+              fill={ELEMENT_COLOR[el]}
+            >
+              {el}
+            </text>
           )
         })}
     </svg>
