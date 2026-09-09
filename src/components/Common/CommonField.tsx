@@ -36,7 +36,7 @@ export function CommonFieldLabel({
   label: string
   description?: string
   htmlFor?: string
-  as?: 'label' | 'legend'
+  as?: 'label' | 'legend' | 'p'
 }) {
   return (
     <Tag htmlFor={htmlFor} className="mb-2 block">

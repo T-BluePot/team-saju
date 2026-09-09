@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
 import { CommonCard } from './CommonCard'
+import { CommonFieldLabel } from './CommonField'
 
 /**
  * 번호를 붙인 섹션. 결과 화면의 분석, 상세 보고서처럼
@@ -71,18 +72,12 @@ export function CommonBlock({
 }) {
   return (
     <div
-      className={first ? 'pb-4' : 'py-4'}
+      className={first ? 'pb-5' : 'py-5'}
       style={first ? undefined : { borderTop: '1px solid var(--rule)' }}
     >
-      <p className="mb-3 text-sm font-bold leading-5 tracking-tight">{label}</p>
-      <div className="pl-3">
-        {description && (
-          <p className="-mt-1 mb-3 text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-            {description}
-          </p>
-        )}
-        {children}
-      </div>
+      {/* 라벨 규칙은 입력 필드와 같은 것을 쓴다. 한 화면에서 라벨이 두 규칙을 가지면 안 된다 */}
+      <CommonFieldLabel as="p" label={label} description={description} />
+      <div className="pl-3">{children}</div>
     </div>
   )
 }
