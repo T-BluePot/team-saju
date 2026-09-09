@@ -36,13 +36,22 @@ export function AppHeader() {
           </button>
         )}
 
-        <div
+        {/*
+          로고를 누르면 첫 화면으로 간다. 어느 서비스에서나 그 자리를 그렇게 쓴다.
+          접근 가능한 이름은 안에 든 브랜드명과 태그라인이 그대로 만든다.
+        */}
+        <button
+          type="button"
+          onClick={goLanding}
           className={[
-            'flex items-center gap-2',
+            'press flex items-center gap-2 rounded-lg text-left focus-visible:outline-2 focus-visible:outline-offset-2',
             showBack ? 'justify-self-center' : 'justify-self-start',
           ].join(' ')}
+          style={{ outlineColor: 'var(--accent)' }}
         >
-          <span className="seal size-6 text-11">占</span>
+          <span aria-hidden="true" className="seal size-6 text-11">
+            占
+          </span>
           <span className="flex flex-col items-start leading-tight">
             <span className="serif text-base font-extrabold tracking-tight">
               {commonCopy.brand}
@@ -51,7 +60,7 @@ export function AppHeader() {
               {commonCopy.tagline}
             </span>
           </span>
-        </div>
+        </button>
 
         {/* 브랜드를 가운데 두려면 오른쪽에도 같은 폭의 빈 칸이 있어야 한다 */}
         {showBack && <span />}

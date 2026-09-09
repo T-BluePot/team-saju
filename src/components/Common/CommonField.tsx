@@ -19,35 +19,63 @@ const controlStyle: React.CSSProperties = {
 }
 
 /**
+ * 필드 머리. 라벨과 설명을 묶는다.
+ *
+ * 간격은 여기서만 정한다. 개별 화면이 제 나름대로 gap 을 주면 같은 폼 안에서
+ * 라벨과 컨트롤 사이가 자리마다 달라진다. 실제로 그렇게 어긋나 있었다.
+ *
+ * `as` 로 label 과 legend 를 갈아끼운다. fieldset 안에서는 legend 가 첫 자식이어야
+ * 해서 바깥을 div 로 감쌀 수 없다. 그래서 라벨 요소 자체가 설명까지 품는다.
+ */
+export function CommonFieldLabel({
+  label,
+  description,
+  htmlFor,
+  as: Tag = 'label',
+}: {
+  label: string
+  description?: string
+  htmlFor?: string
+  as?: 'label' | 'legend'
+}) {
+  return (
+    <Tag htmlFor={htmlFor} className="mb-2 block">
+      <span className="serif block text-sm font-bold tracking-tight">{label}</span>
+      {description && (
+        <span
+          className="mt-0.5 block text-xs leading-relaxed"
+          style={{ color: 'var(--ink-soft)' }}
+        >
+          {description}
+        </span>
+      )}
+    </Tag>
+  )
+}
+
+/** 필드 몸통. 컨트롤이 여럿이면 같은 간격으로 쌓인다 */
+const BODY = 'flex flex-col gap-3'
+
+/**
  * 라벨과 컨트롤을 묶는다.
  * label 의 htmlFor 는 여기서 만들고 id 를 children 으로 넘긴다.
  * 컨트롤에 그 id 를 다는 건 호출부 몫이라 강제되지는 않는다. 규칙으로 지킨다.
  */
 export function CommonField({
   label,
-  hint,
+  description,
   children,
 }: {
   label: string
-  hint?: string
+  /** 적기 전에 알아야 하는 말. 라벨 바로 아래 붙는다 */
+  description?: string
   children: (id: string) => ReactNode
 }) {
   const id = useId()
   return (
-    <div className="flex flex-col gap-1.5">
-      {/*
-        도움말은 라벨 바로 아래다. 컨트롤 밑에 두면 다 적고 나서야 읽게 되는데,
-        "공유 이미지에 표시됩니다" 처럼 적기 전에 알아야 하는 말이 여기 온다.
-      */}
-      <label htmlFor={id} className="serif text-sm font-bold">
-        {label}
-      </label>
-      {hint && (
-        <p className="-mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
-          {hint}
-        </p>
-      )}
-      {children(id)}
+    <div>
+      <CommonFieldLabel label={label} description={description} htmlFor={id} />
+      <div className={BODY}>{children(id)}</div>
     </div>
   )
 }
@@ -173,27 +201,18 @@ export function CommonPickCard({
 
 /** 묶음 입력. 양음력, 태어난 시간처럼 선택지가 몇 개 없을 때 */
 export function CommonFieldGroup({
-  legend,
+  label,
+  description,
   children,
-  boxed = false,
 }: {
-  legend: string
+  label: string
+  description?: string
   children: ReactNode
-  boxed?: boolean
 }) {
   return (
-    <fieldset
-      className={boxed ? 'flex flex-col gap-2 rounded-xl p-3' : 'flex flex-col gap-1.5'}
-      style={
-        boxed
-          ? { background: 'var(--paper-deep)', border: '1px solid var(--rule)' }
-          : undefined
-      }
-    >
-      <legend className={boxed ? 'px-1 text-sm font-medium' : 'serif text-sm font-bold'}>
-        {legend}
-      </legend>
-      {children}
+    <fieldset>
+      <CommonFieldLabel as="legend" label={label} description={description} />
+      <div className={BODY}>{children}</div>
     </fieldset>
   )
 }

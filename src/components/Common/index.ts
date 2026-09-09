@@ -11,6 +11,7 @@ export { CommonChip } from './CommonChip'
 export {
   CommonCheckLabel,
   CommonField,
+  CommonFieldLabel,
   CommonFieldGroup,
   CommonPickCard,
   CommonSelect,

@@ -15,7 +15,10 @@ export function InputPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <CommonField label={inputCopy.teamNameLabel} hint={inputCopy.teamNameHint}>
+      <CommonField
+        label={inputCopy.teamNameLabel}
+        description={inputCopy.teamNameHint}
+      >
         {(id) => (
           <CommonTextInput
             id={id}

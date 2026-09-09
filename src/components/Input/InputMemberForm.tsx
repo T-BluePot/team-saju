@@ -75,7 +75,7 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
   }
 
   return (
-    <CommonCard as="form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <CommonCard as="form" onSubmit={handleSubmit} className="flex flex-col gap-6">
       <h2 className="text-base font-bold">{memberFormCopy.title}</h2>
 
       <CommonField label={memberFormCopy.nameLabel}>
@@ -132,7 +132,7 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
         )}
       </CommonField>
 
-      <CommonFieldGroup legend={memberFormCopy.hourGroup}>
+      <CommonFieldGroup label={memberFormCopy.hourGroup}>
         {draft.hourKnown && (
           <div className="flex items-center gap-2">
             <label className="sr-only" htmlFor="hour">
@@ -203,7 +203,7 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
         </CommonCheckLabel>
       </div>
 
-      <CommonFieldGroup legend={memberFormCopy.sourceGroup}>
+      <CommonFieldGroup label={memberFormCopy.sourceGroup}>
         <CommonPickCard
           name="consent"
           checked={draft.consentSource === 'self'}
