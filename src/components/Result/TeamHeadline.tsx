@@ -2,7 +2,7 @@ import { ArchetypeScroll } from './ArchetypeScroll'
 import { SOLO_LEAD, SOLO_NOTE, isSolo, needsBlock } from '../../lib/report/solo'
 import type { TeamReport } from '../../lib/report/teamReport'
 import { ILLUST_SOURCE, ILLUST_SOURCE_URL } from '../../lib/ui/elementStyle'
-import { headlineCopy, illustrationCopy } from '../../lib/copy'
+import { illustrationCopy } from '../../lib/copy'
 
 export function TeamHeadline({ report }: { report: TeamReport }) {
   const { analysis, archetype } = report
@@ -11,18 +11,6 @@ export function TeamHeadline({ report }: { report: TeamReport }) {
 
   return (
     <header>
-      <div className="mb-6 flex items-center gap-2">
-        <h2 className="serif min-w-0 text-xl font-bold tracking-tight">
-          {analysis.teamName}
-        </h2>
-        <span
-          className="shrink-0 rounded-full px-2.5 py-1 text-11 font-semibold tabular-nums"
-          style={{ background: 'var(--paper-deep)', color: 'var(--ink-soft)' }}
-        >
-          {solo ? headlineCopy.solo : headlineCopy.size(analysis.size)}
-        </span>
-      </div>
-
       {/*
         유형이 이 화면의 결론이다. 첫 화면에서 넘겨보던 판이 여기서 자기 팀 것으로
         걸린다. 누굴 데려오면 되는지도 같이 걸어둔다. 결론 바로 옆에 있어야 읽는다
