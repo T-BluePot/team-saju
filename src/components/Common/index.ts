@@ -21,6 +21,7 @@ export {
   CommonRule,
   CommonSeal,
   CommonBlock,
+  CommonPrescription,
   CommonSection,
   CommonSubHeading,
 } from './CommonSection'

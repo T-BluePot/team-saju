@@ -1,14 +1,14 @@
 import { Children, Fragment, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
-import { CommonBlock, CommonSection } from '../Common'
+import { CommonBlock, CommonPrescription, CommonSection } from '../Common'
 import { SajuElementBars, SajuElementRadar, SajuTraitBars } from '../Saju'
 import { readTraits } from '../../lib/report/traits'
 import { useCountUp, useReveal } from '../../lib/ui/useReveal'
 import type { TeamReport } from '../../lib/report/teamReport'
 import { ELEMENT_LABEL } from '../../lib/saju/constants'
 import { ELEMENT_COLOR, FLAG_LABEL } from '../../lib/ui/elementStyle'
-import { analysisCopy } from '../../lib/copy'
+import { analysisCopy, resultCopy } from '../../lib/copy'
 import { and, subject } from '../../lib/text/josa'
 
 /** 팝오버가 저절로 닫히기까지 */
@@ -82,7 +82,8 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
           {/* 고르게 나온 팀은 짚을 축이 없다. 억지로 두 개를 굵게 하면 배열 순서가 새어 나온다 */}
           <SajuTraitBars
             traits={analysis.traits}
-            highlight={reading.even ? undefined : [...reading.topAxes, ...reading.bottomAxes]}
+            strong={reading.even ? undefined : reading.topAxes}
+            weak={reading.even ? undefined : reading.bottomAxes}
           />
         </div>
 
@@ -206,19 +207,7 @@ function Entry({
         </span>
       </p>
       <p className="text-sm leading-relaxed">{children}</p>
-      {fix && (
-        <div className="mt-3 flex items-center gap-2.5">
-          <span
-            className="serif grid size-5 shrink-0 place-items-center rounded-full text-10 font-bold leading-none"
-            style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
-          >
-            {analysisCopy.prescriptionMark}
-          </span>
-          <p className="text-11 leading-relaxed" style={{ color: 'var(--ink-faint)' }}>
-            {fix}
-          </p>
-        </div>
-      )}
+      {fix && <CommonPrescription mark={resultCopy.prescriptionMark}>{fix}</CommonPrescription>}
     </div>
   )
 }

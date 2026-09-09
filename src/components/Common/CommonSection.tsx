@@ -82,6 +82,31 @@ export function CommonBlock({
   )
 }
 
+/**
+ * 처방 한 덩어리.
+ *
+ * 분석의 축 해설 아래와 상세 보고서의 사각지대 아래에 같은 모양으로 붙는다.
+ * 각자 만들어 뒀더니 도장 크기와 글자 크기가 갈렸다.
+ */
+export function CommonPrescription({ mark, children }: { mark: string; children: ReactNode }) {
+  return (
+    <div
+      className="mt-3 flex items-center gap-2.5 rounded-xl px-4 py-3"
+      style={{ background: 'var(--paper-deep)' }}
+    >
+      <span
+        className="serif grid size-5 shrink-0 place-items-center rounded-full text-10 font-bold leading-none"
+        style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
+      >
+        {mark}
+      </span>
+      <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+        {children}
+      </p>
+    </div>
+  )
+}
+
 /** 카드 안에서 소제목을 나눌 때 */
 export function CommonSubHeading({ children }: { children: ReactNode }) {
   return <h4 className="serif text-base font-bold">{children}</h4>

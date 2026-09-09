@@ -6,6 +6,8 @@ export const resultCopy = {
   // 위쪽 탭 옆 버튼과 맨 아래 버튼이 같은 라벨을 쓴다. 같은 동작에 다른
   // 이름이 붙으면 사용자는 둘이 다른 일을 한다고 읽는다
   editMembers: '팀원 수정',
+  /** 처방 도장. 분석과 상세 보고서가 같은 글자를 쓴다 */
+  prescriptionMark: '處',
 } as const
 
 export const exampleNoticeCopy = {
@@ -59,8 +61,6 @@ export const analysisCopy = {
   /** 머리줄 배지. 두꺼운 축과 얇은 축을 한 글자로 표시한다 */
   thickMark: '厚',
   thinMark: '薄',
-  /** 처방 도장. 상세 보고서와 같은 글자를 쓴다 */
-  prescriptionMark: '處',
 } as const
 
 export const detailCopy = {
@@ -71,7 +71,6 @@ export const detailCopy = {
   strengthsSolo: '이 기운이 만드는 강점',
   strengthsTeam: '이 팀의 강점',
   blindSpots: '놓치기 쉬운 부분',
-  prescriptionSeal: '處',
   pairsHeading: '팀원 간 조합',
   pairGenerating: '상생',
   pairSame: '비슷한 결',
