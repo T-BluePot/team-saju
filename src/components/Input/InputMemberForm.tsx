@@ -133,12 +133,6 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
       </CommonField>
 
       <CommonFieldGroup legend={memberFormCopy.hourGroup}>
-        <CommonCheckLabel
-          checked={!draft.hourKnown}
-          onChange={(e) => set('hourKnown', !e.target.checked)}
-        >
-          {memberFormCopy.hourUnknown}
-        </CommonCheckLabel>
         {draft.hourKnown && (
           <div className="flex items-center gap-2">
             <label className="sr-only" htmlFor="hour">
@@ -178,15 +172,36 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
         )}
       </CommonFieldGroup>
 
-      <CommonCheckLabel
-        checked={draft.useTrueSolarTime}
-        onChange={(e) => set('useTrueSolarTime', e.target.checked)}
+      {/*
+        시간에 걸리는 선택 둘을 한 박스로 묶는다. 떨어뜨려 두면 진태양시가
+        태어난 시간과 무관한 별개 설정처럼 읽힌다. 설명은 라벨 옆이 아니라
+        아래 줄로 내린다. 옆에 붙이면 한 줄이 길어져 라벨이 안 보인다.
+      */}
+      <div
+        className="flex flex-col gap-3 rounded-xl px-4 py-3.5"
+        style={{ background: 'var(--paper-deep)', border: '1px solid var(--rule)' }}
       >
-        {memberFormCopy.trueSolarTime}
-        <span className="ml-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
-          {memberFormCopy.trueSolarTimeNote}
-        </span>
-      </CommonCheckLabel>
+        <CommonCheckLabel
+          className="items-start"
+          checked={!draft.hourKnown}
+          onChange={(e) => set('hourKnown', !e.target.checked)}
+        >
+          {memberFormCopy.hourUnknown}
+        </CommonCheckLabel>
+        <CommonCheckLabel
+          className="items-start"
+          checked={draft.useTrueSolarTime}
+          onChange={(e) => set('useTrueSolarTime', e.target.checked)}
+        >
+          {memberFormCopy.trueSolarTime}
+          <span
+            className="mt-0.5 block text-xs leading-relaxed"
+            style={{ color: 'var(--ink-soft)' }}
+          >
+            {memberFormCopy.trueSolarTimeNote}
+          </span>
+        </CommonCheckLabel>
+      </div>
 
       <CommonFieldGroup legend={memberFormCopy.sourceGroup}>
         <CommonPickCard
@@ -229,7 +244,8 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
         {added}
       </p>
 
-      <CommonButton type="submit" variant="primary" disabled={disabled}>
+      {/* 주 동작은 하단 고정 바의 분석하기다. 폼 버튼은 한 단 내려 아웃라인으로 둔다 */}
+      <CommonButton type="submit" variant="ghost" disabled={disabled}>
         {memberFormCopy.submit}
       </CommonButton>
     </CommonCard>

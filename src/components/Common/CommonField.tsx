@@ -35,15 +35,19 @@ export function CommonField({
   const id = useId()
   return (
     <div className="flex flex-col gap-1.5">
+      {/*
+        도움말은 라벨 바로 아래다. 컨트롤 밑에 두면 다 적고 나서야 읽게 되는데,
+        "공유 이미지에 표시됩니다" 처럼 적기 전에 알아야 하는 말이 여기 온다.
+      */}
       <label htmlFor={id} className="serif text-sm font-bold">
         {label}
       </label>
-      {children(id)}
       {hint && (
-        <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
+        <p className="-mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
           {hint}
         </p>
       )}
+      {children(id)}
     </div>
   )
 }
