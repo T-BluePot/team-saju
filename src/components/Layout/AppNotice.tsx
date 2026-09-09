@@ -9,7 +9,7 @@ const NOTICE = commonCopy.notice
 export function AppNotice() {
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-20 px-4 py-2 text-center text-[11px]"
+      className="fixed bottom-0 left-1/2 z-20 w-full max-w-2xl -translate-x-1/2 px-4 py-2 text-center text-11"
       style={{
         background: 'color-mix(in srgb, var(--paper) 94%, transparent)',
         borderTop: '1px solid var(--rule)',

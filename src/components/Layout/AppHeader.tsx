@@ -20,7 +20,7 @@ export function AppHeader() {
       }}
     >
       <div
-        className="mx-auto grid w-full max-w-2xl items-center gap-2 px-5 py-3"
+        className="grid w-full items-center gap-2 px-5 py-3"
         // 뒤로가기가 있는 화면에서만 브랜드를 가운데로 보낸다
         style={{ gridTemplateColumns: showBack ? '1fr auto 1fr' : 'auto' }}
       >

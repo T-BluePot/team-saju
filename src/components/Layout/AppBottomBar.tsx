@@ -9,6 +9,11 @@ import type { ReactNode } from 'react'
  * `AppNotice` 가 바닥 36px 을 이미 차지하고 있어서 그 위에 앉힌다. 바와 고지
  * 사이의 틈은 같은 종이로 덮는다. 안 덮으면 그 틈으로 본문이 지나간다.
  * 랜딩에서 `bottom-12` 로 띄웠다가 같은 문제를 겪은 자리다.
+ *
+ * 아래 여백을 76px 당긴다. `main` 이 `pb-28`(112px) 을 두고 있어서 그대로 두면
+ * 끝까지 내렸을 때 sticky 가 제 자리로 내려앉으면서 바닥에서 112 - 36 = 76px
+ * 떠오르고, 그 틈으로 배경이 드러난다. 바가 이 계산을 들고 있어야 쓰는 화면마다
+ * 각자 상쇄하지 않는다.
  */
 export function AppBottomBar({
   children,
@@ -20,7 +25,7 @@ export function AppBottomBar({
 }) {
   return (
     <div
-      className="sticky bottom-9 z-10 -mx-5 mt-8 px-5 pb-3 pt-3.5"
+      className="sticky bottom-9 z-10 -mx-5 -mb-19 mt-8 px-5 pb-3 pt-3.5"
       style={{ background: 'var(--paper)', borderTop: '1px solid var(--rule)' }}
     >
       {hint && (

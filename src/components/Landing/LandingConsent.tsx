@@ -90,7 +90,7 @@ export function LandingConsent({ consented, onChange }: Props) {
           if (downOnBackdrop.current && e.target === ref.current) closeDetail()
         }}
         aria-labelledby="privacy-title"
-        className="sheet m-auto mb-0 w-full max-w-md rounded-t-3xl p-0 sm:mb-auto sm:rounded-3xl"
+        className="sheet m-auto mb-0 w-full max-w-2xl rounded-t-3xl p-0"
         style={{
           maxHeight: '92vh',
           background: 'var(--paper)',

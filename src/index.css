@@ -115,7 +115,27 @@ body,
 body {
   margin: 0;
   background-color: var(--paper);
-  /* 한지 결. 아주 옅은 격자를 깔아 종이 느낌을 준다 */
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * 앱 기둥.
+ *
+ * 한지 결은 종이 안에만 둔다. body 에 깔면 넓은 화면에서 격자가 끝없이 이어져
+ * 어디까지가 지면인지가 안 보인다. 기둥 안에만 깔고 좌우에 괘선을 세워
+ * 종이 한 장으로 읽히게 한다.
+ *
+ * 괘선은 창이 기둥보다 32px 이상 넓을 때만 세운다. 딱 맞는 폭에서 세우면
+ * 괘선이 화면 가장자리에 붙어 스크롤바와 겹친다.
+ */
+.app-frame {
+  position: relative;
+  margin: 0 auto;
+  min-height: 100vh;
+  max-width: 42rem;
+  background-color: var(--paper);
   background-image:
     repeating-linear-gradient(
       0deg,
@@ -127,9 +147,13 @@ body {
       transparent 0 23px,
       color-mix(in srgb, var(--rule) 14%, transparent) 23px 24px
     );
-  color: var(--ink);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+}
+
+@media (min-width: 44rem) {
+  .app-frame {
+    border-left: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+  }
 }
 
 * {
@@ -314,19 +338,6 @@ dialog.sheet[open]::backdrop {
 @starting-style {
   dialog.sheet[open]::backdrop {
     background: transparent;
-  }
-}
-
-/* 넓은 화면에서는 가운데 뜨므로 화면 밖에서 올라올 이유가 없다 */
-@media (min-width: 40rem) {
-  dialog.sheet {
-    translate: 0 1rem;
-  }
-
-  @starting-style {
-    dialog.sheet[open] {
-      translate: 0 1rem;
-    }
   }
 }
 
