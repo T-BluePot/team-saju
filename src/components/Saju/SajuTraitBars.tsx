@@ -36,9 +36,10 @@ export function SajuTraitBars({
           : isWeak
             ? 'var(--weak-deep)'
             : dim
-              ? 'var(--ink-soft)'
+              ? 'var(--ink-faint)'
               : 'var(--accent)'
-        const textColor = isStrong || isWeak ? color : undefined
+        // 짚은 축만 먹으로 남기고 나머지는 물러나게 한다. 다 진하면 파랑과 빨강이 안 산다
+        const textColor = isStrong || isWeak ? color : dim ? 'var(--ink-soft)' : undefined
 
         return (
           <li key={axis} className="flex items-center gap-3">
@@ -63,7 +64,7 @@ export function SajuTraitBars({
               />
             </div>
             <span
-              className={`w-9 shrink-0 text-right text-xs tabular-nums ${
+              className={`w-9 shrink-0 text-right text-sm tabular-nums ${
                 isStrong || isWeak ? 'font-bold' : ''
               }`}
               style={{ color: textColor }}
