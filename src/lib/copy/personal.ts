@@ -1,6 +1,15 @@
 // 개인 명식 탭.
 
 export const personalCopy = {
+  chartIndex: '一',
+  chartTitle: '명식',
+  chartSubtitle: '여덟 글자와 그 안에 든 것',
+  traitsIndex: '二',
+  traitsTitle: '성향',
+  traitsSubtitle: '이 명식이 일할 때 어떻게 나오나',
+  elementsBlock: '오행 분포',
+  strengthBlock: '일간 강약',
+  strengthKind: '간이 판정',
   sourceDelegated: '팀원 정보',
   sourceSelf: '본인 정보',
   pillarNote:
@@ -11,7 +20,6 @@ export const personalCopy = {
   voidPrefix: '공망은',
   voidSuffix:
     '. 일주를 기준으로 정해지는 두 글자로, 개인 명식을 살펴볼 때 참고하는 정보예요.',
-  strengthIndex: (index: number) => `지수 ${index} · 간이 판정`,
   traitsHeading: '협업 성향',
   tenGodsHeading: '십신',
   pairsHeading: '다른 팀원과의 조합',

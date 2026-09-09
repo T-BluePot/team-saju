@@ -61,23 +61,35 @@ export function CommonSection({
 export function CommonBlock({
   label,
   description,
+  aside,
   first = false,
   children,
 }: {
   label: string
   /** 라벨 바로 아래 붙는 한 줄 */
   description?: string
+  /** 라벨 줄 오른쪽 끝에 서는 것. 개인 명식의 동의 출처 딱지가 여기 온다 */
+  aside?: ReactNode
   /** 첫 블록은 윗선을 긋지 않는다 */
   first?: boolean
   children: ReactNode
 }) {
+  /* 라벨 규칙은 입력 필드와 같은 것을 쓴다. 한 화면에서 라벨이 두 규칙을 가지면 안 된다 */
+  const head = <CommonFieldLabel as="p" space="block" label={label} description={description} />
+
   return (
     <div
       className={first ? 'pb-5' : 'py-5'}
       style={first ? undefined : { borderTop: '1px solid var(--rule)' }}
     >
-      {/* 라벨 규칙은 입력 필드와 같은 것을 쓴다. 한 화면에서 라벨이 두 규칙을 가지면 안 된다 */}
-      <CommonFieldLabel as="p" space="block" label={label} description={description} />
+      {aside ? (
+        <div className="flex items-center justify-between gap-3">
+          {head}
+          {aside}
+        </div>
+      ) : (
+        head
+      )}
       <div className="pl-3">{children}</div>
     </div>
   )

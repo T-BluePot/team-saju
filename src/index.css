@@ -600,3 +600,66 @@ dialog.sheet[open]::backdrop {
     transition: none;
   }
 }
+
+/*
+ * 일간 강약 눈금.
+ *
+ * 지수 하나만 숫자로 내밀면 62가 어느 쪽인지 모른다. 가운데를 중화 구간으로
+ * 칠하고 핀을 지수 자리에 세운다. 구간 경계는 `STRENGTH_THRESHOLD` 가 정하니
+ * 값은 컴포넌트가 변수로 넘긴다.
+ */
+.gauge {
+  position: relative;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--rule);
+}
+
+.gauge-mid {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--gauge-low);
+  right: var(--gauge-high);
+  background: color-mix(in srgb, var(--ink-soft) 35%, var(--rule));
+}
+
+.gauge-pin {
+  position: absolute;
+  top: 50%;
+  left: var(--gauge-at);
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border: 2px solid var(--surface);
+  border-radius: 9999px;
+  background: var(--accent-deep);
+  transform: translateY(-50%);
+}
+
+/* 펼침 요약줄. 브라우저 기본 삼각형을 걷고 화살표를 직접 단다 */
+.summary-plain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  list-style: none;
+}
+
+.summary-plain::-webkit-details-marker {
+  display: none;
+}
+
+.chevron {
+  transition: transform 0.2s;
+}
+
+details[open] > .summary-plain .chevron {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
+  }
+}
