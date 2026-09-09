@@ -54,7 +54,7 @@ export function SajuElementBars({ percents, flags, showMeaning = false }: Props)
             </div>
             <span
               className={[
-                'w-9 shrink-0 text-right text-sm tabular-nums',
+                'w-9 shrink-0 text-right text-xs tabular-nums',
                 marked ? 'font-bold' : '',
               ]
                 .filter(Boolean)

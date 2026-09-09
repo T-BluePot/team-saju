@@ -32,14 +32,23 @@ export function CommonFieldLabel({
   description,
   htmlFor,
   as: Tag = 'label',
+  space = 'field',
 }: {
   label: string
   description?: string
   htmlFor?: string
   as?: 'label' | 'legend' | 'p'
+  /**
+   * 라벨 아래 여백.
+   *
+   * 글자 규칙은 하나지만 여백은 두 값이다. 입력 필드는 라벨과 컨트롤이 한
+   * 덩어리로 붙어 읽혀야 해서 8px, 카드 안 블록은 그 아래가 문단이라
+   * 12px 이다. 같은 값으로 묶었더니 블록 쪽이 답답했다.
+   */
+  space?: 'field' | 'block'
 }) {
   return (
-    <Tag htmlFor={htmlFor} className="mb-2 block">
+    <Tag htmlFor={htmlFor} className={space === 'block' ? 'mb-3 block' : 'mb-2 block'}>
       <span className="serif block text-sm font-bold tracking-tight">{label}</span>
       {description && (
         <span

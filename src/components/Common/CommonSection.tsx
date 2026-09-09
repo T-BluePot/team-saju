@@ -76,7 +76,7 @@ export function CommonBlock({
       style={first ? undefined : { borderTop: '1px solid var(--rule)' }}
     >
       {/* 라벨 규칙은 입력 필드와 같은 것을 쓴다. 한 화면에서 라벨이 두 규칙을 가지면 안 된다 */}
-      <CommonFieldLabel as="p" label={label} description={description} />
+      <CommonFieldLabel as="p" space="block" label={label} description={description} />
       <div className="pl-3">{children}</div>
     </div>
   )

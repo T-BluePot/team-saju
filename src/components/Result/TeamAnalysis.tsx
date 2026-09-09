@@ -207,7 +207,7 @@ function BalanceScore({ value }: { value: number }) {
       <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>
         {analysisCopy.balanceLabel}
       </span>
-      <span className="serif ml-auto text-base" style={{ color: 'var(--accent-deep)' }}>
+      <span className="serif ml-auto text-base font-bold" style={{ color: 'var(--accent-deep)' }}>
         <span className="text-2xl tabular-nums">{value}</span>
         {analysisCopy.balanceUnit}
       </span>
@@ -215,7 +215,7 @@ function BalanceScore({ value }: { value: number }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={analysisCopy.balanceHelp}
-        className="press grid size-5 shrink-0 place-items-center rounded-full text-11 focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="press grid size-3.5 shrink-0 self-start place-items-center rounded-full text-10 focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{
           border: '1px solid var(--rule)',
           color: 'var(--ink-soft)',
