@@ -18,11 +18,14 @@ const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matc
 export function CommonScroll({
   children,
   unroll = false,
+  narrow = false,
   overlay,
 }: {
   children: ReactNode
   /** 열리는 동작을 보여준다. 결과 화면이 쓴다 */
   unroll?: boolean
+  /** 짧고 좁은 판. 여덟 글자만 거는 로딩 화면이 쓴다 */
+  narrow?: boolean
   /** 판 위에 얹는 것. 캐러셀 화살표가 여기 온다 */
   overlay?: ReactNode
 }) {
@@ -62,7 +65,7 @@ export function CommonScroll({
   )
 
   return (
-    <div className="scroll">
+    <div className={narrow ? 'scroll scroll-narrow' : 'scroll'}>
       <span aria-hidden="true" className="scroll-rod" />
       {unroll ? (
         <div
