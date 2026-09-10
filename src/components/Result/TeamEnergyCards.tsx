@@ -6,7 +6,7 @@ import { energyCards } from '../../lib/report/energy'
 import type { EnergyCard } from '../../lib/report/energy'
 import { BALANCED_ARCHETYPE_ID } from '../../lib/saju/team'
 import type { TeamReport } from '../../lib/report/teamReport'
-import { ELEMENT_COLOR, ELEMENT_COLOR_DEEP, illustForElement } from '../../lib/ui/elementStyle'
+import { ELEMENT_COLOR, ELEMENT_COLOR_DEEP } from '../../lib/ui/elementStyle'
 import { energyCardsCopy, resultCopy } from '../../lib/copy'
 
 type Set = 'good' | 'full'
@@ -77,9 +77,6 @@ export function TeamEnergyCards({ report }: { report: TeamReport }) {
 }
 
 function Card({ card }: { card: EnergyCard }) {
-  // 유형 족자와 같은 규칙으로 그림을 고른다. 그 오행이 비어 있을 때의 장면이다
-  const illust = illustForElement(card.element)
-
   return (
     <article
       className="flex flex-col rounded-xl pb-4"
@@ -94,10 +91,19 @@ function Card({ card }: { card: EnergyCard }) {
           } as CSSProperties
         }
       >
-        <span aria-hidden="true" className="serif energy-seal">
+        {/*
+          그림이 들어갈 자리다. `public/illust` 여섯 장은 전부 그 오행이 **없을 때**
+          의 장면이라 여기 그대로 쓰면 뜻이 뒤집힌다. `화 기운이 센 사람` 카드에
+          회의 중 조는 그림이 붙는 식이다. 오행별 `센` 그림이 생길 때까지
+          한자를 크게 놓는다.
+        */}
+        <span
+          aria-hidden="true"
+          className="serif text-4xl font-bold leading-none"
+          style={{ color: ELEMENT_COLOR_DEEP[card.element] }}
+        >
           {card.element}
         </span>
-        <img src={illust.src} alt={illust.alt} loading="lazy" />
       </div>
 
       <div className="energy-plate">

@@ -85,17 +85,7 @@ const BALANCED_ILLUST = {
 export function illustFor(archetypeId: string, lacking: Element | null) {
   // 균형형은 결핍이 없다. 랜딩 족자가 유형 표를 그대로 훑어서 null 이 들어온다
   if (archetypeId === 'balanced' || lacking === null) return BALANCED_ILLUST
-  return illustForElement(lacking)
-}
-
-/**
- * 오행 하나로 그림을 고른다.
- *
- * 기운 카드가 쓴다. 거기는 유형이 아니라 오행 한 종류를 놓고 얘기하는 자리다.
- * 고르는 기준은 유형 족자와 같다. 그 오행이 비어 있을 때의 장면이다.
- */
-export function illustForElement(element: Element) {
-  return ILLUST_BY_LACKING[element]
+  return ILLUST_BY_LACKING[lacking]
 }
 
 export const ILLUST_SOURCE = 'いらすとや'
