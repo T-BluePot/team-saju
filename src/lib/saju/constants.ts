@@ -44,6 +44,26 @@ export const BRANCHES: Branch[] = [
   '午', '未', '申', '酉', '戌', '亥',
 ]
 
+/**
+ * 천간과 지지의 우리말 음.
+ *
+ * 계산에는 안 쓴다. 명식표에서 한자 밑에 음을 같이 보여주려고 둔다.
+ * 사주를 처음 보는 사람에게 庚 한 글자는 읽을 수조차 없는 표시다.
+ * `TWELVE_STAGE_KO` `NAYIN_KO` 와 같은 갈래라 여기 같이 둔다.
+ */
+export const STEM_KO: Record<Stem, string> = {
+  甲: '갑', 乙: '을',
+  丙: '병', 丁: '정',
+  戊: '무', 己: '기',
+  庚: '경', 辛: '신',
+  壬: '임', 癸: '계',
+}
+
+export const BRANCH_KO: Record<Branch, string> = {
+  子: '자', 丑: '축', 寅: '인', 卯: '묘', 辰: '진', 巳: '사',
+  午: '오', 未: '미', 申: '신', 酉: '유', 戌: '술', 亥: '해',
+}
+
 export const STEM_ELEMENT: Record<Stem, Element> = {
   甲: '木', 乙: '木',
   丙: '火', 丁: '火',

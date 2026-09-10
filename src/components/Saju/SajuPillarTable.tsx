@@ -1,7 +1,14 @@
 import type { CSSProperties, ReactNode } from 'react'
 
-import { ELEMENT_LABEL, STEM_ELEMENT, STRONG_STAGES } from '../../lib/saju/constants'
-import type { Pillar, SajuChart } from '../../lib/saju/types'
+import {
+  BRANCH_ELEMENT,
+  BRANCH_KO,
+  ELEMENT_LABEL,
+  STEM_ELEMENT,
+  STEM_KO,
+  STRONG_STAGES,
+} from '../../lib/saju/constants'
+import type { Element, Pillar, SajuChart } from '../../lib/saju/types'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 import { personalCopy, sajuCopy } from '../../lib/copy'
 
@@ -12,68 +19,62 @@ const KIND_LABEL: Record<Pillar['kind'], string> = {
   hour: '시주',
 }
 
-/** 이름 칸 하나에 기둥 넷 */
-const COLUMNS = 'auto repeat(4, minmax(0, 1fr))'
+/** 일주는 셋째 칸이다 */
+const DAY = 2
 
-/** 일주 칸을 위아래로 잇는 물 */
-const DAY_WASH = 'var(--accent-wash)'
+/**
+ * 일주 열에 아주 옅게 깔리는 물.
+ *
+ * 진하게 깔면 넷 중 하나가 눌린 버튼처럼 보인다. 실제로 그랬다.
+ * 중요하다는 건 알리되 고를 수 있는 것처럼 보이면 안 된다.
+ */
+const DAY_WASH = 'color-mix(in srgb, var(--accent) 5%, var(--surface))'
 
 /**
  * 명식표.
  *
- * 전에는 기둥 하나가 카드 하나였고 그 안에 이름 없는 줄이 넷 쌓였다.
- * 375px 에서 칸이 62px 라 십신도 지장간도 단계도 납음도 전부 10px 회색으로
- * 비슷하게 보였고, 어느 줄이 뭔지는 밑의 안내문을 읽고 세어봐야 알았다.
+ * 기둥 넷을 가로로 비교하는 표다. 세로줄은 안 긋는다. 격자를 다 그으면
+ * 스프레드시트가 되고, 정작 눈이 따라가야 할 가로 줄이 안 보인다.
  *
- * 줄에 이름을 붙였다. 여덟 글자는 위에서 크게 보여주고, 나머지는 이름 붙은
- * 줄로 내린다. 기둥 넷과 같은 격자를 써서 세로줄이 그대로 맞는다.
+ * 여덟 글자 밑에 음과 오행을 같이 적는다. 처음 보는 사람에게 `庚` 은 읽을
+ * 수조차 없는 표시인데, 그게 화면에서 제일 큰 글자면서 아무것도 안 알려줬다.
  */
 export function SajuPillarTable({ pillars }: { pillars: SajuChart['pillars'] }) {
   const list = [pillars.year, pillars.month, pillars.day, pillars.hour]
 
   return (
-    <div className="grid gap-x-1" style={{ gridTemplateColumns: COLUMNS }}>
+    <div className="chart-grid">
+      {/* 기둥 이름 */}
       <Cell />
       {list.map((p, i) => (
-        <Cell key={i} day={i === 2} className="pt-2 text-11" top>
-          <span style={{ color: i === 2 ? 'var(--accent-deep)' : 'var(--ink-soft)' }}>
+        <Cell key={i} col={i} className="chart-name pt-2" top>
+          <span
+            style={{
+              color: i === DAY ? 'var(--accent-deep)' : 'var(--ink-soft)',
+              fontWeight: i === DAY ? 700 : undefined,
+            }}
+          >
             {KIND_LABEL[p?.kind ?? 'hour']}
           </span>
         </Cell>
       ))}
 
       {/* 천간과 지지. 이 여덟 글자를 보러 오는 화면이라 제일 크다 */}
-      <Cell />
-      {list.map((p, i) => (
-        <Cell key={i} day={i === 2} className="text-3xl font-bold leading-tight">
-          {p ? (
-            <span style={{ color: ELEMENT_COLOR[STEM_ELEMENT[p.stem]] }}>{p.stem}</span>
-          ) : (
-            <span className="text-sm font-normal" style={{ color: 'var(--ink-soft)' }}>
-              {sajuCopy.hourUnknownLabel}
-            </span>
-          )}
-        </Cell>
-      ))}
+      <Glyphs
+        list={list}
+        pick={(p) => p.stem}
+        sound={(p) => STEM_KO[p.stem]}
+        element={(p) => STEM_ELEMENT[p.stem]}
+        fallback={sajuCopy.hourUnknownLabel}
+      />
+      <Glyphs
+        list={list}
+        pick={(p) => p.branch}
+        sound={(p) => BRANCH_KO[p.branch]}
+        element={(p) => BRANCH_ELEMENT[p.branch]}
+        fallback={sajuCopy.hourUnknownValue}
+      />
 
-      <Cell />
-      {list.map((p, i) => (
-        <Cell key={i} day={i === 2} className="pb-2 text-3xl font-bold leading-tight">
-          {p ? (
-            p.branch
-          ) : (
-            <span className="text-sm font-normal" style={{ color: 'var(--ink-soft)' }}>
-              {sajuCopy.hourUnknownValue}
-            </span>
-          )}
-        </Cell>
-      ))}
-
-      {/*
-        여덟 글자와 그 아래 부속 정보를 가르는 한 줄. 줄마다 그으면 한 블록 안에
-        선이 넷이 되고, 정작 표가 어디서 끝나는지가 안 보인다. 줄 구별은 이미
-        왼쪽 이름이 하고 있다
-      */}
       <Rule />
 
       <Row
@@ -82,25 +83,75 @@ export function SajuPillarTable({ pillars }: { pillars: SajuChart['pillars'] }) 
           p ? (p.stemGod ?? `일간 ${ELEMENT_LABEL[STEM_ELEMENT[p.stem]]}`) : null,
         )}
       />
+      <Rule />
       <Row label="지장간" values={list.map((p) => p?.hiddenStems.join(' ') ?? null)} />
+      <Rule />
       <Row
         label={personalCopy.stageLabel}
         values={list.map((p) => p?.stage ?? null)}
         // 힘이 센 단계만 짚는다. 좋고 나쁨이 아니라 어느 단계인지를 보여주는 값이다
         strongAt={list.map((p) => (p ? STRONG_STAGES.has(p.stage) : false))}
       />
+      <Rule />
       <Row label="납음" values={list.map((p) => p?.naYin ?? null)} last />
     </div>
   )
 }
 
-/** 줄 사이를 긋는 점선. 격자 전체를 가로지른다 */
+/**
+ * 한자 한 줄과 그 밑의 음 · 오행.
+ *
+ * 음은 한자 크기를 따라 커지지 않는다. 커지면 부가 정보가 열 너비를 정하게 되고
+ * 320px 에서 기둥 넷이 안 들어간다.
+ */
+function Glyphs({
+  list,
+  pick,
+  sound,
+  element,
+  fallback,
+}: {
+  list: Array<Pillar | null>
+  pick: (p: Pillar) => string
+  sound: (p: Pillar) => string
+  element: (p: Pillar) => Element
+  fallback: string
+}) {
+  return (
+    <>
+      <Cell />
+      {list.map((p, i) => (
+        <Cell key={i} col={i} className="pb-1">
+          {p ? (
+            <>
+              <span
+                className="chart-glyph serif block font-bold"
+                style={{ color: ELEMENT_COLOR[element(p)] }}
+              >
+                {pick(p)}
+              </span>
+              <span className="chart-sound block" style={{ color: 'var(--ink-soft)' }}>
+                {sound(p)} · {ELEMENT_LABEL[element(p)]}
+              </span>
+            </>
+          ) : (
+            <span className="chart-value block py-4" style={{ color: 'var(--ink-soft)' }}>
+              {fallback}
+            </span>
+          )}
+        </Cell>
+      ))}
+    </>
+  )
+}
+
+/** 줄 사이 한 올. 세로줄을 안 그으니 이게 가로 줄을 잡아준다 */
 function Rule() {
   return (
     <span
       aria-hidden="true"
       className="col-span-full"
-      style={{ borderTop: '1px dashed var(--rule-faint)' }}
+      style={{ borderTop: '1px solid var(--rule-faint)' }}
     />
   )
 }
@@ -119,11 +170,11 @@ function Row({
 }) {
   return (
     <>
-      <Cell className="py-1.5 pr-1 text-left text-10">
+      <Cell className="chart-name py-2 pr-1.5 text-left">
         <span style={{ color: 'var(--ink-soft)' }}>{label}</span>
       </Cell>
       {values.map((v, i) => (
-        <Cell key={i} day={i === 2} className="py-1.5 text-10" bottom={last}>
+        <Cell key={i} col={i} className="chart-value py-2" bottom={last}>
           <span
             style={{
               color: strongAt?.[i] ? 'var(--accent-deep)' : 'var(--ink)',
@@ -141,31 +192,33 @@ function Row({
 /**
  * 칸 하나.
  *
- * 일주 칸은 물을 들여 세로로 이어 보이게 한다. 테두리로 두르면 줄 사이 간격만큼
+ * 일주 칸만 물을 들여 위아래로 이어 보이게 한다. 테두리로 두르면 줄 사이에서
  * 끊기고, 표 안에 상자가 하나 떠 있는 것처럼 읽힌다.
  */
 function Cell({
   children,
-  day = false,
+  col,
   top = false,
   bottom = false,
   className = '',
 }: {
   children?: ReactNode
-  day?: boolean
+  /** 몇 번째 기둥인가. 이름 칸에는 안 넘긴다 */
+  col?: number
   top?: boolean
   bottom?: boolean
   className?: string
 }) {
-  const style: CSSProperties = day
-    ? {
-        background: DAY_WASH,
-        borderTopLeftRadius: top ? 8 : undefined,
-        borderTopRightRadius: top ? 8 : undefined,
-        borderBottomLeftRadius: bottom ? 8 : undefined,
-        borderBottomRightRadius: bottom ? 8 : undefined,
-      }
-    : {}
+  const style: CSSProperties =
+    col === DAY
+      ? {
+          background: DAY_WASH,
+          borderTopLeftRadius: top ? 6 : undefined,
+          borderTopRightRadius: top ? 6 : undefined,
+          borderBottomLeftRadius: bottom ? 6 : undefined,
+          borderBottomRightRadius: bottom ? 6 : undefined,
+        }
+      : {}
 
   return (
     <div className={['text-center', className].filter(Boolean).join(' ')} style={style}>

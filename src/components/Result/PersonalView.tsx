@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
 import {
   CommonBlock,
@@ -77,7 +77,14 @@ export function PersonalView({
             </CommonChip>
           }
         >
-          <SajuPillarTable pillars={pillars} />
+          {/*
+            표만 블록 들여쓰기와 카드 여백 밖으로 밀어낸다. 320px 에서 기둥 넷을
+            다 보여주려면 24px 이 아쉽다. 이 표는 읽는 폭이 곧 정보량이라
+            여백 줄을 지키는 것보다 넷이 다 보이는 게 먼저다
+          */}
+          <div className="chart-bleed">
+            <SajuPillarTable pillars={pillars} />
+          </div>
 
           {/*
             표를 읽는 법. 표에 딸린 각주라 선 없이 바로 붙인다. 표와 한 덩어리다.
@@ -96,23 +103,25 @@ export function PersonalView({
             className="mt-5 flex flex-col gap-2.5 pt-5"
             style={{ borderTop: '1px solid var(--rule-faint)' }}
           >
-            <p className="text-sm leading-relaxed">
-              {personalCopy.dayMasterPrefix}{' '}
-              <strong style={{ color: ELEMENT_COLOR[dayMaster.element] }}>
+            <Note label={personalCopy.dayMasterPrefix}>
+              <strong
+                className="serif font-bold"
+                style={{ color: ELEMENT_COLOR[dayMaster.element] }}
+              >
                 {dayMaster.stem} {ELEMENT_LABEL[dayMaster.element]}
               </strong>
               {personalCopy.dayMasterSuffix}
-            </p>
+            </Note>
 
             {/*
               공망. 빈 칸이라는 뜻이지 나쁜 게 아니다.
               운을 점치는 데 쓰지 않는다. 그냥 이 사주에서 안 채워진 자리다
             */}
             {voidBranches.length > 0 && (
-              <p className="text-sm leading-relaxed">
-                {personalCopy.voidPrefix} <strong>{voidBranches.join(' ')}</strong>
+              <Note label={personalCopy.voidPrefix}>
+                <strong className="serif font-bold">{voidBranches.join(' ')}</strong>
                 {personalCopy.voidSuffix}
-              </p>
+              </Note>
             )}
           </div>
         </CommonBlock>
@@ -190,6 +199,24 @@ export function PersonalView({
           </div>
         )}
       </CommonSection>
+    </div>
+  )
+}
+
+/**
+ * 명식에서 읽어낸 한 줄.
+ *
+ * `일간은` `공망은` 을 왼쪽에 세우고 값과 설명을 오른쪽에 붙인다. 한 문단으로
+ * 흘리면 무슨 얘기인지가 문장을 읽어야 나오는데, 여기는 훑어보는 자리다.
+ * 문장은 그대로 두고 자리만 갈랐다.
+ */
+function Note({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex gap-3">
+      <span className="w-11 shrink-0 pt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
+        {label}
+      </span>
+      <p className="min-w-0 flex-1 text-sm leading-relaxed">{children}</p>
     </div>
   )
 }

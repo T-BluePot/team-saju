@@ -731,3 +731,72 @@ details[open] > .summary-plain .chevron {
     transition: none;
   }
 }
+
+/*
+ * 명식표.
+ *
+ * 320px 에서도 기둥 넷이 한 화면에 들어가야 한다. 가로 스크롤은 안 쓴다.
+ * 그래서 글자 크기를 화면 폭에 매달았다. 좁아지면 같이 줄고, `힘이 빠진` 처럼
+ * 다섯 글자에 띄어쓰기까지 든 값도 한 줄을 지킨다.
+ *
+ * 카드 안쪽 여백을 표만 밀어내서 폭을 벌었다. 이 표는 읽는 폭이 곧 정보량이라
+ * 여백을 지키는 것보다 넷이 다 보이는 게 먼저다.
+ */
+.chart-grid {
+  display: grid;
+  grid-template-columns: auto repeat(4, minmax(0, 1fr));
+  column-gap: 1px;
+}
+
+/*
+ * 표는 블록 들여쓰기를 안 받는다.
+ *
+ * 블록 안 내용은 라벨보다 한 칸 들여쓴다(`pl-3`). 문단에는 맞는 규칙인데 표에
+ * 걸면 왼쪽 37px 오른쪽 25px 로 어긋나 앉는다. 표는 그 자체가 덩어리라
+ * 카드 안에서 가운데 선다.
+ *
+ * 375px 아래에서는 카드 여백까지 밀어낸다. 그래야 기둥 넷이 다 보인다.
+ * 8px 은 남겨서 값이 카드 테두리에 붙지 않게 한다.
+ */
+.chart-bleed {
+  margin-left: -12px;
+}
+
+@media (width < 375px) {
+  .chart-bleed {
+    margin-left: -28px;
+    margin-right: -16px;
+  }
+}
+
+/*
+ * 320px 30px, 375px 34px, 430px 부터 38px.
+ *
+ * 여덟 글자가 화면에서 제일 큰 건 맞지만 모바일에서 42px 까지 키우니 한자만
+ * 남고 나머지가 전부 부속처럼 눌렸다. 밑에 음과 오행이 붙어서 덩어리로도
+ * 커진 터라 한 단 낮춘다.
+ */
+.chart-glyph {
+  font-size: clamp(1.875rem, 9vw, 2.375rem);
+  line-height: 1.1;
+}
+
+/* 한자 밑에 붙는 음과 오행. 한자 크기와 무관하게 늘 작다 */
+.chart-sound {
+  font-size: clamp(0.625rem, 2.8vw, 0.6875rem);
+  letter-spacing: -0.02em;
+}
+
+/* 십신 지장간 단계 납음. 375px 위에서 13px, 320px 에서 12px */
+.chart-value {
+  font-size: clamp(0.75rem, 3.5vw, 0.8125rem);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+/* 줄 이름. 값보다 한 단 작고 흐리다 */
+.chart-name {
+  font-size: clamp(0.6875rem, 3.2vw, 0.75rem);
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
