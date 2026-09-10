@@ -42,7 +42,7 @@ export function PersonalView({
             type="button"
             onClick={() => setSelected(i)}
             aria-pressed={i === selected}
-            className="press min-h-11 flex-none whitespace-nowrap rounded-full px-4 text-sm font-medium"
+            className="press flex-none whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium"
             style={
               i === selected
                 ? { background: 'var(--ink)', color: 'var(--paper)' }
@@ -86,7 +86,7 @@ export function PersonalView({
           */}
           <p
             className="mt-3 pt-3 text-11 leading-relaxed"
-            style={{ borderTop: '1px dashed var(--rule)', color: 'var(--ink-soft)' }}
+            style={{ borderTop: '1px solid var(--rule-faint)', color: 'var(--ink-soft)' }}
           >
             {personalCopy.pillarNote}
           </p>
@@ -97,7 +97,7 @@ export function PersonalView({
           */}
           <div
             className="mt-4 flex flex-col gap-2.5 pt-4"
-            style={{ borderTop: '1px dashed var(--rule)' }}
+            style={{ borderTop: '1px solid var(--rule-faint)' }}
           >
             <p className="text-sm leading-relaxed">
               {personalCopy.dayMasterPrefix}{' '}
