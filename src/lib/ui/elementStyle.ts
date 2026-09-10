@@ -214,15 +214,15 @@ export function illustFor(archetypeId: string, lacking: Element | null) {
  * 그 여섯 장은 `이 오행이 없는 팀에 벌어지는 일` 이라 사람 카드로는 반만 맞았다.
  * 金 약한 사람은 `다 받아주는 사람` 인데 붙는 그림이 결재 서류 산더미였다.
  *
- * 水만 결핍 그림을 그대로 쓴다. 앞만 보고 돌진하는 멧돼지가 곧 `일단 가는 사람`
- * 이라 새로 받을 이유가 없었다. 같은 그림을 두 이름으로 두면 바이트만 는다.
+ * 다섯 다 사람이다. 한동안 水 자리에 결핍 그림(돌진하는 멧돼지)을 뒀는데,
+ * 나머지 아홉이 전부 사람인 자리에 짐승 한 마리만 서 있었다.
  */
 const ILLUST_BY_WEAK: Record<Element, { src: string; alt: string }> = {
   木: { src: '/illust/weak-wood.png', alt: illustrationCopy.altByWeak.木 },
   火: { src: '/illust/weak-fire.png', alt: illustrationCopy.altByWeak.火 },
   土: { src: '/illust/weak-earth.png', alt: illustrationCopy.altByWeak.土 },
   金: { src: '/illust/weak-metal.png', alt: illustrationCopy.altByWeak.金 },
-  水: { src: '/illust/no-water.png', alt: illustrationCopy.altByWeak.水 },
+  水: { src: '/illust/weak-water.png', alt: illustrationCopy.altByWeak.水 },
 }
 
 /**
