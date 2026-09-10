@@ -28,7 +28,9 @@ export function TeamHeadline({ report }: { report: TeamReport }) {
           href={ILLUST_SOURCE_URL}
           target="_blank"
           rel="noreferrer noopener"
-          className="underline"
+          // 11px 글자라 줄 높이 그대로면 누르는 자리가 13px 밖에 안 된다.
+          // 글자는 그대로 두고 위아래 여백으로 24px 을 만든다
+          className="py-1.5 underline"
         >
           {ILLUST_SOURCE}
         </a>

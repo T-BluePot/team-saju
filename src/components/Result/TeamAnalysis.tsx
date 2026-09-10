@@ -148,7 +148,9 @@ function BalanceScore({ value }: { value: number }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={analysisCopy.balanceHelp}
-        className="press grid size-3.5 shrink-0 self-start place-items-center rounded-full text-10 focus-visible:outline-2 focus-visible:outline-offset-2"
+        // 동그라미는 14px 이 맞다. 이 자리에서 더 키우면 점수보다 물음표가 먼저 보인다.
+        // 대신 누르는 자리는 비워둔 24px 로 넓힌다. 보이는 크기와 닿는 크기는 따로다
+        className="press relative grid size-3.5 shrink-0 self-start place-items-center rounded-full text-10 before:absolute before:-inset-1.5 before:content-[''] focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{
           border: '1px solid var(--rule)',
           color: 'var(--ink-soft)',

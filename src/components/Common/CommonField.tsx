@@ -127,7 +127,13 @@ export function CommonSelect({
  * type 기본값을 반드시 둔다. input 의 기본 type 은 text 라서
  * 빠뜨리면 체크박스가 텍스트 칸으로 렌더되고 checked 가 항상 false 로 읽힌다.
  * {...rest} 보다 앞에 둬야 호출부의 type="radio" 가 이긴다.
+ *
+ * 크기를 직접 정한다. 안 정하면 브라우저 기본값인 13px 로 나오는데, 시안은
+ * 체크박스 18px 라디오 16px 이다. 네모가 동그라미보다 조금 큰 건 같은 크기로
+ * 두면 동그라미가 작아 보여서다.
  */
+const BOX = { checkbox: 18, radio: 16 } as const
+
 export function CommonCheckLabel({
   children,
   className = '',
@@ -135,13 +141,25 @@ export function CommonCheckLabel({
   style,
   ...rest
 }: InputHTMLAttributes<HTMLInputElement> & { children: ReactNode }) {
+  const size = BOX[type as keyof typeof BOX] ?? BOX.checkbox
   return (
     <label
       className={['flex cursor-pointer items-center gap-2 text-sm', className]
         .filter(Boolean)
         .join(' ')}
     >
-      <input type={type} {...rest} style={{ accentColor: 'var(--accent)', ...style }} />
+      <input
+        type={type}
+        {...rest}
+        style={{
+          accentColor: 'var(--accent)',
+          width: size,
+          height: size,
+          flex: 'none',
+          margin: 0,
+          ...style,
+        }}
+      />
       <span>{children}</span>
     </label>
   )

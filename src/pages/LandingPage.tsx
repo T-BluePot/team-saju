@@ -46,7 +46,8 @@ export function LandingPage() {
           <li
             key={title}
             className="flex gap-5 py-4"
-            style={{ borderTop: i === 0 ? 'none' : '1px solid var(--rule)' }}
+            // 항목 사이는 점선 --rule-faint. index.css 의 괘선 표를 따른다
+            style={{ borderTop: i === 0 ? 'none' : '1px dashed var(--rule-faint)' }}
           >
             <span
               className="serif w-5 shrink-0 text-lg font-bold"
