@@ -208,13 +208,31 @@ export function illustFor(archetypeId: string, lacking: Element | null) {
 }
 
 /**
+ * 그 기운이 **약한 사람**.
+ *
+ * 유형 21장이 생기면서 `ILLUST_BY_LACKING` 은 여기 말고는 쓸 데가 없어졌는데,
+ * 그 여섯 장은 `이 오행이 없는 팀에 벌어지는 일` 이라 사람 카드로는 반만 맞았다.
+ * 金 약한 사람은 `다 받아주는 사람` 인데 붙는 그림이 결재 서류 산더미였다.
+ *
+ * 水만 결핍 그림을 그대로 쓴다. 앞만 보고 돌진하는 멧돼지가 곧 `일단 가는 사람`
+ * 이라 새로 받을 이유가 없었다. 같은 그림을 두 이름으로 두면 바이트만 는다.
+ */
+const ILLUST_BY_WEAK: Record<Element, { src: string; alt: string }> = {
+  木: { src: '/illust/weak-wood.png', alt: illustrationCopy.altByWeak.木 },
+  火: { src: '/illust/weak-fire.png', alt: illustrationCopy.altByWeak.火 },
+  土: { src: '/illust/weak-earth.png', alt: illustrationCopy.altByWeak.土 },
+  金: { src: '/illust/weak-metal.png', alt: illustrationCopy.altByWeak.金 },
+  水: { src: '/illust/no-water.png', alt: illustrationCopy.altByWeak.水 },
+}
+
+/**
  * 기운 카드가 쓰는 그림.
  *
- * `센 사람` 카드는 그 기운을 들고 오는 사람을, `약한 사람` 카드는 그 기운이
- * 없을 때의 장면을 쓴다. 약한 쪽은 결핍 그림이 곧 그 사람 얘기라 그대로 맞다.
+ * 센 쪽과 약한 쪽이 서로 다른 표를 본다. 한 표로 덮으면 `화 기운이 센 사람`
+ * 카드에 화가 없는 장면이 붙는 식으로 절반이 뒤집힌다.
  */
 export function illustForEnergy(element: Element, strength: 'strong' | 'weak') {
-  return strength === 'strong' ? ILLUST_BY_STRONG[element] : ILLUST_BY_LACKING[element]
+  return strength === 'strong' ? ILLUST_BY_STRONG[element] : ILLUST_BY_WEAK[element]
 }
 
 export const ILLUST_SOURCE = 'いらすとや'
