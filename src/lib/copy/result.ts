@@ -53,6 +53,36 @@ export const illustrationCopy = {
    * 기운 카드 그림. 이쪽은 결핍이 아니라 **그 기운이 센 사람**을 그린다.
    * 데려오면 좋은 사람을 보여주는 자리라 없는 장면을 붙이면 뜻이 뒤집힌다.
    */
+  /**
+   * 유형별 그림. 21개 유형이 저마다 다른 장면을 쓴다.
+   *
+   * 앞의 `altByLacking` 은 결핍 오행 여섯 장이라 한 장을 유형 넷이 나눠 썼다.
+   * 이름과 태그라인은 넷이 완전히 다른데 그림만 같아서, 특히 첫 화면에서
+   * 한 장씩 넘겨볼 때 절반이 같은 그림으로 나왔다.
+   */
+  altByArchetype: {
+    'wood-no-fire': '포스트잇을 붙이며 회의하는 사람들',
+    'wood-no-earth': '치우지 못한 어질러진 방에 앉은 사람',
+    'wood-no-metal': '새것과 헌것 사이에서 질려버린 사람',
+    'wood-no-water': '지도를 들고 길을 헤매는 사람',
+    'fire-no-wood': '백지 두 장을 들고 선 사람',
+    'fire-no-earth': '다 타버려 재가 된 회사원',
+    'fire-no-metal': '빠르게 달려 나가는 자동차',
+    'fire-no-water': '멱살을 잡고 다투는 회사원 둘',
+    'earth-no-wood': '맞물려 도는 톱니바퀴',
+    'earth-no-fire': '말없이 앉아 있는 가족',
+    'earth-no-metal': '밤에 혼자 남아 일하는 사람',
+    'earth-no-water': '우물 안에서 하늘을 보는 개구리',
+    'metal-no-wood': '가위로 종이를 반듯하게 자르는 손',
+    'metal-no-fire': '팔을 벌리고 자랑하는 사람',
+    'metal-no-earth': '책상을 치며 혼내는 상사',
+    'metal-no-water': '매뉴얼을 펼쳐 든 사람',
+    'water-no-wood': '둘러앉아 토론하는 사람들',
+    'water-no-fire': '고개를 돌린 동료들 사이에 선 사람',
+    'water-no-earth': '주사위를 다시 굴리는 사람',
+    'water-no-metal': '끝나지 않는 회의',
+    'balanced': '쌓인 상자 앞에서 머리를 감싸쥔 사람',
+  },
   altByStrong: {
     木: '어질러진 책상에서 밤새 게임하는 사람',
     火: '의욕에 불타는 사람',

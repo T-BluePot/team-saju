@@ -96,6 +96,103 @@ const ILLUST_BY_STRONG: Record<Element, { src: string; alt: string }> = {
   水: { src: '/illust/strong-water.png', alt: illustrationCopy.altByStrong.水 },
 }
 
+/**
+ * 유형마다 한 장.
+ *
+ * 앞의 `ILLUST_BY_LACKING` 은 결핍 오행 여섯 장이라 한 장을 유형 넷이 나눠 썼다.
+ * 결과 화면은 제 유형 하나만 보니까 티가 안 났는데, 첫 화면 족자를 한 장씩
+ * 넘겨보면 다섯 중 두 쌍이 같은 그림이었다. 넘겨볼 이유가 없어지는 자리다.
+ *
+ * 출처는 앞의 여섯 장과 같은 いらすとや 다. 21점 이상 유료는 상용 디자인에만
+ * 걸리고 지금은 비상용이라 점수 제한이 없다. 상용으로 돌리면 그때 다시 본다.
+ */
+const ILLUST_BY_ARCHETYPE: Record<string, { src: string; alt: string }> = {
+  'wood-no-fire': {
+    src: '/illust/type-wood-no-fire.png',
+    alt: illustrationCopy.altByArchetype['wood-no-fire'],
+  },
+  'wood-no-earth': {
+    src: '/illust/type-wood-no-earth.png',
+    alt: illustrationCopy.altByArchetype['wood-no-earth'],
+  },
+  'wood-no-metal': {
+    src: '/illust/type-wood-no-metal.png',
+    alt: illustrationCopy.altByArchetype['wood-no-metal'],
+  },
+  'wood-no-water': {
+    src: '/illust/type-wood-no-water.png',
+    alt: illustrationCopy.altByArchetype['wood-no-water'],
+  },
+  'fire-no-wood': {
+    src: '/illust/type-fire-no-wood.png',
+    alt: illustrationCopy.altByArchetype['fire-no-wood'],
+  },
+  'fire-no-earth': {
+    src: '/illust/type-fire-no-earth.png',
+    alt: illustrationCopy.altByArchetype['fire-no-earth'],
+  },
+  'fire-no-metal': {
+    src: '/illust/type-fire-no-metal.png',
+    alt: illustrationCopy.altByArchetype['fire-no-metal'],
+  },
+  'fire-no-water': {
+    src: '/illust/type-fire-no-water.png',
+    alt: illustrationCopy.altByArchetype['fire-no-water'],
+  },
+  'earth-no-wood': {
+    src: '/illust/type-earth-no-wood.png',
+    alt: illustrationCopy.altByArchetype['earth-no-wood'],
+  },
+  'earth-no-fire': {
+    src: '/illust/type-earth-no-fire.png',
+    alt: illustrationCopy.altByArchetype['earth-no-fire'],
+  },
+  'earth-no-metal': {
+    src: '/illust/type-earth-no-metal.png',
+    alt: illustrationCopy.altByArchetype['earth-no-metal'],
+  },
+  'earth-no-water': {
+    src: '/illust/type-earth-no-water.png',
+    alt: illustrationCopy.altByArchetype['earth-no-water'],
+  },
+  'metal-no-wood': {
+    src: '/illust/type-metal-no-wood.png',
+    alt: illustrationCopy.altByArchetype['metal-no-wood'],
+  },
+  'metal-no-fire': {
+    src: '/illust/type-metal-no-fire.png',
+    alt: illustrationCopy.altByArchetype['metal-no-fire'],
+  },
+  'metal-no-earth': {
+    src: '/illust/type-metal-no-earth.png',
+    alt: illustrationCopy.altByArchetype['metal-no-earth'],
+  },
+  'metal-no-water': {
+    src: '/illust/type-metal-no-water.png',
+    alt: illustrationCopy.altByArchetype['metal-no-water'],
+  },
+  'water-no-wood': {
+    src: '/illust/type-water-no-wood.png',
+    alt: illustrationCopy.altByArchetype['water-no-wood'],
+  },
+  'water-no-fire': {
+    src: '/illust/type-water-no-fire.png',
+    alt: illustrationCopy.altByArchetype['water-no-fire'],
+  },
+  'water-no-earth': {
+    src: '/illust/type-water-no-earth.png',
+    alt: illustrationCopy.altByArchetype['water-no-earth'],
+  },
+  'water-no-metal': {
+    src: '/illust/type-water-no-metal.png',
+    alt: illustrationCopy.altByArchetype['water-no-metal'],
+  },
+  'balanced': {
+    src: '/illust/type-balanced.png',
+    alt: illustrationCopy.altByArchetype['balanced'],
+  },
+}
+
 /** 어디도 안 비어서 붙일 결핍이 없다. 아무도 안 집는 마지막 한 조각 */
 const BALANCED_ILLUST = {
   src: '/illust/no-lacking.png',
@@ -103,8 +200,10 @@ const BALANCED_ILLUST = {
 }
 
 export function illustFor(archetypeId: string, lacking: Element | null) {
-  // 균형형은 결핍이 없다. 랜딩 족자가 유형 표를 그대로 훑어서 null 이 들어온다
-  if (archetypeId === 'balanced' || lacking === null) return BALANCED_ILLUST
+  const own = ILLUST_BY_ARCHETYPE[archetypeId]
+  if (own) return own
+  // 유형 표에 없는 id 가 들어오면 결핍 오행으로 떨어진다. 유형이 늘 때의 안전망이다
+  if (lacking === null) return BALANCED_ILLUST
   return ILLUST_BY_LACKING[lacking]
 }
 
