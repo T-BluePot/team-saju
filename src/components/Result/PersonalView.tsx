@@ -37,7 +37,7 @@ export function PersonalView({
         팀원 전환. 넘치면 밀어서 본다. 줄바꿈으로 흘리면 사람 수에 따라
         아래 섹션이 시작하는 높이가 달라진다
       */}
-      <div className="-mx-5 flex gap-2 overflow-x-auto px-5">
+      <div className="scroll-x -mx-5 flex gap-2 overflow-x-auto px-5">
         {charts.map((c, i) => (
           <button
             key={c.member.id}

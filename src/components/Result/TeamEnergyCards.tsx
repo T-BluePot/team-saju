@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import type { CSSProperties } from 'react'
 
-import { CommonPrescription, CommonSection } from '../Common'
+import { CommonSection } from '../Common'
 import { energyCards } from '../../lib/report/energy'
 import type { EnergyCard } from '../../lib/report/energy'
 import { BALANCED_ARCHETYPE_ID } from '../../lib/saju/team'
 import type { TeamReport } from '../../lib/report/teamReport'
-import { ELEMENT_COLOR, ELEMENT_COLOR_DEEP } from '../../lib/ui/elementStyle'
+import { ELEMENT_COLOR, ELEMENT_COLOR_DEEP, illustForElement } from '../../lib/ui/elementStyle'
 import { energyCardsCopy, resultCopy } from '../../lib/copy'
 
 type Set = 'good' | 'full'
@@ -67,7 +67,7 @@ export function TeamEnergyCards({ report }: { report: TeamReport }) {
         {set === 'good' ? energyCardsCopy.note : energyCardsCopy.noteFull}
       </p>
 
-      <div className="energy-cards">
+      <div className="energy-cards scroll-x">
         {shown.map((card) => (
           <Card key={card.id} card={card} />
         ))}
@@ -77,31 +77,27 @@ export function TeamEnergyCards({ report }: { report: TeamReport }) {
 }
 
 function Card({ card }: { card: EnergyCard }) {
+  // 유형 족자와 같은 규칙으로 그림을 고른다. 그 오행이 비어 있을 때의 장면이다
+  const illust = illustForElement(card.element)
+
   return (
     <article
       className="flex flex-col rounded-xl pb-4"
       style={{ background: 'var(--surface)', border: '1px solid var(--rule)' }}
     >
-      {/*
-        일러스트가 들어갈 자리다. 오행별 그림이 아직 없어서 한자를 크게 놓는다.
-        `public/illust` 의 여섯 장은 전부 결핍 오행을 그린 거라 여기 쓰면
-        금 카드에 결재 서류 산더미가 들어간다
-      */}
       <div
         className="energy-face"
         style={
           {
             '--energy-face': `color-mix(in srgb, ${ELEMENT_COLOR[card.element]} 9%, var(--surface))`,
+            '--energy-seal': ELEMENT_COLOR_DEEP[card.element],
           } as CSSProperties
         }
       >
-        <span
-          aria-hidden="true"
-          className="serif text-4xl font-bold leading-none"
-          style={{ color: ELEMENT_COLOR_DEEP[card.element] }}
-        >
+        <span aria-hidden="true" className="serif energy-seal">
           {card.element}
         </span>
+        <img src={illust.src} alt={illust.alt} loading="lazy" />
       </div>
 
       <div className="energy-plate">
@@ -116,8 +112,19 @@ function Card({ card }: { card: EnergyCard }) {
         <p className="mt-3.5 text-11 leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
           {card.line}
         </p>
+
+        {/*
+          겹치는 기운 쪽에만 붙는 단서. 다른 자리의 處 딱지와 달리 면을 안 깐다.
+          "그래도 데려오려면" 이라는 말이라 본문보다 낮게 깔려야 하는데,
+          상자를 두르면 본문보다 눈에 먼저 든다
+        */}
         {card.fix && (
-          <CommonPrescription mark={resultCopy.prescriptionMark}>{card.fix}</CommonPrescription>
+          <p className="energy-rx text-10" style={{ color: 'var(--ink-soft)' }}>
+            <span aria-hidden="true" className="dot serif">
+              {resultCopy.prescriptionMark}
+            </span>
+            <span>{card.fix}</span>
+          </p>
         )}
       </div>
     </article>
