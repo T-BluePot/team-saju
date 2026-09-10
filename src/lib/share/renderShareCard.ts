@@ -1,4 +1,4 @@
-import { ELEMENTS, ELEMENT_LABEL } from '../saju/constants'
+import { ELEMENTS } from '../saju/constants'
 import type { Element } from '../saju/types'
 import { SOLO_LEAD, isSolo, needsBlock } from '../report/solo'
 import type { TeamReport } from '../report/teamReport'
@@ -16,11 +16,25 @@ import { shareCanvasCopy } from '../copy'
  * 문서 07-team-report.md
  *
  * 카피 길이가 유형마다 달라서 높이를 먼저 재고 그 다음에 그린다.
+ *
+ * 짜임은 시안을 따른다. 위쪽은 이 팀이 누구인지를 말하는 자리라 가운데 정렬이고,
+ * 겹줄 아래는 데이터라 한 칸에 왼쪽 정렬이다. 두 구역이 같은 정렬이면
+ * 어디까지가 정체이고 어디부터가 근거인지가 안 갈린다.
  */
 
 const W = 1080
-const PAD = 88
-const MIN_H = 1350
+
+/** 한지 여백. 그 안에 종이 면을 한 장 더 깐다 */
+const CARD_PAD = 36
+const PANEL_PAD_X = 72
+const PANEL_PAD_TOP = 76
+const PANEL_PAD_BOTTOM = 60
+
+const PANEL_X = CARD_PAD
+const PANEL_W = W - CARD_PAD * 2
+/** 글이 시작하는 자리와 그 폭 */
+const X = PANEL_X + PANEL_PAD_X
+const INNER = PANEL_W - PANEL_PAD_X * 2
 
 /** 한지와 먹, 주사. index.css 의 토큰과 같은 값 */
 const C = {
@@ -30,6 +44,7 @@ const C = {
   ink: '#17140F',
   inkSoft: '#6B6355',
   rule: '#DDD4C2',
+  gold: '#BFA678',
 }
 
 const SERIF = '"Nanum Myeongjo", "Apple SD Gothic Neo", serif'
@@ -98,6 +113,67 @@ function drawPaper(ctx: CanvasRenderingContext2D, h: number) {
   }
 }
 
+/**
+ * 회문 모서리 하나.
+ *
+ * 족자와 같은 무늬다. 화면에서는 SVG 를 배경으로 깔지만 캔버스에는 못 깔아서
+ * 같은 좌표를 손으로 그린다. 원본이 23 단위라 원하는 크기로 나눠 배율을 잡는다.
+ */
+function drawFret(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  flipX: boolean,
+  flipY: boolean,
+) {
+  const s = size / 23
+  ctx.save()
+  ctx.translate(x + (flipX ? size : 0), y + (flipY ? size : 0))
+  ctx.scale(flipX ? -s : s, flipY ? -s : s)
+  ctx.strokeStyle = C.gold
+  ctx.lineWidth = 1
+  ctx.lineJoin = 'miter'
+
+  ctx.beginPath()
+  ctx.moveTo(23, 0.5)
+  ctx.lineTo(14.5, 0.5)
+  ctx.lineTo(14.5, 21.5)
+  ctx.lineTo(7.5, 21.5)
+  ctx.lineTo(7.5, 0.5)
+  ctx.lineTo(0.5, 0.5)
+  ctx.lineTo(0.5, 7.5)
+  ctx.moveTo(0.5, 14.5)
+  ctx.lineTo(0.5, 23)
+  ctx.moveTo(0.5, 7.5)
+  ctx.lineTo(21.5, 7.5)
+  ctx.lineTo(21.5, 14.5)
+  ctx.lineTo(0.5, 14.5)
+  ctx.stroke()
+  ctx.restore()
+}
+
+/** 종이 면 위의 금선 액자. 모서리 넷과 그 사이를 잇는 줄 */
+function drawFrame(ctx: CanvasRenderingContext2D, top: number, bottom: number) {
+  const inset = 20
+  const size = 52
+  const l = PANEL_X + inset
+  const r = PANEL_X + PANEL_W - inset
+  const t = top + inset
+  const b = bottom - inset
+
+  drawFret(ctx, l, t, size, false, false)
+  drawFret(ctx, r - size, t, size, true, false)
+  drawFret(ctx, l, b - size, size, false, true)
+  drawFret(ctx, r - size, b - size, size, true, true)
+
+  ctx.fillStyle = C.gold
+  ctx.fillRect(l + size, t, r - l - size * 2, 2)
+  ctx.fillRect(l + size, b - 2, r - l - size * 2, 2)
+  ctx.fillRect(l, t + size, 2, b - t - size * 2)
+  ctx.fillRect(r - 2, t + size, 2, b - t - size * 2)
+}
+
 function drawRadar(
   ctx: CanvasRenderingContext2D,
   percents: Record<Element, number>,
@@ -157,21 +233,33 @@ function drawRadar(
 
   ctx.textAlign = 'center'
   ELEMENTS.forEach((el, i) => {
-    const [x, y] = at(i, 1.26)
-    ctx.fillStyle = ELEMENT_HEX[el]
-    ctx.font = serif(30, 700)
+    const [x, y] = at(i, 1.3)
+    ctx.fillStyle = ELEMENT_HEX_DEEP[el]
+    ctx.font = serif(34, 700)
     ctx.fillText(el, x, y)
     ctx.fillStyle = C.inkSoft
-    ctx.font = sans(23, 500)
-    ctx.fillText(`${percents[el]}%`, x, y + 32)
+    ctx.font = sans(26, 500)
+    ctx.fillText(`${percents[el]}%`, x, y + 36)
   })
   ctx.textAlign = 'left'
 }
 
-const RADAR_RADIUS = 140
-const ILLUST_H = 230
-/** 레이더 라벨이 반지름 밖으로 더 나가서 행 높이를 따로 잡는다 */
-const ROW_H = Math.round(RADAR_RADIUS * 1.26 * 2 + 80)
+/** 점선 한 줄. 캔버스는 `setLineDash` 를 켜면 뒤에 그리는 것까지 물들어서 꼭 되돌린다 */
+function dashed(ctx: CanvasRenderingContext2D, y: number) {
+  ctx.save()
+  ctx.strokeStyle = C.rule
+  ctx.lineWidth = 2
+  ctx.setLineDash([10, 10])
+  ctx.beginPath()
+  ctx.moveTo(X, y)
+  ctx.lineTo(X + INNER, y)
+  ctx.stroke()
+  ctx.restore()
+}
+
+const RADAR_RADIUS = 186
+/** 레이더 라벨이 반지름 밖으로 더 나가서 높이를 따로 잡는다 */
+const RADAR_H = Math.round(RADAR_RADIUS * 1.3 * 2 + 70)
 
 function layout(
   ctx: CanvasRenderingContext2D,
@@ -185,196 +273,306 @@ function layout(
   // 화면과 같은 규칙. 주도 오행이 카드 강조색이 된다
   const accent = ELEMENT_HEX[analysis.elements.dominant]
   const accentDeep = ELEMENT_HEX_DEEP[analysis.elements.dominant]
-  const inner = W - PAD * 2
   const paint = (fn: () => void) => {
     if (draw) fn()
   }
+  const mid = X + INNER / 2
 
-  let y = 118
+  const panelTop = CARD_PAD
+  let y = panelTop + PANEL_PAD_TOP
 
-  // 머리말과 인장
+  /* ── 정체 구역. 가운데 정렬 ────────────────────────────── */
+
+  // 인장과 팀 이름과 인원. 셋을 한 줄에 가운데로 모은다
+  const who = solo ? shareCanvasCopy.solo : shareCanvasCopy.size(analysis.size)
+  ctx.font = serif(36, 700)
+  const teamW = ctx.measureText(analysis.teamName).width
+  ctx.font = sans(24, 400)
+  const sizeW = ctx.measureText(who).width + 36
+  const topW = 56 + 18 + teamW + 18 + sizeW
+  const topX = mid - topW / 2
+
   paint(() => {
-    ctx.fillStyle = C.inkSoft
-    ctx.font = sans(28, 500)
-    // 혼자면 "1명" 이 아니라 아직 혼자라고 적는다. 팀인 척하지 않는다
-    const who = solo ? shareCanvasCopy.solo : shareCanvasCopy.size(analysis.size)
-    ctx.fillText(`${analysis.teamName} · ${who}`, PAD, y)
-
-    ctx.save()
-    ctx.translate(W - PAD - 34, y - 24)
-    ctx.rotate((-4 * Math.PI) / 180)
-    // 흰 글자를 얹으니 accentDeep 을 쓴다. 화면 인장과 같은 규칙
     ctx.fillStyle = accentDeep
-    roundRect(ctx, -34, -34, 68, 68, 8)
+    roundRect(ctx, topX, y, 56, 56, 12)
     ctx.fill()
     ctx.fillStyle = '#fff'
-    ctx.font = serif(36, 800)
+    ctx.font = serif(30, 800)
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText('占', 0, 2)
-    ctx.restore()
+    ctx.fillText(shareCanvasCopy.seal, topX + 28, y + 30)
     ctx.textAlign = 'left'
     ctx.textBaseline = 'alphabetic'
+
+    ctx.fillStyle = C.ink
+    ctx.font = serif(36, 700)
+    ctx.fillText(analysis.teamName, topX + 74, y + 41)
+
+    ctx.fillStyle = C.paperDeep
+    roundRect(ctx, topX + 74 + teamW + 18, y + 13, sizeW, 34, 17)
+    ctx.fill()
+    ctx.fillStyle = C.inkSoft
+    ctx.font = sans(24, 400)
+    ctx.fillText(who, topX + 74 + teamW + 36, y + 38)
   })
+  y += 56
+
+  // 일러스트
+  y += 40
+  if (illust && illust.complete && illust.naturalWidth > 0) {
+    const ratio = illust.naturalWidth / illust.naturalHeight
+    const h = Math.min(270, INNER * 0.52 / ratio)
+    const w = h * ratio
+    paint(() => ctx.drawImage(illust, mid - w / 2, y, w, h))
+    y += h
+  }
 
   // 유형 이름. 혼자면 "이 기운으로 팀을 만들면" 을 위에 붙여서 화면과 화법을 맞춘다
-  y += solo ? 62 : 84
+  y += 44
   if (solo) {
     paint(() => {
       ctx.fillStyle = accentDeep
-      ctx.font = serif(26, 700)
-      ctx.fillText(SOLO_LEAD, PAD, y)
+      ctx.font = serif(28, 700)
+      ctx.textAlign = 'center'
+      ctx.fillText(SOLO_LEAD, mid, y)
+      ctx.textAlign = 'left'
     })
-    y += 44
+    y += 48
   }
-  ctx.font = serif(72, 800)
-  const nameLines = wrap(ctx, archetype.name, inner)
+  ctx.font = serif(64, 800)
+  const nameLines = wrap(ctx, archetype.name, INNER)
   paint(() => {
     ctx.fillStyle = C.ink
-    nameLines.forEach((line, i) => ctx.fillText(line, PAD, y + i * 88))
-  })
-  y += nameLines.length * 88
-
-  y += 8
-  ctx.font = serif(34, 400)
-  const tagLines = wrap(ctx, archetype.tagline, inner)
-  paint(() => {
-    ctx.fillStyle = C.inkSoft
-    tagLines.forEach((line, i) => ctx.fillText(line, PAD, y + i * 46))
-  })
-  y += tagLines.length * 46
-
-  // 겹줄 괘선
-  y += 34
-  paint(() => {
-    ctx.strokeStyle = C.rule
-    ctx.lineWidth = 2
-    ctx.beginPath()
-    ctx.moveTo(PAD, y)
-    ctx.lineTo(W - PAD, y)
-    ctx.moveTo(PAD, y + 6)
-    ctx.lineTo(W - PAD, y + 6)
-    ctx.stroke()
-  })
-  y += 6
-
-  // 일러스트와 레이더를 나란히
-  const rowTop = y + 30
-  const rowCy = rowTop + ROW_H / 2
-
-  paint(() => {
-    if (illust && illust.complete && illust.naturalWidth > 0) {
-      const ratio = illust.naturalWidth / illust.naturalHeight
-      const h = ILLUST_H
-      const w = h * ratio
-      ctx.drawImage(illust, PAD + (inner / 2 - w) / 2, rowCy - h / 2, w, h)
-    }
-  })
-  paint(() =>
-    drawRadar(ctx, analysis.elements.percents, PAD + inner * 0.74, rowCy, RADAR_RADIUS, accent),
-  )
-  y = rowTop + ROW_H + 46
-
-  // 넘치는 기운 / 비어 있는 곳
-  paint(() => {
-    ctx.font = sans(25, 500)
-    ctx.fillStyle = C.inkSoft
-    ctx.fillText(shareCanvasCopy.excess, PAD, y)
-    ctx.textAlign = 'right'
-    ctx.fillText(shareCanvasCopy.lacking, W - PAD, y)
+    ctx.textAlign = 'center'
+    nameLines.forEach((line, i) => ctx.fillText(line, mid, y + 50 + i * 78))
     ctx.textAlign = 'left'
   })
+  y += 50 + (nameLines.length - 1) * 78
 
+  y += 28
+  ctx.font = serif(31, 400)
+  const tagLines = wrap(ctx, archetype.tagline, INNER)
+  paint(() => {
+    ctx.fillStyle = C.inkSoft
+    ctx.textAlign = 'center'
+    tagLines.forEach((line, i) => ctx.fillText(line, mid, y + 24 + i * 44))
+    ctx.textAlign = 'left'
+  })
+  y += 24 + (tagLines.length - 1) * 44
+
+  // 겹줄 괘선. 여기서 정체가 끝나고 근거가 시작한다
   y += 48
   paint(() => {
-    ctx.font = serif(40, 700)
-    ctx.fillStyle = ELEMENT_HEX[dominant.element]
-    ctx.fillText(
-      `${dominant.element} ${ELEMENT_LABEL[dominant.element]} ${dominant.percent}%`,
-      PAD,
-      y,
-    )
-    ctx.textAlign = 'right'
-    ctx.fillStyle = ELEMENT_HEX[lacking.element]
-    ctx.fillText(
-      `${lacking.element} ${ELEMENT_LABEL[lacking.element]} ${lacking.percent}%`,
-      W - PAD,
-      y,
-    )
-    ctx.textAlign = 'left'
+    ctx.fillStyle = C.rule
+    ctx.fillRect(X, y, INNER, 2)
+    ctx.fillRect(X, y + 7, INNER, 2)
   })
+  y += 9
 
-  // 처방
-  y += 54
-  ctx.font = sans(29, 500)
-  const preLines = wrap(ctx, archetype.prescriptions[0], inner - 84)
-  const boxH = 54 + 46 + preLines.length * 42 + 30
+  /* ── 데이터 구역. 한 칸에 왼쪽 정렬 ────────────────────── */
+
+  y += 36
+  paint(() =>
+    drawRadar(ctx, analysis.elements.percents, mid, y + RADAR_H / 2, RADAR_RADIUS, accent),
+  )
+  y += RADAR_H
+
+  // 넘치는 기운과 비어 있는 기운. 화면의 주목할 부분과 같은 짜임이다
+  y += 36
+  const rows = [
+    { el: dominant.element, k: shareCanvasCopy.excess, pc: dominant.percent, body: dominant.meaning },
+    { el: lacking.element, k: shareCanvasCopy.lacking, pc: lacking.percent, body: lacking.effect },
+  ]
+  for (const row of rows) {
+    dashed(ctx, y)
+    y += 28
+    paint(() => {
+      ctx.fillStyle = ELEMENT_HEX_DEEP[row.el]
+      roundRect(ctx, X, y, 58, 58, 15)
+      ctx.fill()
+      ctx.fillStyle = '#fff'
+      ctx.font = serif(31, 800)
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(row.el, X + 29, y + 31)
+      ctx.textAlign = 'left'
+      ctx.textBaseline = 'alphabetic'
+
+      ctx.fillStyle = C.ink
+      ctx.font = serif(32, 700)
+      // 오행 이름은 도장이 이미 말한다. `화 넘치는 기운` 은 한 번 더 말하는 셈이다
+      ctx.fillText(row.k, X + 78, y + 40)
+
+      ctx.fillStyle = ELEMENT_HEX_DEEP[row.el]
+      ctx.font = serif(44, 700)
+      ctx.textAlign = 'right'
+      ctx.fillText(`${row.pc}%`, X + INNER, y + 44)
+      ctx.textAlign = 'left'
+    })
+    y += 58
+
+    y += 20
+    ctx.font = sans(27, 400)
+    const lines = wrap(ctx, row.body, INNER - 78)
+    paint(() => {
+      ctx.fillStyle = C.inkSoft
+      lines.forEach((line, i) => ctx.fillText(line, X + 78, y + 26 + i * 42))
+    })
+    y += 26 + (lines.length - 1) * 42 + 28
+  }
+
+  // 처방. 면을 깔아서 이 한 줄만 따로 집어 읽게 한다
+  y += 8
+  ctx.font = sans(29, 400)
+  const rxLines = wrap(ctx, archetype.prescriptions[0], INNER - 64 - 60)
+  const boxH = 28 + 44 + 16 + rxLines.length * 44 + 28
   const boxTop = y
-
   paint(() => {
-    ctx.fillStyle = C.surface
-    roundRect(ctx, PAD, boxTop, inner, boxH, 24)
-    ctx.fill()
-    ctx.strokeStyle = C.rule
-    ctx.lineWidth = 2
-    ctx.stroke()
-
-    ctx.fillStyle = accent
-    roundRect(ctx, PAD, boxTop + 20, 5, boxH - 40, 3)
+    ctx.fillStyle = C.paperDeep
+    roundRect(ctx, X, boxTop, INNER, boxH, 24)
     ctx.fill()
 
     ctx.fillStyle = accentDeep
-    ctx.font = serif(25, 700)
-    ctx.fillText(shareCanvasCopy.prescription, PAD + 42, boxTop + 56)
+    ctx.beginPath()
+    ctx.arc(X + 32 + 22, boxTop + 28 + 22, 22, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.fillStyle = '#fff'
+    ctx.font = serif(22, 700)
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(shareCanvasCopy.prescriptionMark, X + 32 + 22, boxTop + 28 + 23)
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'alphabetic'
 
     ctx.fillStyle = C.ink
-    ctx.font = sans(29, 500)
-    preLines.forEach((line, i) => ctx.fillText(line, PAD + 42, boxTop + 102 + i * 42))
-  })
-  y = boxTop + boxH + 50
+    ctx.font = serif(28, 700)
+    ctx.fillText(shareCanvasCopy.prescription, X + 32 + 60, boxTop + 28 + 30)
 
-  // 필요한 사람
+    ctx.fillStyle = C.ink
+    ctx.font = sans(29, 400)
+    rxLines.forEach((line, i) =>
+      ctx.fillText(line, X + 32 + 60, boxTop + 28 + 44 + 16 + 30 + i * 44),
+    )
+  })
+  y = boxTop + boxH
+
+  // 어떤 사람이 오면 좋은지
+  y += 44
+  dashed(ctx, y)
+  y += 40
   paint(() => {
     ctx.fillStyle = C.inkSoft
-    ctx.font = sans(25, 500)
-    ctx.fillText(needs.heading, PAD, y)
+    ctx.font = sans(26, 400)
+    ctx.fillText(needs.heading, X, y + 22)
   })
+  y += 22 + 16
 
-  y += 48
-  ctx.font = serif(33, 700)
-  const needLines = wrap(ctx, needs.body, inner)
+  ctx.font = serif(36, 700)
+  const needLines = wrap(ctx, needs.body, INNER)
   paint(() => {
     ctx.fillStyle = C.ink
-    needLines.forEach((line, i) => ctx.fillText(line, PAD, y + i * 44))
+    needLines.forEach((line, i) => ctx.fillText(line, X, y + 30 + i * 51))
   })
-  y += needLines.length * 44
+  y += 30 + (needLines.length - 1) * 51
 
-  // 푸터
-  const footerTop = Math.max(y + 60, MIN_H - 96)
+  // 균형 점수
+  y += 40
+  dashed(ctx, y)
+  y += 36
   paint(() => {
-    ctx.strokeStyle = C.rule
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.moveTo(PAD, footerTop - 34)
-    ctx.lineTo(W - PAD, footerTop - 34)
-    ctx.stroke()
+    ctx.fillStyle = C.inkSoft
+    ctx.font = sans(26, 400)
+    ctx.fillText(shareCanvasCopy.balanceLabel, X, y + 34)
 
+    ctx.textAlign = 'right'
+    ctx.fillStyle = accentDeep
+    ctx.font = serif(30, 700)
+    ctx.fillText(shareCanvasCopy.balanceUnit, X + INNER, y + 34)
+    const unitW = ctx.measureText(shareCanvasCopy.balanceUnit).width
+    ctx.font = serif(46, 700)
+    ctx.fillText(`${analysis.balance}`, X + INNER - unitW - 4, y + 34)
+    ctx.textAlign = 'left'
+  })
+  y += 34
+
+  // 조합 칩. 혼자면 조합이 없다. 0쌍 0쌍 0쌍은 알려주는 게 없어서 안 그린다
+  if (!solo) {
+    y += 22
+    const chips = [
+      [shareCanvasCopy.pairGenerating, analysis.pairCounts.generating],
+      [shareCanvasCopy.pairSame, analysis.pairCounts.same],
+      [shareCanvasCopy.pairTension, analysis.pairCounts.tension],
+    ] as const
+    paint(() => {
+      ctx.font = sans(24, 400)
+      let cx = X
+      for (const [label, n] of chips) {
+        const text = `${label} ${n}${shareCanvasCopy.pairUnit}`
+        const w = ctx.measureText(text).width + 40
+        ctx.strokeStyle = C.rule
+        ctx.lineWidth = 2
+        roundRect(ctx, cx, y, w, 46, 23)
+        ctx.stroke()
+        ctx.fillStyle = C.inkSoft
+        ctx.fillText(text, cx + 20, y + 31)
+        cx += w + 12
+      }
+    })
+    y += 46
+  }
+
+  // 맺음
+  y += 56
+  paint(() => {
+    ctx.fillStyle = C.rule
+    ctx.fillRect(X, y, INNER, 1)
+  })
+  y += 36
+  paint(() => {
     ctx.fillStyle = C.inkSoft
     ctx.font = sans(23, 400)
-    // 혼자면 조합이 없다. 0쌍 0쌍 0쌍은 알려주는 게 없어서 균형 점수만 남긴다
-    const stats = solo
-      ? shareCanvasCopy.balance(analysis.balance)
-      : shareCanvasCopy.balanceWithPairs(
-          analysis.balance,
-          analysis.pairCounts.generating,
-          analysis.pairCounts.same,
-          analysis.pairCounts.tension,
-        )
-    ctx.fillText(stats, PAD, footerTop)
-    ctx.fillText(shareCanvasCopy.footer, PAD, footerTop + 36)
-  })
+    ctx.textAlign = 'center'
+    ctx.fillText(shareCanvasCopy.note, mid, y + 22)
 
-  return footerTop + 36 + 56
+    ctx.font = serif(26, 700)
+    const brandW = ctx.measureText(shareCanvasCopy.brand).width
+    const bx = mid - (34 + 14 + brandW) / 2
+    ctx.textAlign = 'left'
+    ctx.fillStyle = accentDeep
+    roundRect(ctx, bx, y + 44, 34, 34, 8)
+    ctx.fill()
+    ctx.fillStyle = '#fff'
+    ctx.font = serif(20, 800)
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(shareCanvasCopy.seal, bx + 17, y + 62)
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'alphabetic'
+
+    ctx.fillStyle = C.ink
+    ctx.font = serif(26, 700)
+    ctx.fillText(shareCanvasCopy.brand, bx + 48, y + 70)
+  })
+  y += 22 + 16 + 34
+
+  return y + PANEL_PAD_BOTTOM
+}
+
+/**
+ * 종이 면과 금선 액자.
+ *
+ * 높이를 알아야 그릴 수 있는데 글보다 먼저 깔려야 한다. 나중에 `destination-over`
+ * 로 뒤에 넣어보려다 한지가 이미 불투명하게 깔려 있어서 통째로 가려졌다.
+ * 그래서 재는 판을 한 번 돌린 뒤 그 높이로 여기서 먼저 깐다.
+ */
+function drawPanel(ctx: CanvasRenderingContext2D, panelBottom: number) {
+  const h = panelBottom - CARD_PAD
+  ctx.fillStyle = C.surface
+  ctx.fillRect(PANEL_X, CARD_PAD, PANEL_W, h)
+  ctx.strokeStyle = C.rule
+  ctx.lineWidth = 2
+  ctx.strokeRect(PANEL_X + 1, CARD_PAD + 1, PANEL_W - 2, h - 2)
+  drawFrame(ctx, CARD_PAD, panelBottom)
 }
 
 function loadImage(src: string): Promise<HTMLImageElement | null> {
@@ -398,15 +596,17 @@ export async function drawShareCard(
 
   // 1차. 높이만 잰다
   canvas.width = W
-  canvas.height = MIN_H
+  canvas.height = 1400
   ctx.textBaseline = 'alphabetic'
-  const height = Math.max(MIN_H, Math.ceil(layout(ctx, report, illust, false)))
+  const panelBottom = Math.ceil(layout(ctx, report, illust, false))
+  const height = panelBottom + CARD_PAD
 
   // 2차. 실제로 그린다. width/height 를 바꾸면 컨텍스트가 초기화된다
   canvas.width = W
   canvas.height = height
   ctx.textBaseline = 'alphabetic'
   drawPaper(ctx, height)
+  drawPanel(ctx, panelBottom)
   layout(ctx, report, illust, true)
 }
 

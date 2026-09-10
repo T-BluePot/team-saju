@@ -28,9 +28,20 @@ export const shareCanvasCopy = {
   excess: '넘치는 기운',
   lacking: '비어 있는 기운',
   prescription: '이번 주에 해볼 것',
-  balance: (balance: number) => `균형 ${balance}점`,
-  balanceWithPairs: (balance: number, generating: number, same: number, tension: number) =>
-    `균형 ${balance}점 · 상생 ${generating}쌍 · 비슷한 결 ${same}쌍 · 긴장 ${tension}쌍`,
-  footer: '팀사주 · 재미로 보는 콘텐츠입니다',
+  prescriptionMark: '處',
+  /**
+   * 균형 점수와 조합은 한 줄로 잇지 않고 나눠 적는다. 카드 아래쪽은 훑어보는
+   * 자리라 `균형 69점 · 상생 0쌍 · …` 처럼 이으면 한 덩어리로 뭉쳐 읽힌다.
+   */
+  balanceLabel: '균형 점수',
+  balanceUnit: '점',
+  pairGenerating: '상생',
+  pairSame: '비슷한 결',
+  /** 화면은 `긴장감 있는 조합` 인데 카드는 칩이 좁아서 줄인다 */
+  pairTension: '긴장',
+  pairUnit: '쌍',
+  seal: '占',
+  brand: '팀사주',
+  note: '재미로 보는 콘텐츠입니다',
   fileName: (teamName: string, archetype: string) => `팀사주-${teamName}-${archetype}.png`,
 } as const
