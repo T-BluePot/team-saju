@@ -781,8 +781,14 @@ details[open] > .summary-plain .chevron {
   line-height: 1.1;
 }
 
-/* 한자 밑에 붙는 음과 오행. 한자 크기와 무관하게 늘 작다 */
+/*
+ * 한자 밑에 붙는 음과 오행. 한자 크기와 무관하게 늘 작다.
+ *
+ * 한자와는 2px 만 띄운다. 한 덩어리로 읽혀야 해서다. 덩어리 사이는 칸이
+ * 아래 여백으로 벌린다. 둘 다 0 이면 천간의 음이 지지 한자에 붙어 버린다.
+ */
 .chart-sound {
+  margin-top: 2px;
   font-size: clamp(0.625rem, 2.8vw, 0.6875rem);
   letter-spacing: -0.02em;
 }

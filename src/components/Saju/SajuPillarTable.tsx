@@ -47,7 +47,7 @@ export function SajuPillarTable({ pillars }: { pillars: SajuChart['pillars'] }) 
       {/* 기둥 이름 */}
       <Cell />
       {list.map((p, i) => (
-        <Cell key={i} col={i} className="chart-name pt-2" top>
+        <Cell key={i} col={i} className="chart-name pb-1.5 pt-2.5" top>
           <span
             style={{
               color: i === DAY ? 'var(--accent-deep)' : 'var(--ink-soft)',
@@ -121,7 +121,7 @@ function Glyphs({
     <>
       <Cell />
       {list.map((p, i) => (
-        <Cell key={i} col={i} className="pb-1">
+        <Cell key={i} col={i} className="pb-3">
           {p ? (
             <>
               <span
@@ -135,7 +135,7 @@ function Glyphs({
               </span>
             </>
           ) : (
-            <span className="chart-value block py-4" style={{ color: 'var(--ink-soft)' }}>
+            <span className="chart-value block py-5" style={{ color: 'var(--ink-soft)' }}>
               {fallback}
             </span>
           )}
