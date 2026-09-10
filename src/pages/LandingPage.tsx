@@ -46,8 +46,9 @@ export function LandingPage() {
           <li
             key={title}
             className="flex gap-5 py-4"
-            // 항목 사이는 점선 --rule-faint. index.css 의 괘선 표를 따른다
-            style={{ borderTop: i === 0 ? 'none' : '1px dashed var(--rule-faint)' }}
+            // 괘선 표의 예외다. 항목 사이지만 점선으로 내리면 아래 동의 목록과
+            // 같은 무게가 되어 첫 화면의 세 단계가 묻힌다. index.css 에 적어뒀다
+            style={{ borderTop: i === 0 ? 'none' : '1px solid var(--rule)' }}
           >
             <span
               className="serif w-5 shrink-0 text-lg font-bold"
