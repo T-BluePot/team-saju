@@ -80,23 +80,20 @@ export function PersonalView({
           <SajuPillarTable pillars={pillars} />
 
           {/*
-            표를 읽는 법. 표에 딸린 각주라 제일 작고 흐리다.
+            표를 읽는 법. 표에 딸린 각주라 선 없이 바로 붙인다. 표와 한 덩어리다.
             십이운성에 프레이밍이 없으면 회색과 강조색이 좋고 나쁨처럼 읽힌다.
             팀원 전환 탭이 있어서 남의 명식도 같은 화면에 보인다. 평가로 쓰이면 안 된다
           */}
-          <p
-            className="mt-3 pt-3 text-11 leading-relaxed"
-            style={{ borderTop: '1px solid var(--rule-faint)', color: 'var(--ink-soft)' }}
-          >
+          <p className="mt-3 text-11 leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
             {personalCopy.pillarNote}
           </p>
 
           {/*
-            이 명식에서 짚어둘 것. 표를 읽는 법이 아니라 표에서 읽어낸 내용이라
-            각주보다 한 단 위다. 크기와 색을 같이 올려서 각주와 안 섞이게 한다
+            여기서 덩어리가 바뀐다. 위는 표와 표 읽는 법이고 아래는 이 명식에서
+            읽어낸 내용이다. 이 블록 안에서 선을 긋는 자리는 여기 하나다
           */}
           <div
-            className="mt-4 flex flex-col gap-2.5 pt-4"
+            className="mt-5 flex flex-col gap-2.5 pt-5"
             style={{ borderTop: '1px solid var(--rule-faint)' }}
           >
             <p className="text-sm leading-relaxed">

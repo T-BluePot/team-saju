@@ -69,6 +69,13 @@ export function SajuPillarTable({ pillars }: { pillars: SajuChart['pillars'] }) 
         </Cell>
       ))}
 
+      {/*
+        여덟 글자와 그 아래 부속 정보를 가르는 한 줄. 줄마다 그으면 한 블록 안에
+        선이 넷이 되고, 정작 표가 어디서 끝나는지가 안 보인다. 줄 구별은 이미
+        왼쪽 이름이 하고 있다
+      */}
+      <Rule />
+
       <Row
         label="십신"
         values={list.map((p) =>
@@ -112,7 +119,6 @@ function Row({
 }) {
   return (
     <>
-      <Rule />
       <Cell className="py-1.5 pr-1 text-left text-10">
         <span style={{ color: 'var(--ink-soft)' }}>{label}</span>
       </Cell>
