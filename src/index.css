@@ -916,18 +916,15 @@ details[open] > .summary-plain .chevron {
   }
 }
 
-/*
- * 오행 면. 그림이 아래쪽에 서고 이름표가 그 위에 반쯤 걸친다.
- * 지금은 그림 대신 한자가 서 있어서 가운데 정렬이다.
- */
+/* 오행 면. 그림이 아래쪽에 서고 이름표가 그 위에 반쯤 걸친다 */
 .energy-face {
   position: relative;
   display: grid;
-  min-height: 108px;
+  min-height: 132px;
   padding: 16px 12px 26px;
   border-radius: 11px 11px 0 0;
   background: var(--energy-face, var(--paper-deep));
-  place-items: center;
+  place-items: end center;
 }
 
 .energy-face img {
@@ -997,7 +994,7 @@ details[open] > .summary-plain .chevron {
 
 @media (width >= 560px) {
   .energy-face {
-    min-height: 132px;
+    min-height: 180px;
     padding-top: 24px;
   }
 

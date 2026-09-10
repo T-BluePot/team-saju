@@ -76,6 +76,26 @@ const ILLUST_BY_LACKING: Record<Element, { src: string; alt: string }> = {
   水: { src: '/illust/no-water.png', alt: illustrationCopy.altByLacking.水 },
 }
 
+/**
+ * 그 기운이 **센 사람**.
+ *
+ * 위 여섯 장과 기준이 반대다. 저쪽은 이 오행이 없을 때 벌어지는 일을 그리고
+ * 이쪽은 이 오행을 들고 오는 사람을 그린다. 기운 카드가 "데려오면 좋은 사람" 을
+ * 보여주는 자리라 없는 장면을 붙이면 `화 기운이 센 사람` 카드에 회의 중 조는
+ * 그림이 들어간다. 실제로 한 번 그렇게 붙였다가 뺐다.
+ *
+ * 출처는 위와 같은 いらすとや 다. 파일 이름은 내용이 바뀌면 같이 바꾼다.
+ * `vercel.json` 이 1년 immutable 캐시를 걸어둬서 같은 이름으로 내용만 갈면
+ * 이미 받아간 사람은 옛 그림을 계속 본다.
+ */
+const ILLUST_BY_STRONG: Record<Element, { src: string; alt: string }> = {
+  木: { src: '/illust/strong-wood.png', alt: illustrationCopy.altByStrong.木 },
+  火: { src: '/illust/strong-fire.png', alt: illustrationCopy.altByStrong.火 },
+  土: { src: '/illust/strong-earth.png', alt: illustrationCopy.altByStrong.土 },
+  金: { src: '/illust/strong-metal.png', alt: illustrationCopy.altByStrong.金 },
+  水: { src: '/illust/strong-water.png', alt: illustrationCopy.altByStrong.水 },
+}
+
 /** 어디도 안 비어서 붙일 결핍이 없다. 아무도 안 집는 마지막 한 조각 */
 const BALANCED_ILLUST = {
   src: '/illust/no-lacking.png',
@@ -86,6 +106,16 @@ export function illustFor(archetypeId: string, lacking: Element | null) {
   // 균형형은 결핍이 없다. 랜딩 족자가 유형 표를 그대로 훑어서 null 이 들어온다
   if (archetypeId === 'balanced' || lacking === null) return BALANCED_ILLUST
   return ILLUST_BY_LACKING[lacking]
+}
+
+/**
+ * 기운 카드가 쓰는 그림.
+ *
+ * `센 사람` 카드는 그 기운을 들고 오는 사람을, `약한 사람` 카드는 그 기운이
+ * 없을 때의 장면을 쓴다. 약한 쪽은 결핍 그림이 곧 그 사람 얘기라 그대로 맞다.
+ */
+export function illustForEnergy(element: Element, strength: 'strong' | 'weak') {
+  return strength === 'strong' ? ILLUST_BY_STRONG[element] : ILLUST_BY_LACKING[element]
 }
 
 export const ILLUST_SOURCE = 'いらすとや'
