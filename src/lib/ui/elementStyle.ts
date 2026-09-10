@@ -23,6 +23,21 @@ export const ELEMENT_COLOR: Record<Element, string> = {
   水: 'var(--el-water)',
 }
 
+/**
+ * 글자용 오방색.
+ *
+ * 면과 선은 `ELEMENT_COLOR`, 글자는 이쪽이다. 원본 오방색을 글자로 쓰면
+ * 한지색 위에서 土 2.99:1, 金 3.86:1 로 4.5:1 에 못 미친다.
+ * 값은 `index.css` 가 들고 있고 다크에서는 알아서 밝은 쪽으로 바뀐다.
+ */
+export const ELEMENT_COLOR_DEEP: Record<Element, string> = {
+  木: 'var(--el-wood-deep)',
+  火: 'var(--el-fire-deep)',
+  土: 'var(--el-earth-deep)',
+  金: 'var(--el-metal-deep)',
+  水: 'var(--el-water-deep)',
+}
+
 /** 캔버스에는 CSS 변수를 못 쓴다 */
 export const ELEMENT_HEX: Record<Element, string> = {
   木: '#2F7D6B',

@@ -1,7 +1,7 @@
 import { ELEMENTS, ELEMENT_LABEL, ELEMENT_TEAM_MEANING } from '../../lib/saju/constants'
 import { useReveal } from '../../lib/ui/useReveal'
 import type { ElementScores } from '../../lib/saju/types'
-import { ELEMENT_COLOR, FLAG_LABEL } from '../../lib/ui/elementStyle'
+import { ELEMENT_COLOR, ELEMENT_COLOR_DEEP, FLAG_LABEL } from '../../lib/ui/elementStyle'
 
 type Props = {
   percents: ElementScores
@@ -31,7 +31,7 @@ export function SajuElementBars({ percents, flags, showMeaning = false }: Props)
           >
             <span
               className="w-6 shrink-0 text-sm font-semibold"
-              style={{ color: ELEMENT_COLOR[el] }}
+              style={{ color: ELEMENT_COLOR_DEEP[el] }}
             >
               <span aria-hidden="true">{el}</span>
               {/* 한자만 두면 화면은 깔끔한데 읽어주는 쪽이 잃는다 */}

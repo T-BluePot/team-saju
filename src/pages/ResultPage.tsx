@@ -1,15 +1,12 @@
 import { useMemo, useState } from 'react'
 
-import {
-  PersonalView,
-  ResultExampleNotice,
-  TeamNextStep,
-  TeamReportView,
-} from '../components/Result'
+import { PersonalView, ResultExampleNotice, TeamReportView } from '../components/Result'
+import { AppBottomBar } from '../components/Layout'
+import { CommonButton } from '../components/Common'
 import { buildTeamReport } from '../lib/report/teamReport'
 import { isSolo } from '../lib/report/solo'
-import { useTeamStore } from '../store/teamStore'
-import { headlineCopy, resultCopy } from '../lib/copy'
+import { MAX_MEMBERS, useTeamStore } from '../store/teamStore'
+import { headlineCopy, nextStepCopy, resultCopy } from '../lib/copy'
 
 export function ResultPage() {
   const charts = useTeamStore((s) => s.charts)
@@ -104,7 +101,22 @@ export function ResultPage() {
         <PersonalView charts={charts} pairs={report.analysis.pairs} />
       )}
 
-      <TeamNextStep count={charts.length} onEdit={onEdit} onRestart={reset} />
+      {/*
+        주 동작은 랜딩 · 입력과 같은 바에 앉힌다. 결과만 흐름 안에 두면 주 버튼이
+        화면마다 다른 자리에 앉아서 어디를 눌러야 하는지를 매번 다시 배워야 한다.
+        `팀원 수정` 은 위 머리줄에 이미 있어서 여기 또 두지 않는다.
+      */}
+      <AppBottomBar
+        hint={
+          charts.length >= MAX_MEMBERS
+            ? nextStepCopy.full(MAX_MEMBERS)
+            : nextStepCopy.more
+        }
+      >
+        <CommonButton type="button" variant="ghost" onClick={reset}>
+          {nextStepCopy.restart}
+        </CommonButton>
+      </AppBottomBar>
     </div>
   )
 }

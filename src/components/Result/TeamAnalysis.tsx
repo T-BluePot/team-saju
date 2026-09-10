@@ -6,7 +6,7 @@ import { readTraits } from '../../lib/report/traits'
 import { useCountUp, useReveal } from '../../lib/ui/useReveal'
 import type { TeamReport } from '../../lib/report/teamReport'
 import { ELEMENT_LABEL } from '../../lib/saju/constants'
-import { ELEMENT_COLOR, FLAG_LABEL } from '../../lib/ui/elementStyle'
+import { ELEMENT_COLOR_DEEP, FLAG_LABEL } from '../../lib/ui/elementStyle'
 import { analysisCopy, resultCopy } from '../../lib/copy'
 import { and, subject } from '../../lib/text/josa'
 
@@ -55,7 +55,7 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
           <CommonEntry
             mark={dominant.element}
             markLabel={ELEMENT_LABEL[dominant.element]}
-            markColor={ELEMENT_COLOR[dominant.element]}
+            markColor={ELEMENT_COLOR_DEEP[dominant.element]}
             title={FLAG_LABEL[analysis.flags[dominant.element]]}
             value={`${dominant.percent}%`}
           >
@@ -64,7 +64,7 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
           <CommonEntry
             mark={lacking.element}
             markLabel={ELEMENT_LABEL[lacking.element]}
-            markColor={ELEMENT_COLOR[lacking.element]}
+            markColor={ELEMENT_COLOR_DEEP[lacking.element]}
             title={FLAG_LABEL[analysis.flags[lacking.element]]}
             value={`${lacking.percent}%`}
           >

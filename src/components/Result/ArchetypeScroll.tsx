@@ -4,7 +4,7 @@ import type { Archetype } from '../../lib/report/archetypes'
 import { scrollCopy } from '../../lib/copy'
 import { ELEMENT_LABEL } from '../../lib/saju/constants'
 import { object } from '../../lib/text/josa'
-import { ELEMENT_COLOR, illustFor } from '../../lib/ui/elementStyle'
+import { ELEMENT_COLOR_DEEP, illustFor } from '../../lib/ui/elementStyle'
 
 /**
  * 유형을 건 족자.
@@ -77,7 +77,7 @@ function ScrollWhy({ lacking }: { lacking: Archetype['lacking'] }) {
   return (
     <>
       {scrollCopy.whyHead}
-      <span className="serif font-bold" style={{ color: ELEMENT_COLOR[lacking] }}>
+      <span className="serif font-bold" style={{ color: ELEMENT_COLOR_DEEP[lacking] }}>
         {lacking}
       </span>
       {scrollCopy.whyTail(josa)}

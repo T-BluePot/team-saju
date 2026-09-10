@@ -9,7 +9,7 @@ import {
   STRONG_STAGES,
 } from '../../lib/saju/constants'
 import type { Element, Pillar, SajuChart } from '../../lib/saju/types'
-import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
+import { ELEMENT_COLOR_DEEP } from '../../lib/ui/elementStyle'
 import { personalCopy, sajuCopy } from '../../lib/copy'
 
 const KIND_LABEL: Record<Pillar['kind'], string> = {
@@ -126,7 +126,7 @@ function Glyphs({
             <>
               <span
                 className="chart-glyph serif block font-bold"
-                style={{ color: ELEMENT_COLOR[element(p)] }}
+                style={{ color: ELEMENT_COLOR_DEEP[element(p)] }}
               >
                 {pick(p)}
               </span>

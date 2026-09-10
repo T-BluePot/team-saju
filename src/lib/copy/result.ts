@@ -104,7 +104,11 @@ export const energyCardsCopy = {
   title: '우리 팀에 필요한 기운은?',
   subtitle: '현재 팀의 오행 조합을 기준으로 살펴봅니다',
   carousel: '팀에 더해질 기운에 따른 변화',
+  /** 도움이 되는 쪽 / 이미 넘치는 쪽. 두 묶음을 갈라 놓는다 */
+  tabGood: '균형을 더하는 기운',
+  tabFull: '현재와 겹치는 기운',
   note: '새로운 기운이 더해졌을 때의 오행 조합 변화입니다',
+  noteFull: '현재 팀의 오행 조합에서 이미 비중이 높은 기운입니다.',
 } as const
 
 export const nextStepCopy = {

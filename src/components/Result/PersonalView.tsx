@@ -13,7 +13,7 @@ import type { PairChemistry, SajuChart, Strength } from '../../lib/saju/types'
 import { personalCopy, strengthCopy } from '../../lib/copy'
 import { pairCopy } from '../../lib/report/pairs'
 import { readTraits } from '../../lib/report/traits'
-import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
+import { ELEMENT_COLOR_DEEP } from '../../lib/ui/elementStyle'
 
 export function PersonalView({
   charts,
@@ -108,7 +108,7 @@ export function PersonalView({
             <Note label={personalCopy.dayMasterPrefix}>
               <strong
                 className="serif font-bold"
-                style={{ color: ELEMENT_COLOR[dayMaster.element] }}
+                style={{ color: ELEMENT_COLOR_DEEP[dayMaster.element] }}
               >
                 {dayMaster.stem} {ELEMENT_LABEL[dayMaster.element]}
               </strong>

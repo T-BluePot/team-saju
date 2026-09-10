@@ -103,12 +103,26 @@
   --scroll-silk: #4a5b58;
   --scroll-gold: #bfa678;
 
-  /* 오방색 */
+  /* 오방색. 면과 선에 쓴다 */
   --el-wood: #2f7d6b;
   --el-fire: #d93a26;
   --el-earth: #c08a2e;
   --el-metal: #7c8188;
   --el-water: #2b3a55;
+
+  /*
+   * 글자용 오방색.
+   *
+   * 오방색 원본은 한지색 위에서 土 2.99:1, 金 3.86:1 이라 글자로 쓰면 4.5:1 에
+   * 못 미친다. `[data-element]` 의 `--accent-deep` 이 같은 값을 들고 있었는데
+   * 그건 그 화면의 주도 오행 하나에만 걸려서, 오행 다섯이 한 줄에 같이 서는
+   * 자리(오행 막대, 명식표)에서는 쓸 수가 없었다.
+   */
+  --el-wood-deep: #1f5a4c;
+  --el-fire-deep: var(--cinnabar-deep);
+  --el-earth-deep: #8a6220;
+  --el-metal-deep: #565b61;
+  --el-water-deep: var(--el-water);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -139,6 +153,17 @@
     --el-earth: #d9a648;
     --el-metal: #9aa1aa;
     --el-water: #6b83ad;
+
+    /*
+     * 다크는 오방색이 이미 밝아서 대체로 글자로 그대로 쓴다.
+     * 火와 水만 예외다. 오행 막대는 그 줄을 제 색으로 옅게 까는데, 그 물 위에서
+     * 다크 --el-fire 가 4.49:1 로 4.5 에 딱 못 미친다. 水는 더 어둡다.
+     */
+    --el-wood-deep: var(--el-wood);
+    --el-fire-deep: var(--cinnabar-deep);
+    --el-earth-deep: var(--el-earth);
+    --el-metal-deep: var(--el-metal);
+    --el-water-deep: #8098c4;
   }
 }
 
@@ -388,27 +413,27 @@ dialog.sheet[open]::backdrop {
  */
 [data-element='木'] {
   --accent: var(--el-wood);
-  --accent-deep: #1f5a4c;
+  --accent-deep: var(--el-wood-deep);
   --accent-wash: color-mix(in srgb, var(--el-wood) 12%, var(--surface));
 }
 [data-element='火'] {
   --accent: var(--el-fire);
-  --accent-deep: var(--cinnabar-deep);
+  --accent-deep: var(--el-fire-deep);
   --accent-wash: color-mix(in srgb, var(--el-fire) 12%, var(--surface));
 }
 [data-element='土'] {
   --accent: var(--el-earth);
-  --accent-deep: #8a6220;
+  --accent-deep: var(--el-earth-deep);
   --accent-wash: color-mix(in srgb, var(--el-earth) 12%, var(--surface));
 }
 [data-element='金'] {
   --accent: var(--el-metal);
-  --accent-deep: #565b61;
+  --accent-deep: var(--el-metal-deep);
   --accent-wash: color-mix(in srgb, var(--el-metal) 12%, var(--surface));
 }
 [data-element='水'] {
   --accent: var(--el-water);
-  --accent-deep: var(--el-water);
+  --accent-deep: var(--el-water-deep);
   --accent-wash: color-mix(in srgb, var(--el-water) 12%, var(--surface));
 }
 
@@ -805,4 +830,72 @@ details[open] > .summary-plain .chevron {
   font-size: clamp(0.6875rem, 3.2vw, 0.75rem);
   letter-spacing: -0.03em;
   white-space: nowrap;
+}
+
+/*
+ * 기운 카드.
+ *
+ * 앞에는 넉 장을 좌우로 넘겨봤다. 넷 중 둘은 데려오면 좋은 쪽이고 둘은
+ * 이미 넘치는 쪽인데, 한 줄에 섞여 있으니 어느 게 어느 쪽인지가 카드를 다
+ * 읽어야 나왔다. 두 묶음으로 갈라서 한 번에 한 묶음만 보여준다.
+ *
+ * 좁은 화면에서도 두 장을 나란히 둔다. 한 장씩 쌓으면 비교가 안 되는데
+ * 이 카드는 둘을 견주라고 있는 것이다.
+ */
+.energy-seg {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--rule);
+  border-radius: 9999px;
+  background: var(--paper-deep);
+}
+
+.energy-seg button {
+  flex: 1;
+  padding: 9px 8px;
+  border-radius: 9999px;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.energy-seg button[aria-pressed='true'] {
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+.energy-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 10px;
+}
+
+/* 오행 면. 일러스트가 들어갈 자리인데 아직 에셋이 없어서 한자를 크게 놓는다 */
+.energy-face {
+  display: grid;
+  min-height: 92px;
+  padding: 16px 12px 26px;
+  border-radius: 11px 11px 0 0;
+  background: var(--energy-face, var(--paper-deep));
+  place-items: center;
+}
+
+/* 이름표. 면 아래쪽에 반쯤 걸친다 */
+.energy-plate {
+  position: relative;
+  z-index: 2;
+  margin: -20px 10px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+@media (width >= 560px) {
+  .energy-face {
+    min-height: 128px;
+    padding-top: 24px;
+  }
 }
