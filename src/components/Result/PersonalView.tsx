@@ -12,6 +12,7 @@ import { ELEMENT_LABEL, STRENGTH_THRESHOLD, TEN_GODS } from '../../lib/saju/cons
 import type { PairChemistry, SajuChart, Strength } from '../../lib/saju/types'
 import { personalCopy, strengthCopy } from '../../lib/copy'
 import { pairCopy } from '../../lib/report/pairs'
+import { readTraits } from '../../lib/report/traits'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
 
 export function PersonalView({
@@ -28,6 +29,7 @@ export function PersonalView({
   const { pillars, dayMaster, elements, strength, traits, tenGods, voidBranches, corrections } =
     chart
   const myPairs = pairs.filter((p) => p.aId === chart.member.id || p.bId === chart.member.id)
+  const reading = readTraits(traits)
 
   return (
     <div className="flex flex-col gap-10">
@@ -151,7 +153,19 @@ export function PersonalView({
         </CommonBlock>
 
         <CommonBlock label={personalCopy.traitsHeading}>
-          <SajuTraitBars traits={traits} />
+          {/*
+            팀 결과와 같은 규칙으로 짚는다. 높은 축은 파랑, 낮은 축은 빨강,
+            나머지는 물러난다. 여기만 다섯 줄이 다 강조색이라 어느 쪽이 두껍고
+            어느 쪽이 얇은지가 안 보였다.
+
+            고르게 나온 사람은 짚을 축이 없다. 억지로 둘을 굵게 하면
+            `TRAIT_AXES` 배열 순서가 그대로 새어 나온다
+          */}
+          <SajuTraitBars
+            traits={traits}
+            strong={reading.even ? undefined : reading.topAxes}
+            weak={reading.even ? undefined : reading.bottomAxes}
+          />
         </CommonBlock>
 
         {myPairs.length > 0 && (
