@@ -20,7 +20,6 @@ export function CommonScroll({
   unroll = false,
   narrow = false,
   overlay,
-  hold,
 }: {
   children: ReactNode
   /** 열리는 동작을 보여준다. 결과 화면이 쓴다 */
@@ -29,13 +28,6 @@ export function CommonScroll({
   narrow?: boolean
   /** 판 위에 얹는 것. 캐러셀 화살표가 여기 온다 */
   overlay?: ReactNode
-  /**
-   * 판을 이 높이 아래로 줄어들지 않게 붙잡는다.
-   *
-   * 넘겨보는 자리에서 장마다 내용 길이가 다르면 봉이 위아래로 뛴다.
-   * 부르는 쪽이 제일 긴 장의 높이를 재서 넘긴다.
-   */
-  hold?: number
 }) {
   // 저감 모션이면 첫 그림부터 다 펼친 상태다. 열고 나서 되돌리지 않는다
   const [p, setP] = useState(() => (unroll && !reduced() ? 0 : 1))
@@ -64,7 +56,7 @@ export function CommonScroll({
 
   const paper = (
     <div className="scroll-silk">
-      <div className="scroll-paper" style={hold ? { minHeight: hold } : undefined}>
+      <div className="scroll-paper">
         <span aria-hidden="true" className="scroll-frame" />
         {overlay}
         {children}

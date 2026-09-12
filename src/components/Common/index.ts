@@ -28,3 +28,4 @@ export {
   CommonSection,
   CommonSubHeading,
 } from './CommonSection'
+export { CommonSegmented } from './CommonSegmented'

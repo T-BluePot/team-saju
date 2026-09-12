@@ -24,6 +24,36 @@ export const memberFormCopy = {
   hourOption: (hour: string) => `${hour}시`,
   minuteOption: (minute: string) => `${minute}분`,
   hourUnknownNote: '시주를 제외하고 계산합니다',
+
+  /** 시간을 지시로 고를지 시각으로 넣을지 */
+  hourModeGroup: '시간을 넣는 방법',
+  hourModeBranch: '십이지시',
+  hourModeClock: '직접 입력',
+  hourBranchLabel: '지시',
+  hourBranchNote: '태어난 시를 모르면 어림해도 괜찮습니다. 시주만 달라집니다',
+  /** 자시가 자정을 걸쳐서 두 칸인 이유 */
+  hourBranchMidnightNote: '자시는 자정을 걸쳐서 둘로 나눠 받습니다',
+
+  /**
+   * 시각 한 점을 읽는 말.
+   *
+   * 때 이름은 십이지시 경계에 맞춰 끊는다. 5시 30분은 새벽이고 6시는 오전,
+   * 17시 30분은 오후고 19시는 저녁이다. 시간 단위로 반올림해서 끊으면
+   * 지시의 시작과 끝이 다른 때 이름으로 읽혀서 한 칸이 두 때에 걸친다.
+   *
+   * 23시 59분은 자정으로 읽는다. 야자시의 끝이라 `밤 11:59` 보다 자정이 맞다.
+   */
+  clockAt: (hour: number, minute: number) => {
+    if (minute === 0 && hour === 0) return '자정'
+    if (minute === 59 && hour === 23) return '자정'
+    if (minute === 0 && hour === 12) return '정오'
+    const period =
+      hour < 6 ? '새벽' : hour < 12 ? '오전' : hour < 18 ? '오후' : hour < 20 ? '저녁' : '밤'
+    const h12 = hour % 12 === 0 ? 12 : hour % 12
+    const mm = minute === 0 ? '' : `:${String(minute).padStart(2, '0')}`
+    return `${period} ${h12}${mm}`
+  },
+  hourRange: (from: string, to: string) => `${from} ~ ${to}`,
   trueSolarTime: '진태양시 보정',
   trueSolarTimeNote:
     '태어난 시간을 실제 태양시 기준으로 보정합니다. 정확한 계산을 위해 켜두는 것을 권장합니다.',

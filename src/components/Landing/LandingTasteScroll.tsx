@@ -1,8 +1,8 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import type { TouchEvent } from 'react'
 import { CommonScroll } from '../Common'
 // 유형 족자는 결과 화면 것이다. 첫 화면은 그걸 그대로 걸어서 넘겨보게만 한다
-import { ArchetypeScroll } from '../Result'
+import { ArchetypeContent } from '../Result'
 import { landingCopy } from '../../lib/copy'
 import { ARCHETYPES } from '../../lib/report/archetypes'
 import { LANDING_TASTE } from '../../lib/report/sample'
@@ -32,32 +32,6 @@ export function LandingTasteScroll() {
   const [i, setI] = useState(0)
   const [from, setFrom] = useState<{ x: number; y: number } | null>(null)
 
-  /**
-   * 판 높이를 제일 긴 장에 맞춰 붙잡는다.
-   *
-   * 유형 다섯 장은 그림과 이름과 들어오면 좋은 사람이 다 들어가서 505px 인데,
-   * 마지막 `외 16가지 유형` 장은 글 두 줄뿐이라 352px 이다. 그대로 두면 마지막
-   * 장에서만 봉이 150px 뛰어오른다. 넘기다 보면 판이 접혔다 펴지는 것처럼 보인다.
-   *
-   * 값을 박아두지 않고 재서 쓴다. 폭이 바뀌면 유형 장의 높이도 같이 바뀐다.
-   */
-  const box = useRef<HTMLDivElement>(null)
-  const [hold, setHold] = useState(0)
-
-  useLayoutEffect(() => {
-    const paper = box.current?.querySelector('.scroll-paper')
-    // 붙잡고 있는 장을 재면 제 키가 아니라 붙잡힌 키가 나온다
-    if (!paper || i >= PICKED.length) return
-    setHold((max) => Math.max(max, Math.round(paper.getBoundingClientRect().height)))
-  }, [i])
-
-  // 폭이 바뀌면 기준도 바뀐다. 다시 재게 비운다
-  useEffect(() => {
-    const onResize = () => setHold(0)
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-
   const move = (step: number) => setI((n) => Math.min(Math.max(n + step, 0), COUNT - 1))
 
   const onTouchStart = (e: TouchEvent) =>
@@ -77,8 +51,6 @@ export function LandingTasteScroll() {
     if (Math.abs(dx) >= SWIPE_PX && Math.abs(dx) > Math.abs(dy)) move(dx < 0 ? 1 : -1)
   }
 
-  const archetype = PICKED[i]
-
   const nav = (
     <>
       <NavButton
@@ -97,16 +69,19 @@ export function LandingTasteScroll() {
   )
 
   return (
-    <div ref={box} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-      {archetype ? (
-        <ArchetypeScroll
-          archetype={archetype}
-          needs={needsBlock(false, archetype)}
-          overlay={nav}
-        />
-      ) : (
-        <CommonScroll overlay={nav} hold={hold}>
-          <div className="flex flex-1 flex-col justify-center gap-3">
+    <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+      {/*
+        여섯 장을 한 판에 겹쳐 쌓고 한 장만 보여준다. 판을 장마다 새로 씌우면
+        내용이 짧은 마지막 장에서 판이 150px 줄어들면서 봉이 뛰어오른다.
+      */}
+      <CommonScroll overlay={nav}>
+        <div className="deck">
+          {PICKED.map((a, n) => (
+            <div key={a.id} className="deck-slide" aria-hidden={n !== i}>
+              <ArchetypeContent archetype={a} needs={needsBlock(false, a)} />
+            </div>
+          ))}
+          <div className="deck-slide justify-center" aria-hidden={i !== COUNT - 1}>
             <p className="serif text-2xl font-extrabold" style={{ color: 'var(--ink-soft)' }}>
               {landingCopy.tasteMore(REST)}
             </p>
@@ -114,8 +89,8 @@ export function LandingTasteScroll() {
               {landingCopy.tasteMoreNote}
             </p>
           </div>
-        </CommonScroll>
-      )}
+        </div>
+      </CommonScroll>
 
       {/* 몇 번째 장인지만 알려주는 자리. 읽어줄 내용은 판 안에 다 있다 */}
       <div aria-hidden="true" className="flex justify-center gap-1.5 pt-4">

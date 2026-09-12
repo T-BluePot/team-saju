@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { CSSProperties } from 'react'
 
-import { CommonSection } from '../Common'
+import { CommonSection, CommonSegmented } from '../Common'
 import { energyCards } from '../../lib/report/energy'
 import type { EnergyCard } from '../../lib/report/energy'
 import { BALANCED_ARCHETYPE_ID } from '../../lib/saju/team'
@@ -9,7 +9,7 @@ import type { TeamReport } from '../../lib/report/teamReport'
 import { ELEMENT_COLOR, ELEMENT_COLOR_DEEP, illustForEnergy } from '../../lib/ui/elementStyle'
 import { energyCardsCopy, resultCopy } from '../../lib/copy'
 
-type Set = 'good' | 'full'
+type EnergySet = 'good' | 'full'
 
 /**
  * 데려오면 좋은 기운, 지금은 안 되는 기운.
@@ -23,7 +23,7 @@ type Set = 'good' | 'full'
  */
 export function TeamEnergyCards({ report }: { report: TeamReport }) {
   const { dominant, lacking } = report.analysis.elements
-  const [set, setSet] = useState<Set>('good')
+  const [set, setSet] = useState<EnergySet>('good')
 
   /*
    * 균형형은 채울 데도 덜 데도 없다. 억지로 네 장을 만들면 같은 말이 두 번 나온다.
@@ -37,7 +37,7 @@ export function TeamEnergyCards({ report }: { report: TeamReport }) {
   const cards = energyCards(dominant, lacking)
   const shown = cards.filter((c) => (set === 'good' ? c.good : !c.good))
 
-  const tabs: Array<[Set, string]> = [
+  const tabs: Array<[EnergySet, string]> = [
     ['good', energyCardsCopy.tabGood],
     ['full', energyCardsCopy.tabFull],
   ]
@@ -48,20 +48,12 @@ export function TeamEnergyCards({ report }: { report: TeamReport }) {
       title={energyCardsCopy.title}
       subtitle={energyCardsCopy.subtitle}
     >
-      <div className="energy-seg" role="group" aria-label={energyCardsCopy.carousel}>
-        {tabs.map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            aria-pressed={set === key}
-            onClick={() => setSet(key)}
-            className="press text-xs font-semibold"
-            style={{ color: set === key ? 'var(--ink)' : 'var(--ink-soft)' }}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <CommonSegmented
+        label={energyCardsCopy.carousel}
+        value={set}
+        options={tabs}
+        onChange={setSet}
+      />
 
       <p className="my-4 text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
         {set === 'good' ? energyCardsCopy.note : energyCardsCopy.noteFull}

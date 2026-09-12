@@ -13,28 +13,26 @@ import { ELEMENT_COLOR_DEEP, illustFor } from '../../lib/ui/elementStyle'
  * 첫 화면에서 스쳐본 판이 결과에서 자기 유형으로 걸리는 게 이 화면의 맺음이다.
  * 그래서 판을 두 벌로 나누지 않는다.
  */
-export function ArchetypeScroll({
-  archetype,
-  needs,
-  lead,
-  unroll = false,
-  overlay,
-  hold,
-}: {
+export type ArchetypeContentProps = {
   archetype: Archetype
   /** 어떤 사람이 오면 좋은지. 혼자일 때 말이 달라져서 밖에서 받는다 */
   needs: { heading: string; body: string }
   /** 유형 이름 위에 붙는 한 줄. 혼자일 때만 있다 */
   lead?: string
-  unroll?: boolean
-  overlay?: ReactNode
-  /** 넘겨보는 자리에서 판 높이를 붙잡는다. `CommonScroll` 이 받는다 */
-  hold?: number
-}) {
+}
+
+/**
+ * 판에 걸리는 내용만. 판은 밖에서 씌운다.
+ *
+ * 첫 화면은 여섯 장을 한 판에 겹쳐 쌓아두고 한 장만 보여준다. 그래야 판이
+ * 제일 긴 장에 맞춰 서고 넘길 때 봉이 안 뛴다. 판을 장마다 새로 씌우면
+ * 그렇게 못 한다.
+ */
+export function ArchetypeContent({ archetype, needs, lead }: ArchetypeContentProps) {
   const illust = illustFor(archetype.id, archetype.lacking)
 
   return (
-    <CommonScroll unroll={unroll} overlay={overlay} hold={hold}>
+    <>
       {lead && (
         <p className="serif text-sm" style={{ color: 'var(--accent-deep)' }}>
           {lead}
@@ -66,6 +64,21 @@ export function ArchetypeScroll({
           <CommonSeal className="size-8 text-11">{scrollCopy.seal}</CommonSeal>
         </div>
       </div>
+    </>
+  )
+}
+
+export function ArchetypeScroll({
+  unroll = false,
+  overlay,
+  ...content
+}: ArchetypeContentProps & {
+  unroll?: boolean
+  overlay?: ReactNode
+}) {
+  return (
+    <CommonScroll unroll={unroll} overlay={overlay}>
+      <ArchetypeContent {...content} />
     </CommonScroll>
   )
 }

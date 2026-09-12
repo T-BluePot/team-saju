@@ -1,4 +1,4 @@
-export { ArchetypeScroll } from './ArchetypeScroll'
+export { ArchetypeContent, ArchetypeScroll } from './ArchetypeScroll'
 export { PersonalView } from './PersonalView'
 export { ResultExampleNotice } from './ResultExampleNotice'
 export { TeamAnalysis } from './TeamAnalysis'

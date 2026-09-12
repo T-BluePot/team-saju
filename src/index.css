@@ -642,6 +642,36 @@ dialog.sheet[open]::backdrop {
  *
  * 금선 안쪽으로 들어오게 위아래를 10px 씩 띄운다. 그 선이 판의 테두리다.
  */
+/*
+ * 겹쳐 쌓은 장.
+ *
+ * 넘겨보는 자리에서 장마다 내용 길이가 다르면 판이 늘었다 줄었다 하면서
+ * 봉이 위아래로 뛴다. 높이를 재서 붙잡아봤지만 폭이 바뀌면 잰 값이 낡는다.
+ * 여섯 장을 같은 칸에 겹쳐 두면 판이 제일 긴 장에 맞춰 서고, 그 다음부터는
+ * 폭이 어떻게 바뀌든 브라우저가 알아서 맞춘다. 재지 않는다.
+ */
+.deck {
+  display: grid;
+  flex: 1;
+  width: 100%;
+}
+
+.deck > * {
+  grid-area: 1 / 1;
+}
+
+.deck-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.deck-slide[aria-hidden='true'] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .scroll-nav {
   position: absolute;
   top: 10px;
@@ -961,7 +991,7 @@ details[open] > .summary-plain .chevron {
  * 좁은 화면에서도 두 장을 나란히 둔다. 한 장씩 쌓으면 비교가 안 되는데
  * 이 카드는 둘을 견주라고 있는 것이다.
  */
-.energy-seg {
+.seg {
   display: flex;
   gap: 2px;
   padding: 3px;
@@ -970,7 +1000,7 @@ details[open] > .summary-plain .chevron {
   background: var(--paper-deep);
 }
 
-.energy-seg button {
+.seg button {
   flex: 1;
   padding: 9px 8px;
   border-radius: 9999px;
@@ -979,7 +1009,7 @@ details[open] > .summary-plain .chevron {
     color 0.15s;
 }
 
-.energy-seg button[aria-pressed='true'] {
+.seg button[aria-pressed='true'] {
   background: var(--surface);
   box-shadow: 0 0 0 1px var(--rule);
 }
