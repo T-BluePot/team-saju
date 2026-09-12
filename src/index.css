@@ -997,35 +997,51 @@ details[open] > .summary-plain .chevron {
 /*
  * 밀어서 보는 줄.
  *
- * **스크롤바를 감추지 않는다.** 한동안 감춰뒀는데, 손가락으로는 스와이프가
- * 되지만 마우스에는 밀 방법이 없다. 창을 좁게 쓰는 데스크탑에서는 둘째 장에
- * 닿을 데가 아예 없어서 카드 한 장이 조용히 사라졌다. 얇게라도 보이면
- * 잡아서 밀 수 있고, 더 있다는 것도 그 자체로 알린다.
+ * 스크롤바를 **마우스가 있을 때만** 보여준다. 손가락은 그냥 밀면 되니까 막대가
+ * 필요 없고, 마우스는 밀 방법이 그것뿐이다. 한동안 양쪽 다 감춰뒀는데
+ * 창을 좁게 쓰는 데스크탑에서 둘째 장에 닿을 데가 아예 없어서 카드 한 장이
+ * 조용히 사라졌다.
  *
- * 손가락 쪽에서는 대개 겹쳐 뜨는 막대라 자리를 안 먹는다.
+ * 기본을 감춘 쪽으로 두고 `hover` 가 되는 기기에서만 되살린다. 반대로 짜면
+ * `::-webkit-scrollbar` 를 스타일한 탓에 손가락 기기에서 겹쳐 뜨던 막대가
+ * 자리를 먹는 막대로 바뀐다. 판 아래에 쓰지도 않을 8px 이 늘 깔린다.
+ *
+ * `hover` 로 가른다. 터치 노트북은 트랙패드도 있어서 `hover` 가 되고, 그 쪽은
+ * 보이는 게 맞다. 반대로 마우스뿐인데 `hover` 가 안 되는 기기는 사실상 없다.
  */
 .scroll-x {
-  scrollbar-width: thin;
-  scrollbar-color: var(--rule) transparent;
+  scrollbar-width: none;
 }
 
 .scroll-x::-webkit-scrollbar {
-  height: 8px;
+  display: none;
 }
 
-.scroll-x::-webkit-scrollbar-track {
-  background: transparent;
-}
+@media (hover: hover) {
+  .scroll-x {
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
 
-.scroll-x::-webkit-scrollbar-thumb {
-  border: 2px solid transparent;
-  border-radius: 9999px;
-  background-clip: content-box;
-  background-color: var(--rule);
-}
+  .scroll-x::-webkit-scrollbar {
+    display: block;
+    height: 8px;
+  }
 
-.scroll-x:hover::-webkit-scrollbar-thumb {
-  background-color: var(--ink-faint);
+  .scroll-x::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scroll-x::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    background-clip: content-box;
+    background-color: var(--rule);
+  }
+
+  .scroll-x:hover::-webkit-scrollbar-thumb {
+    background-color: var(--ink-faint);
+  }
 }
 
 /*
