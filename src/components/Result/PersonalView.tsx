@@ -34,14 +34,11 @@ export function PersonalView({
   return (
     <div className="flex flex-col gap-10">
       {/*
-        팀원 전환. 넘치면 줄을 바꾼다.
-
-        한동안 옆으로 밀어서 보게 뒀다. 사람 수에 따라 아래 섹션이 시작하는
-        높이가 달라지는 게 싫어서였는데, 스크롤바를 감춰둔 자리라 마우스로는
-        뒤쪽 칩에 닿을 방법이 없었다. 여덟 명이면 뒤 셋이 그냥 사라진다.
-        높이가 한 줄 늘어나는 것보다 사람이 사라지는 게 나쁘다.
+        팀원 전환. 넘치면 밀어서 본다. 줄바꿈으로 흘리면 사람 수에 따라
+        아래 섹션이 시작하는 높이가 달라진다. 스크롤바는 `.scroll-x` 가
+        얇게라도 남겨둔다. 감추면 마우스로 뒤쪽 칩에 닿을 데가 없어진다
       */}
-      <div className="-mx-5 flex flex-wrap gap-2 px-5">
+      <div className="scroll-x -mx-5 flex gap-2 overflow-x-auto px-5">
         {charts.map((c, i) => (
           <button
             key={c.member.id}
