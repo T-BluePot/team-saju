@@ -16,7 +16,6 @@ export const exampleNoticeCopy = {
 } as const
 
 export const headlineCopy = {
-  seal: '占',
   solo: '아직 혼자',
   size: (size: number) => `${size}명`,
 } as const
@@ -46,13 +45,9 @@ export const illustrationCopy = {
     火: '회의 중에 조는 사람',
     土: '손가락에 밀려 무너지는 도미노',
     金: '결재 서류가 산더미로 쌓인 책상',
-    水: '팜플렛을 들고 앞을 가리키는 여행자들',
+    水: '콧김을 뿜으며 돌진하는 멧돼지',
   },
   altBalanced: '접시에 하나 남은 음식',
-  /**
-   * 기운 카드 그림. 이쪽은 결핍이 아니라 **그 기운이 센 사람**을 그린다.
-   * 데려오면 좋은 사람을 보여주는 자리라 없는 장면을 붙이면 뜻이 뒤집힌다.
-   */
   /**
    * 유형별 그림. 21개 유형이 저마다 다른 장면을 쓴다.
    *

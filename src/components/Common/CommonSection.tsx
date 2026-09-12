@@ -235,15 +235,6 @@ export function CommonEntry({
   )
 }
 
-/** 카드 안에서 소제목을 나눌 때 */
-export function CommonSubHeading({ children }: { children: ReactNode }) {
-  return <h4 className="serif text-base font-bold">{children}</h4>
-}
-
-export function CommonRule({ double = false }: { double?: boolean }) {
-  return <hr className={double ? 'rule-double my-7' : 'rule my-7'} />
-}
-
 /** 붉은 인장 */
 export function CommonSeal({
   children = '占',

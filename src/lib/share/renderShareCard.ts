@@ -58,6 +58,29 @@ function sans(size: number, weight = 400) {
   return `${weight} ${size}px ${SANS}`
 }
 
+/**
+ * 넘치면 끝을 줄인다.
+ *
+ * 캔버스에는 `text-overflow` 가 없어서 넘치는 걸 그대로 그린다. 팀 이름은 20자까지
+ * 받는데 머리줄이 쓸 수 있는 폭은 그보다 좁아서, 긴 이름이면 금선까지 붙었다.
+ * 화면의 팀 이름은 `truncate` 로 같은 일을 한다.
+ */
+function clip(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string {
+  if (ctx.measureText(text).width <= maxWidth) return text
+
+  const tail = '…'
+  let fit = 0
+  let over = text.length
+
+  // 한 글자씩 재면 20자에 20번이다. 반씩 좁힌다
+  while (fit < over) {
+    const half = Math.ceil((fit + over) / 2)
+    if (ctx.measureText(text.slice(0, half) + tail).width <= maxWidth) fit = half
+    else over = half - 1
+  }
+  return text.slice(0, fit) + tail
+}
+
 function wrap(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const words = text.split(' ')
   const lines: string[] = []
@@ -372,10 +395,12 @@ function layout(
 
   // 인장과 팀 이름과 인원. 셋을 한 줄에 가운데로 모은다
   const who = solo ? shareCanvasCopy.solo : shareCanvasCopy.size(analysis.size)
-  ctx.font = serif(36, 700)
-  const teamW = ctx.measureText(analysis.teamName).width
   ctx.font = sans(24, 400)
   const pillW = ctx.measureText(who).width + 40
+  ctx.font = serif(36, 700)
+  // 인장 56 + 틈 18 + 이름 + 틈 18 + 배지. 이름이 가져갈 수 있는 건 나머지뿐이다
+  const teamName = clip(ctx, analysis.teamName, INNER - (56 + 18 + 18 + pillW))
+  const teamW = ctx.measureText(teamName).width
   const topX = mid - (56 + 18 + teamW + 18 + pillW) / 2
   const topY = y
 
@@ -384,7 +409,7 @@ function layout(
 
     ctx.fillStyle = C.ink
     ctx.font = serif(36, 700)
-    ctx.fillText(analysis.teamName, topX + 74, topY + 41)
+    ctx.fillText(teamName, topX + 74, topY + 41)
 
     ctx.font = sans(24, 400)
     pill(ctx, topX + 74 + teamW + 18, topY + 11, 34, who, C.paperDeep)

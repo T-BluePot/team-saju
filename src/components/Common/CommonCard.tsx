@@ -56,21 +56,3 @@ export function CommonCard<T extends ElementType = 'section'>({
     </Tag>
   )
 }
-
-/** 카드 안에서 한 단 낮은 면. 통계 타일 같은 데 쓴다 */
-export function CommonWell({
-  className = '',
-  children,
-}: {
-  className?: string
-  children: ReactNode
-}) {
-  return (
-    <div
-      className={['rounded-xl p-4', className].filter(Boolean).join(' ')}
-      style={{ background: 'var(--paper-deep)' }}
-    >
-      {children}
-    </div>
-  )
-}

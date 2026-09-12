@@ -29,7 +29,7 @@ describe('색 토큰 대비', () => {
 
   it('잴 짝이 비어 있지 않다', () => {
     expect(PAIRS.length).toBeGreaterThan(0)
-    expect(ELEMENT_PAIRS).toHaveLength(10)
+    expect(ELEMENT_PAIRS).toHaveLength(15)
   })
 
   it(`쓰는 짝이 전부 ${MIN_RATIO}:1 을 넘는다`, () => {

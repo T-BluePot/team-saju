@@ -53,8 +53,10 @@ export function ResultPage() {
             key={key}
             type="button"
             onClick={() => setTab(key)}
-            aria-selected={tab === key}
-            role="tab"
+            // 눌린 상태로만 알린다. role="tab" 은 tablist 와 tabpanel, 화살표 키
+            // 이동까지 같이 서야 뜻이 생긴다. 롤만 얹으면 아무것도 안 얹은 것보다
+            // 덜 알려준다. 바로 아래 팀원 전환 버튼도 aria-pressed 다
+            aria-pressed={tab === key}
             className="press serif -mb-px py-3.5 text-base font-bold"
             style={{
               color: tab === key ? 'var(--ink)' : 'var(--ink-soft)',

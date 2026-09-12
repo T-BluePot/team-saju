@@ -253,10 +253,22 @@ export const PAIRS: Pair[] = [
   { fg: '--on-accent', bg: '--accent-deep', where: '인장 · 處 도장 · 주 버튼' },
 ]
 
-/** 오행 글자. 팀 색과 무관하게 다섯이 한 화면에 같이 선다 */
+/**
+ * 오행 다섯이 한 화면에 같이 서는 자리.
+ *
+ * 도장은 `--el-*-deep` 을 면으로 깔고 `--on-accent` 를 얹는다. 위의
+ * `--on-accent on --accent-deep` 과 같은 짝처럼 보이지만, 어두운 환경에서는
+ * `--accent-deep` 이 `var(--accent)` 로 갈려서 다른 색이 된다.
+ * 그래서 따로 잰다.
+ */
 export const ELEMENT_PAIRS: Pair[] = Object.values(ELEMENT_SLUG).flatMap((slug) => [
   { fg: `--el-${slug}-deep`, bg: '--surface', where: `오행 글자 (${slug}) · 카드 위` },
   { fg: `--el-${slug}-deep`, bg: '--paper', where: `오행 글자 (${slug}) · 한지 위` },
+  {
+    fg: '--on-accent',
+    bg: `--el-${slug}-deep`,
+    where: `기운 카드 오행 도장 (${slug})`,
+  },
 ])
 
 /** 본문 글자 기준. 큰 글자 예외(18.66px bold / 24px)에 기대지 않는다 */

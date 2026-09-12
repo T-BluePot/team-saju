@@ -6,7 +6,7 @@
  * 색은 전부 `src/index.css` 의 CSS 변수를 본다.
  */
 export { CommonButton, type CommonButtonVariant } from './CommonButton'
-export { CommonCard, CommonWell } from './CommonCard'
+export { CommonCard } from './CommonCard'
 export { CommonChip } from './CommonChip'
 export { CommonScroll } from './CommonScroll'
 export {
@@ -19,13 +19,11 @@ export {
   CommonTextInput,
 } from './CommonField'
 export {
-  CommonRule,
   CommonSeal,
   CommonBlock,
   CommonEntry,
   CommonEntryList,
   CommonPrescription,
   CommonSection,
-  CommonSubHeading,
 } from './CommonSection'
 export { CommonSegmented } from './CommonSegmented'
