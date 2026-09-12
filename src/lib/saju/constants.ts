@@ -64,23 +64,15 @@ export const BRANCH_KO: Record<Branch, string> = {
   午: '오', 未: '미', 申: '신', 酉: '유', 戌: '술', 亥: '해',
 }
 
-/** 지지에 붙는 띠. 지시로 시간을 고를 때 옆에 세워 알아보기 쉽게 한다 */
-export const BRANCH_ANIMAL: Record<Branch, string> = {
-  子: '쥐', 丑: '소', 寅: '호랑이', 卯: '토끼', 辰: '용', 巳: '뱀',
-  午: '말', 未: '양', 申: '원숭이', 酉: '닭', 戌: '개', 亥: '돼지',
-}
-
 export type HourBranch = {
   branch: Branch
-  /** 자시 축시 같은 이름 */
+  /** 화면에 세우는 이름 */
   name: string
   /** 시계 시각 [시, 분]. `to` 는 그 분까지 포함한다 */
   from: [number, number]
   to: [number, number]
   /** 고르면 저장하는 시각. 구간 한가운데다 */
   at: [number, number]
-  /** 자시만 둘로 갈린다. 나머지는 없다 */
-  sect?: '야자시' | '조자시'
 }
 
 /**
@@ -92,13 +84,17 @@ export type HourBranch = {
  * **`at` 은 구간의 시작이 아니라 한가운데다.** 경계값을 저장하면 진태양시 보정을
  * 껐을 때 옆 칸으로 넘어간다. 한가운데는 보정을 켜든 끄든 같은 지시에 남는다.
  *
- * 자시만 둘이다. 자정을 걸치기 때문에 같은 날짜를 넣어도 자정 앞뒤로 일주가 갈린다.
- * 야자시설을 쓰므로 23시 이후는 다음날 일주로 본다 (같은 문서 야자시 처리).
- * 한 칸으로 두면 둘 중 한쪽은 여덟 글자 중 하나가 틀린 채로 나온다.
+ * 자시가 둘이다. 야자시설을 쓰므로 23시 이후는 다음날 일주로 본다 (같은 문서).
+ * 갈리는 자리는 **진태양시 00:00, 곧 시계로 00:30** 이다. 시계 자정으로 끊으면
+ * 00:00~00:29 가 조자시로 들어가는데 그 30분은 진태양시로 23:30~23:59 라 야자시다.
+ *
+ * 야자시 한 칸에는 자정 앞뒤가 같이 들어간다. 같은 시각을 두고도 생년월일을
+ * 자정 앞으로 적은 사람과 뒤로 적은 사람이 있어서, 한 칸에 시각 하나만 둘 수는
+ * 없다. `at` 은 자정 앞(23:45)으로 잡았다. 자정을 넘겨 태어났으면 직접 입력이 맞다.
  */
 export const HOUR_BRANCHES: HourBranch[] = [
-  { branch: '子', name: '자시', sect: '야자시', from: [23, 30], to: [23, 59], at: [23, 45] },
-  { branch: '子', name: '자시', sect: '조자시', from: [0, 0], to: [1, 29], at: [0, 45] },
+  { branch: '子', name: '야자시', from: [23, 30], to: [0, 29], at: [23, 45] },
+  { branch: '子', name: '자시', from: [0, 30], to: [1, 29], at: [0, 45] },
   { branch: '丑', name: '축시', from: [1, 30], to: [3, 29], at: [2, 30] },
   { branch: '寅', name: '인시', from: [3, 30], to: [5, 29], at: [4, 30] },
   { branch: '卯', name: '묘시', from: [5, 30], to: [7, 29], at: [6, 30] },
@@ -116,14 +112,16 @@ export const HOUR_BRANCHES: HourBranch[] = [
  * 시계 시각이 어느 지시에 드는가.
  *
  * 직접 입력에서 지시로 돌아올 때 고른 칸을 되살리는 데 쓴다.
- * 자시는 자정을 걸치니까 `from > to` 인 칸이 없게 표를 둘로 갈라뒀다.
+ * 야자시만 자정을 걸쳐서 `from` 이 `to` 보다 크다. 그 칸은 둘 중 하나만 맞으면 든다.
  */
 export function hourBranchAt(hour: number, minute: number): HourBranch | null {
   const m = hour * 60 + minute
   return (
-    HOUR_BRANCHES.find(
-      (b) => m >= b.from[0] * 60 + b.from[1] && m <= b.to[0] * 60 + b.to[1],
-    ) ?? null
+    HOUR_BRANCHES.find((b) => {
+      const from = b.from[0] * 60 + b.from[1]
+      const to = b.to[0] * 60 + b.to[1]
+      return from > to ? m >= from || m <= to : m >= from && m <= to
+    }) ?? null
   )
 }
 

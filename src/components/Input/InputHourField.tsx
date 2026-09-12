@@ -1,10 +1,12 @@
 import { useState } from 'react'
 
-import { CommonFieldGroup, CommonSegmented, CommonSelect, CommonTextInput } from '../Common'
+import { CommonFieldGroup, CommonNumberPick, CommonSegmented, CommonSelect } from '../Common'
 import { memberFormCopy } from '../../lib/copy'
-import { BRANCH_ANIMAL, HOUR_BRANCHES, hourBranchAt } from '../../lib/saju/constants'
+import { HOUR_BRANCHES, hourBranchAt } from '../../lib/saju/constants'
 
 const HOURS = Array.from({ length: 24 }, (_, h) => h)
+/** 목록에 띄울 분. 여기 없는 값도 써넣을 수 있다 */
+const MINUTES = [0, 10, 20, 30, 40, 50]
 
 type Mode = 'branch' | 'clock'
 
@@ -16,12 +18,11 @@ const MODES: Array<[Mode, string]> = [
 function optionText(index: number): string {
   const b = HOUR_BRANCHES[index]
   return memberFormCopy.hourBranchOption(
-    memberFormCopy.hourBranchName(b.name, b.sect),
+    b.name,
     memberFormCopy.hourRange(
       memberFormCopy.clockAt(b.from[0], b.from[1]),
       memberFormCopy.clockAt(b.to[0], b.to[1]),
     ),
-    BRANCH_ANIMAL[b.branch],
   )
 }
 
@@ -81,7 +82,7 @@ export function InputHourField({
                 }}
               >
                 {HOUR_BRANCHES.map((b, n) => (
-                  <option key={`${b.branch}${b.sect ?? ''}`} value={n}>
+                  <option key={b.name} value={n}>
                     {optionText(n)}
                   </option>
                 ))}
@@ -91,49 +92,29 @@ export function InputHourField({
               </p>
             </>
           ) : (
-            <div className="flex items-center gap-2">
-              <label className="sr-only" htmlFor="hour">
-                {memberFormCopy.hourLabel}
-              </label>
-              <CommonSelect
-                id="hour"
+            /*
+              시와 분이 같은 물건이라 같은 칸을 쓴다. 둘 다 목록에서 고르거나
+              그냥 써넣는다. 한쪽만 고르기로 두면 나란히 선 두 칸이 다르게 돈다.
+            */
+            <div className="flex items-center gap-3">
+              <CommonNumberPick
+                label={memberFormCopy.hourLabel}
+                suffix={memberFormCopy.hourLabel}
                 value={hour}
-                onChange={(e) => onChange(Number(e.target.value), minute)}
-              >
-                {HOURS.map((h) => (
-                  <option key={h} value={h}>
-                    {memberFormCopy.hourOption(String(h).padStart(2, '0'))}
-                  </option>
-                ))}
-              </CommonSelect>
-
-              {/*
-                분은 고르는 게 아니라 넣는다. 10분 단위 목록으로는 7분에
-                태어난 사람이 제 시각을 못 넣는다.
-              */}
-              <label className="sr-only" htmlFor="minute">
-                {memberFormCopy.minuteLabel}
-              </label>
-              <div className="flex items-center gap-1.5">
-                <CommonTextInput
-                  id="minute"
-                  type="number"
-                  min={0}
-                  max={59}
-                  inputMode="numeric"
-                  className="w-20 text-center"
-                  value={minute}
-                  onChange={(e) => {
-                    // 빈 칸은 0 으로 본다. NaN 이 들어가면 계산이 통째로 깨진다
-                    const next = Number(e.target.value)
-                    if (Number.isNaN(next)) return
-                    onChange(hour, Math.min(Math.max(Math.trunc(next), 0), 59))
-                  }}
-                />
-                <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-                  {memberFormCopy.minuteLabel}
-                </span>
-              </div>
+                min={0}
+                max={23}
+                options={HOURS}
+                onChange={(next) => onChange(next, minute)}
+              />
+              <CommonNumberPick
+                label={memberFormCopy.minuteLabel}
+                suffix={memberFormCopy.minuteLabel}
+                value={minute}
+                min={0}
+                max={59}
+                options={MINUTES}
+                onChange={(next) => onChange(hour, next)}
+              />
             </div>
           )}
         </div>

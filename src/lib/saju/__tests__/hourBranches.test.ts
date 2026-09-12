@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { buildChart } from '../chart'
-import { BRANCH_ANIMAL, BRANCHES, HOUR_BRANCHES, hourBranchAt } from '../constants'
+import { BRANCHES, HOUR_BRANCHES, hourBranchAt } from '../constants'
 import type { MemberInput } from '../types'
 
 /**
@@ -29,9 +29,9 @@ function member(hour: number, minute: number, useTrueSolarTime: boolean): Member
 }
 
 describe('십이지시 표', () => {
-  it('열세 칸이다. 자시만 야자시와 조자시로 갈린다', () => {
+  it('열세 칸이다. 子 만 야자시와 자시로 갈린다', () => {
     expect(HOUR_BRANCHES).toHaveLength(13)
-    expect(HOUR_BRANCHES.filter((b) => b.sect)).toHaveLength(2)
+    expect(HOUR_BRANCHES.filter((b) => b.branch === '子')).toHaveLength(2)
     expect(new Set(HOUR_BRANCHES.map((b) => b.branch)).size).toBe(12)
   })
 
@@ -40,23 +40,33 @@ describe('십이지시 표', () => {
     expect(seen).toEqual(BRANCHES)
   })
 
-  it('띠가 열두 지지에 다 있다', () => {
-    for (const branch of BRANCHES) {
-      expect(BRANCH_ANIMAL[branch]).toBeTruthy()
+  /**
+   * 하루 1440분이 빈 데 없이 딱 한 칸씩 덮이는가.
+   *
+   * 야자시가 자정을 걸쳐서 `from > to` 라 정렬로 이어붙이는 걸로는 못 본다.
+   * 분마다 물어보는 게 제일 확실하고 1440번이면 금방이다.
+   */
+  it('하루 어느 분이든 정확히 한 칸에 든다', () => {
+    const hit = (m: number) =>
+      HOUR_BRANCHES.filter((b) => {
+        const from = b.from[0] * 60 + b.from[1]
+        const to = b.to[0] * 60 + b.to[1]
+        return from > to ? m >= from || m <= to : m >= from && m <= to
+      })
+
+    for (let m = 0; m < 24 * 60; m += 1) {
+      expect(hit(m)).toHaveLength(1)
     }
   })
 
-  it('구간이 겹치지도 비지도 않는다', () => {
-    const minutes = (hm: [number, number]) => hm[0] * 60 + hm[1]
-    // 자시가 자정을 걸치니까 조자시(0:00)부터 시계 순서로 다시 세운다
-    const sorted = [...HOUR_BRANCHES].sort((a, b) => minutes(a.from) - minutes(b.from))
-
-    expect(minutes(sorted[0].from)).toBe(0)
-    expect(minutes(sorted[sorted.length - 1].to)).toBe(23 * 60 + 59)
-
-    for (let i = 1; i < sorted.length; i += 1) {
-      expect(minutes(sorted[i].from)).toBe(minutes(sorted[i - 1].to) + 1)
-    }
+  it('야자시는 자정을 걸친다', () => {
+    const [night] = HOUR_BRANCHES
+    expect(night.name).toBe('야자시')
+    expect(night.from).toEqual([23, 30])
+    expect(night.to).toEqual([0, 29])
+    // 진태양시로 자정이 시계 00:30 이다. 00:29 까지는 아직 어제 자시다
+    expect(hourBranchAt(0, 29)).toBe(night)
+    expect(hourBranchAt(0, 30)).not.toBe(night)
   })
 
   it('at 은 제 구간 안에 있다', () => {
@@ -67,7 +77,7 @@ describe('십이지시 표', () => {
 })
 
 describe('지시를 고르면 그 지시로 계산된다', () => {
-  it.each(HOUR_BRANCHES.map((b) => [b.sect ? `${b.name} ${b.sect}` : b.name, b] as const))(
+  it.each(HOUR_BRANCHES.map((b) => [b.name, b] as const))(
     '%s',
     (_name, b) => {
       for (const useTrueSolarTime of [true, false]) {
@@ -85,10 +95,10 @@ describe('지시를 고르면 그 지시로 계산된다', () => {
    * 당일이다. 한 칸으로 두면 둘 중 한쪽은 여덟 글자 중 하나가 틀린 채로 나온다.
    * 문서 03-saju-spec.md 의 G6 과 같은 자리다.
    */
-  it('야자시와 조자시는 일주가 갈린다', () => {
+  it('야자시와 자시는 일주가 갈린다', () => {
     const [night, late] = HOUR_BRANCHES
-    expect(night.sect).toBe('야자시')
-    expect(late.sect).toBe('조자시')
+    expect(night.name).toBe('야자시')
+    expect(late.name).toBe('자시')
 
     const a = buildChart(member(night.at[0], night.at[1], true)).pillars.day
     const b = buildChart(member(late.at[0], late.at[1], true)).pillars.day
