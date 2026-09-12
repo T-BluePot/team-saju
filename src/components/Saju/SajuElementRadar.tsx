@@ -1,5 +1,5 @@
 import { ELEMENTS, ELEMENT_LABEL } from '../../lib/saju/constants'
-import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
+import { ELEMENT_COLOR_DEEP } from '../../lib/ui/elementStyle'
 import type { ElementScores } from '../../lib/saju/types'
 import { useReveal } from '../../lib/ui/useReveal'
 import { sajuCopy } from '../../lib/copy'
@@ -106,7 +106,10 @@ export function SajuElementRadar({ percents, size = 240, showLabels = true }: Pr
               textAnchor="middle"
               fontSize={14}
               fontWeight={700}
-              fill={ELEMENT_COLOR[el]}
+              // 14px 700 은 큰 글자 예외에 못 들어가서 4.5:1 을 받아야 한다.
+              // 오방색 원본은 --surface 위에서 土 2.97:1 金 3.84:1 火 4.48:1 이다.
+              // 같은 자리를 그리는 캔버스 쪽 drawRadar 도 ELEMENT_HEX_DEEP 을 쓴다
+              fill={ELEMENT_COLOR_DEEP[el]}
             >
               {el}
             </text>

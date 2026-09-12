@@ -179,24 +179,24 @@ export const useTeamStore = create<State>((set, get) => ({
     for (const seed of SAMPLE_TEAM) {
       const error = get().addMember({ ...emptyDraft(), ...seed, consentSource: 'self' })
       if (error) {
-        // 반쯤 채워진 표본을 남기면 다음에 팀 만들기를 눌렀을 때 그게 섞인다
-        get().goLanding()
+        // 반쯤 채워진 표본을 남기면 다음에 팀 만들기를 눌렀을 때 그게 섞인다.
+        // `goLanding()` 은 화면만 옮기니까 여기서는 비우는 쪽을 부른다
+        get().reset()
+        set({ view: 'landing' })
         return
       }
     }
     // addMember 가 isExample 을 끄니 마지막에 다시 켠다
     set({ view: 'result', isExample: true })
   },
-  /** 머리글 로고로 처음 화면에 돌아온다. 넣던 내용은 지운다 */
-  goLanding: () =>
-    set({
-      view: 'landing',
-      teamName: '',
-      members: [],
-      charts: [],
-      removed: null,
-      isExample: false,
-    }),
+  /**
+   * 첫 화면으로 옮긴다. **아무것도 지우지 않는다.**
+   *
+   * 머리글 로고가 부른다. 한때 여기서 팀원까지 비웠는데, 넷째 사람을 넣다가
+   * 로고를 누르면 확인 한 번 없이 전부 날아갔다. v1 은 저장을 안 하니 되돌릴 데도 없다.
+   * 지우는 동작은 그렇게 적힌 자리에만 둔다. `새 팀으로 시작하기` 의 `reset()` 이다.
+   */
+  goLanding: () => set({ view: 'landing' }),
   goResult: () => set({ view: 'loading', removed: null }),
   finishLoading: () => set({ view: 'result' }),
   goBack: () => set((s) => ({ view: entryView(s.consented), removed: null })),

@@ -963,7 +963,8 @@ details[open] > .summary-plain .chevron {
   flex: none;
   margin-top: 1px;
   border-radius: 9999px;
-  background: var(--accent);
+  /* CommonPrescription 의 處 와 같은 짝이다. --on-accent 는 --accent-deep 위에만 얹는다 */
+  background: var(--accent-deep);
   color: var(--on-accent);
   font-size: 9px;
   font-weight: 700;

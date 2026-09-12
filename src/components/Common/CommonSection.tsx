@@ -120,7 +120,9 @@ export function CommonPrescription({ mark, children }: { mark: string; children:
     >
       <span
         className="serif grid size-5 shrink-0 place-items-center rounded-full text-10 font-bold leading-none"
-        style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
+        // --on-accent 는 --accent-deep 위에 얹는 짝이다. 오방색 원본을 깔면
+        // 土 3.04:1 金 3.92:1 로 떨어진다. index.css 의 .seal 주석에 적힌 숫자다
+        style={{ background: 'var(--accent-deep)', color: 'var(--on-accent)' }}
       >
         {mark}
       </span>

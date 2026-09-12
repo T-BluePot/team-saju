@@ -3,6 +3,7 @@ import { useTeamStore } from '../../store/teamStore'
 
 export function AppHeader() {
   const goLanding = useTeamStore((s) => s.goLanding)
+  const goBack = useTeamStore((s) => s.goBack)
   const view = useTeamStore((s) => s.view)
 
   /**
@@ -29,10 +30,13 @@ export function AppHeader() {
         }}
       >
         {showBack && (
+          // 화살표는 뒤로 가는 표시다. 한때 여기가 전체 초기화였는데, 생김새와
+          // 하는 일이 어긋나면 누른 사람이 잃는 쪽으로 어긋난다. 지우는 동작은
+          // `새 팀으로 시작하기` 가 이름을 달고 맡는다
           <button
             type="button"
-            onClick={goLanding}
-            aria-label={commonCopy.restart}
+            onClick={goBack}
+            aria-label={commonCopy.back}
             className="press -ml-2 grid size-9 place-items-center rounded-lg justify-self-start text-xl"
             style={{ color: 'var(--ink)' }}
           >
