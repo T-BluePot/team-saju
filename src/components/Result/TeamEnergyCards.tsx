@@ -59,7 +59,7 @@ export function TeamEnergyCards({ report }: { report: TeamReport }) {
         {set === 'good' ? energyCardsCopy.note : energyCardsCopy.noteFull}
       </p>
 
-      <div className="energy-cards scroll-x">
+      <div className="energy-cards">
         {shown.map((card) => (
           <Card key={card.id} card={card} />
         ))}
