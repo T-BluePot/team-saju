@@ -19,6 +19,7 @@ export function ArchetypeScroll({
   lead,
   unroll = false,
   overlay,
+  hold,
 }: {
   archetype: Archetype
   /** 어떤 사람이 오면 좋은지. 혼자일 때 말이 달라져서 밖에서 받는다 */
@@ -27,11 +28,13 @@ export function ArchetypeScroll({
   lead?: string
   unroll?: boolean
   overlay?: ReactNode
+  /** 넘겨보는 자리에서 판 높이를 붙잡는다. `CommonScroll` 이 받는다 */
+  hold?: number
 }) {
   const illust = illustFor(archetype.id, archetype.lacking)
 
   return (
-    <CommonScroll unroll={unroll} overlay={overlay}>
+    <CommonScroll unroll={unroll} overlay={overlay} hold={hold}>
       {lead && (
         <p className="serif text-sm" style={{ color: 'var(--accent-deep)' }}>
           {lead}

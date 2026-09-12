@@ -632,6 +632,106 @@ dialog.sheet[open]::backdrop {
 }
 
 /* 천을 타고 내려가는 결 */
+/*
+ * 넘기는 자리.
+ *
+ * 화살표 글자만 흐리게 얹어뒀더니 넘길 수 있는 판인 줄 모르고 지나갔다.
+ * 면을 깔고 괘선을 두른 동그라미로 바꾸고, 손이 그 쪽에 닿으면 가장자리에서
+ * 안쪽으로 옅게 번지게 한다. 눌리는 자리가 버튼 하나가 아니라 그 구역 전체라는
+ * 걸 손이 닿는 순간에만 말해준다. 평소에는 판을 가리지 않는다.
+ *
+ * 금선 안쪽으로 들어오게 위아래를 10px 씩 띄운다. 그 선이 판의 테두리다.
+ */
+.scroll-nav {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  z-index: 3;
+  display: flex;
+  width: 64px;
+  align-items: center;
+}
+
+.scroll-nav.left {
+  left: 10px;
+  justify-content: flex-start;
+}
+
+.scroll-nav.right {
+  right: 10px;
+  justify-content: flex-end;
+}
+
+.scroll-nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease-out;
+}
+
+.scroll-nav.left::before {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--ink) 13%, transparent),
+    transparent
+  );
+}
+
+.scroll-nav.right::before {
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--ink) 13%, transparent),
+    transparent
+  );
+}
+
+/* 손가락에는 hover 가 없다. 누르는 동안에도 같이 번지게 둔다 */
+.scroll-nav:hover::before,
+.scroll-nav:active::before {
+  opacity: 1;
+}
+
+/* 끝 장에서는 번지지 않는다. 갈 데가 없는데 갈 수 있다고 말하는 셈이다 */
+.scroll-nav:disabled::before {
+  opacity: 0;
+}
+
+/*
+ * 유리판 하나 얹은 느낌으로 둔다.
+ *
+ * 꽉 찬 면에 진한 테두리를 두르니 판 위에 칙칙한 단추 둘이 박혀 보였다.
+ * 반쯤 비치게 하고 뒤를 흐리면 판의 결이 비쳐서 얹혀 있다는 느낌이 난다.
+ * `backdrop-filter` 를 못 읽는 브라우저에서는 반투명한 면만 남고 그대로 읽힌다.
+ */
+.scroll-nav-chip {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--rule) 60%, transparent);
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--ink-soft);
+  transition:
+    background 0.18s ease-out,
+    color 0.18s ease-out;
+}
+
+/* 손이 닿으면 또렷해진다 */
+.scroll-nav:hover .scroll-nav-chip,
+.scroll-nav:active .scroll-nav-chip {
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--ink);
+}
+
+.scroll-nav:disabled .scroll-nav-chip {
+  opacity: 0.25;
+}
+
 .scroll-ripple {
   position: absolute;
   z-index: 2;
