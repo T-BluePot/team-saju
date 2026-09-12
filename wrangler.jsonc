@@ -1,0 +1,9 @@
+{
+  "name": "team-saju",
+  "compatibility_date": "2026-09-12",
+  "assets": {
+    "directory": "./dist",
+    // SPA 라우팅. 없는 경로는 index.html 로 돌려보낸다
+    "not_found_handling": "single-page-application"
+  }
+}
