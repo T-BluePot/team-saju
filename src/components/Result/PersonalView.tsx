@@ -14,6 +14,7 @@ import { personalCopy, strengthCopy } from '../../lib/copy'
 import { pairCopy } from '../../lib/report/pairs'
 import { readTraits } from '../../lib/report/traits'
 import { ELEMENT_COLOR_DEEP } from '../../lib/ui/elementStyle'
+import { useDragScroll } from '../../lib/ui/useDragScroll'
 
 export function PersonalView({
   charts,
@@ -23,6 +24,7 @@ export function PersonalView({
   pairs: PairChemistry[]
 }) {
   const [selected, setSelected] = useState(0)
+  const chips = useDragScroll<HTMLDivElement>()
   const chart = charts[selected]
   if (!chart) return null
 
@@ -35,10 +37,9 @@ export function PersonalView({
     <div className="flex flex-col gap-10">
       {/*
         팀원 전환. 넘치면 밀어서 본다. 줄바꿈으로 흘리면 사람 수에 따라
-        아래 섹션이 시작하는 높이가 달라진다. 스크롤바는 `.scroll-x` 가
-        얇게라도 남겨둔다. 감추면 마우스로 뒤쪽 칩에 닿을 데가 없어진다
+        아래 섹션이 시작하는 높이가 달라진다. 막대는 안 보여주고 끌어서 넘긴다
       */}
-      <div className="scroll-x -mx-5 flex gap-2 overflow-x-auto px-5">
+      <div ref={chips} className="scroll-x -mx-5 flex gap-2 overflow-x-auto px-5">
         {charts.map((c, i) => (
           <button
             key={c.member.id}

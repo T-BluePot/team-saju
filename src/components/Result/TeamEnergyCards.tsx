@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { CSSProperties } from 'react'
 
 import { CommonSection, CommonSegmented } from '../Common'
+import { useDragScroll } from '../../lib/ui/useDragScroll'
 import { energyCards } from '../../lib/report/energy'
 import type { EnergyCard } from '../../lib/report/energy'
 import { BALANCED_ARCHETYPE_ID } from '../../lib/saju/team'
@@ -24,6 +25,7 @@ type EnergySet = 'good' | 'full'
 export function TeamEnergyCards({ report }: { report: TeamReport }) {
   const { dominant, lacking } = report.analysis.elements
   const [set, setSet] = useState<EnergySet>('good')
+  const deck = useDragScroll<HTMLDivElement>()
 
   /*
    * 균형형은 채울 데도 덜 데도 없다. 억지로 네 장을 만들면 같은 말이 두 번 나온다.
@@ -59,7 +61,7 @@ export function TeamEnergyCards({ report }: { report: TeamReport }) {
         {set === 'good' ? energyCardsCopy.note : energyCardsCopy.noteFull}
       </p>
 
-      <div className="energy-cards scroll-x">
+      <div ref={deck} className="energy-cards scroll-x">
         {shown.map((card) => (
           <Card key={card.id} card={card} />
         ))}
