@@ -47,12 +47,20 @@ export function useDragScroll<T extends HTMLElement>() {
       el.scrollLeft = startLeft - dx
     }
 
+    /**
+     * 끌기를 놓는다. 손을 뗐을 때와 **줄 밖으로 나갔을 때** 둘 다 여기로 온다.
+     *
+     * 포인터를 붙잡아두지 않아서 줄을 벗어나면 `pointermove` 가 끊긴다. 그 상태로
+     * 바깥에서 손을 떼면 `pointerup` 이 이 줄에 안 와서, 스냅이 꺼진 채로 끌던
+     * 상태가 그대로 물려 있었다. 다음에 누를 때까지 스냅이 안 살아난다.
+     *
+     * 놓는 순간 스냅이 살아나면서 제일 가까운 장으로 붙는다.
+     */
     const end = (e: PointerEvent) => {
       if (id === null || e.pointerId !== id) return
       id = null
       el.style.scrollSnapType = snap
       el.style.userSelect = ''
-      // 놓는 순간 스냅이 살아나면서 제일 가까운 장으로 붙는다
     }
 
     /**
@@ -70,6 +78,8 @@ export function useDragScroll<T extends HTMLElement>() {
     el.addEventListener('pointermove', move)
     el.addEventListener('pointerup', end)
     el.addEventListener('pointercancel', end)
+    // 자식 사이를 지날 때는 안 뜨는 이벤트다. 줄 밖으로 나갈 때만 뜬다
+    el.addEventListener('pointerleave', end)
     el.addEventListener('click', click, true)
 
     return () => {
@@ -77,6 +87,7 @@ export function useDragScroll<T extends HTMLElement>() {
       el.removeEventListener('pointermove', move)
       el.removeEventListener('pointerup', end)
       el.removeEventListener('pointercancel', end)
+      el.removeEventListener('pointerleave', end)
       el.removeEventListener('click', click, true)
       el.style.scrollSnapType = snap
       el.style.userSelect = ''
