@@ -34,17 +34,6 @@ export function useDragScroll<T extends HTMLElement>() {
     let moved = 0
     const snap = el.style.scrollSnapType
 
-    /**
-     * 목표 자리까지 부드럽게 굴린다.
-     *
-     * 굴리는 동안 스냅을 끈다. `x mandatory` 가 켜진 채로 프로그램이 스크롤하면
-     * 브라우저가 도중에 제일 가까운 장으로 다시 당겨서, 한 칸 넘어가는 게
-     * 한 번 눌러서는 안 되고 두 번 눌러야 됐다.
-     *
-     * 되돌리는 건 시간으로만 받는다. `scrollend` 로도 받아봤는데 굴리기 시작한
-     * 첫 프레임에 떠버려서, 스냅이 곧바로 살아나 제자리로 되당겼다.
-     * 목표가 어차피 스냅 자리라 다 굴린 뒤에 켜도 안 움직인다.
-     */
     const down = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse' || e.button !== 0) return
       id = e.pointerId
@@ -65,20 +54,33 @@ export function useDragScroll<T extends HTMLElement>() {
     }
 
     /**
-     * 끌기를 놓는다. 손을 뗐을 때와 **줄 밖으로 나갔을 때** 둘 다 여기로 온다.
+     * 끌기를 놓는다. 놓는 순간 스냅이 살아나면서 제일 가까운 장으로 붙는다.
      *
-     * 포인터를 붙잡아두지 않아서 줄을 벗어나면 `pointermove` 가 끊긴다. 그 상태로
-     * 바깥에서 손을 떼면 `pointerup` 이 이 줄에 안 와서, 스냅이 꺼진 채로 끌던
-     * 상태가 그대로 물려 있었다. 다음에 누를 때까지 스냅이 안 살아난다.
+     * `keepMoved` 가 끈 거리를 남길지 정한다. 손을 뗀 경우에는 곧바로 `click` 이
+     * 따라오니까 남겨야 한다. 그 값으로 "넘기려던 것"과 "그냥 누른 것"을 가른다.
      *
-     * 놓는 순간 스냅이 살아나면서 제일 가까운 장으로 붙는다.
+     * 줄 밖으로 나가서 끝난 경우에는 비운다. 남겨두면 그 뒤에 `pointerdown` 없이
+     * 오는 첫 클릭이 끌기로 오인돼서 삭제된다. 키보드로 칩에 포커스를 주고
+     * Enter 를 누르는 게 그 경우다. 사람이 안 바뀐다.
      */
-    const end = (e: PointerEvent) => {
+    const release = (e: PointerEvent, keepMoved: boolean) => {
       if (id === null || e.pointerId !== id) return
       id = null
+      if (!keepMoved) moved = 0
       el.style.scrollSnapType = snap
       el.style.userSelect = ''
     }
+
+    const up = (e: PointerEvent) => release(e, true)
+
+    /**
+     * 줄을 벗어나면 그 자리에서 놓는다.
+     *
+     * 포인터를 붙잡아두지 않아서 줄을 벗어나면 `pointermove` 가 끊긴다. 그 상태로
+     * 바깥에서 손을 떼면 `pointerup` 이 이 줄에 안 와서, 스냅이 꺼진 채로 끌던
+     * 상태가 다음에 누를 때까지 물려 있었다.
+     */
+    const away = (e: PointerEvent) => release(e, false)
 
     /** 이 줄의 직계 자식 중 누른 자리를 품은 것 */
     const slideOf = (target: EventTarget | null) => {
@@ -120,18 +122,18 @@ export function useDragScroll<T extends HTMLElement>() {
 
     el.addEventListener('pointerdown', down)
     el.addEventListener('pointermove', move)
-    el.addEventListener('pointerup', end)
-    el.addEventListener('pointercancel', end)
+    el.addEventListener('pointerup', up)
+    el.addEventListener('pointercancel', away)
     // 자식 사이를 지날 때는 안 뜨는 이벤트다. 줄 밖으로 나갈 때만 뜬다
-    el.addEventListener('pointerleave', end)
+    el.addEventListener('pointerleave', away)
     el.addEventListener('click', click, true)
 
     return () => {
       el.removeEventListener('pointerdown', down)
       el.removeEventListener('pointermove', move)
-      el.removeEventListener('pointerup', end)
-      el.removeEventListener('pointercancel', end)
-      el.removeEventListener('pointerleave', end)
+      el.removeEventListener('pointerup', up)
+      el.removeEventListener('pointercancel', away)
+      el.removeEventListener('pointerleave', away)
       el.removeEventListener('click', click, true)
       el.style.scrollSnapType = snap
       el.style.userSelect = ''

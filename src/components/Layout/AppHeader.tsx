@@ -3,7 +3,7 @@ import { useTeamStore } from '../../store/teamStore'
 
 export function AppHeader() {
   const goLanding = useTeamStore((s) => s.goLanding)
-  const goBack = useTeamStore((s) => s.goBack)
+  const goEdit = useTeamStore((s) => s.goEdit)
   const view = useTeamStore((s) => s.view)
 
   /**
@@ -32,10 +32,12 @@ export function AppHeader() {
         {showBack && (
           // 화살표는 뒤로 가는 표시다. 한때 여기가 전체 초기화였는데, 생김새와
           // 하는 일이 어긋나면 누른 사람이 잃는 쪽으로 어긋난다. 지우는 동작은
-          // `새 팀으로 시작하기` 가 이름을 달고 맡는다
+          // `새 팀으로 시작하기` 가 이름을 달고 맡는다.
+          // `팀원 수정` 과 같은 동작이라 같은 것을 부른다. 예시일 때 비우고 나가는
+          // 갈림이 그 안에 있다. 여기서 goBack 을 직접 부르면 그 갈림을 뛰어넘는다
           <button
             type="button"
-            onClick={goBack}
+            onClick={goEdit}
             aria-label={commonCopy.back}
             className="press -ml-2 grid size-9 place-items-center rounded-lg justify-self-start text-xl"
             style={{ color: 'var(--ink)' }}

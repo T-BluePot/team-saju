@@ -59,6 +59,7 @@ type State = {
   goResult: () => void
   finishLoading: () => void
   goBack: () => void
+  goEdit: () => void
   reset: () => void
 }
 
@@ -195,11 +196,27 @@ export const useTeamStore = create<State>((set, get) => ({
    * 머리글 로고가 부른다. 한때 여기서 팀원까지 비웠는데, 넷째 사람을 넣다가
    * 로고를 누르면 확인 한 번 없이 전부 날아갔다. v1 은 저장을 안 하니 되돌릴 데도 없다.
    * 지우는 동작은 그렇게 적힌 자리에만 둔다. `새 팀으로 시작하기` 의 `reset()` 이다.
+   *
+   * 되돌리기 버퍼는 비운다. 팀원을 지운 직후에 로고를 눌러 나갔다 돌아오면
+   * 이미 지나간 토스트가 처음부터 다시 뜨고 되돌리기도 살아 있었다.
+   * `goBack()` `goResult()` 가 하는 것과 같이 맞춘다.
    */
-  goLanding: () => set({ view: 'landing' }),
+  goLanding: () => set({ view: 'landing', removed: null }),
   goResult: () => set({ view: 'loading', removed: null }),
   finishLoading: () => set({ view: 'result' }),
   goBack: () => set((s) => ({ view: entryView(s.consented), removed: null })),
+
+  /**
+   * 결과에서 입력으로 되돌아간다. **예시를 보고 있었으면 비우고 나간다.**
+   *
+   * 예시의 표본 팀이 그대로 남아서 편집으로 나가면, 은우 서림 효경이 사용자가
+   * 직접 넣은 팀원인 척 입력 화면에 선다. 그 상태로 분석하면 자기 결과 위에
+   * `예시 데이터로 만든 결과입니다` 띠가 달린다.
+   *
+   * 이 갈림을 화면에 두면 결과로 나가는 자리마다 각자 챙겨야 한다. 실제로
+   * `팀원 수정` 만 챙기고 머리글 화살표가 빠져 있었다. 한 곳에 둔다.
+   */
+  goEdit: () => (get().isExample ? get().reset() : get().goBack()),
   reset: () =>
     set((s) => ({
       teamName: '',
