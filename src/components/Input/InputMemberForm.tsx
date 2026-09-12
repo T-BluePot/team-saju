@@ -7,9 +7,9 @@ import {
   CommonField,
   CommonFieldGroup,
   CommonPickCard,
-  CommonSelect,
   CommonTextInput,
 } from '../Common'
+import { InputHourField } from './InputHourField'
 import { memberFormCopy } from '../../lib/copy'
 import { MAX_MEMBERS, emptyDraft, type Draft } from '../../store/teamStore'
 
@@ -20,7 +20,6 @@ type Props = {
   count: number
 }
 
-const HOURS = Array.from({ length: 24 }, (_, i) => i)
 
 /** 읽어준 뒤 문장을 비우는 시간 */
 const ANNOUNCE_MS = 4000
@@ -132,45 +131,12 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
         )}
       </CommonField>
 
-      <CommonFieldGroup label={memberFormCopy.hourGroup}>
-        {draft.hourKnown && (
-          <div className="flex items-center gap-2">
-            <label className="sr-only" htmlFor="hour">
-              {memberFormCopy.hourLabel}
-            </label>
-            <CommonSelect
-              id="hour"
-              value={draft.birthHour}
-              onChange={(e) => set('birthHour', Number(e.target.value))}
-            >
-              {HOURS.map((h) => (
-                <option key={h} value={h}>
-                  {memberFormCopy.hourOption(String(h).padStart(2, '0'))}
-                </option>
-              ))}
-            </CommonSelect>
-            <label className="sr-only" htmlFor="minute">
-              {memberFormCopy.minuteLabel}
-            </label>
-            <CommonSelect
-              id="minute"
-              value={draft.birthMinute}
-              onChange={(e) => set('birthMinute', Number(e.target.value))}
-            >
-              {[0, 10, 20, 30, 40, 50].map((m) => (
-                <option key={m} value={m}>
-                  {memberFormCopy.minuteOption(String(m).padStart(2, '0'))}
-                </option>
-              ))}
-            </CommonSelect>
-          </div>
-        )}
-        {!draft.hourKnown && (
-          <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-            {memberFormCopy.hourUnknownNote}
-          </p>
-        )}
-      </CommonFieldGroup>
+      <InputHourField
+        hour={draft.birthHour}
+        minute={draft.birthMinute}
+        known={draft.hourKnown}
+        onChange={(hour, minute) => setDraft((d) => ({ ...d, birthHour: hour, birthMinute: minute }))}
+      />
 
       {/*
         시간에 걸리는 선택 둘을 한 박스로 묶는다. 떨어뜨려 두면 진태양시가

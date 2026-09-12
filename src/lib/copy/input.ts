@@ -54,6 +54,11 @@ export const memberFormCopy = {
     return `${period} ${h12}${mm}`
   },
   hourRange: (from: string, to: string) => `${from} ~ ${to}`,
+  /** `자시 야자시` 처럼 갈래가 있으면 뒤에 붙인다 */
+  hourBranchName: (name: string, sect?: string) => (sect ? `${name} ${sect}` : name),
+  /** `자시 야자시 · 밤 11:30 ~ 자정 · 쥐띠` */
+  hourBranchOption: (name: string, range: string, animal: string) =>
+    `${name} · ${range} · ${animal}띠`,
   trueSolarTime: '진태양시 보정',
   trueSolarTimeNote:
     '태어난 시간을 실제 태양시 기준으로 보정합니다. 정확한 계산을 위해 켜두는 것을 권장합니다.',
