@@ -9,9 +9,11 @@ import {
 } from '../Common'
 import { SajuElementBars, SajuPillarTable, SajuTraitBars } from '../Saju'
 import { ELEMENT_LABEL, STRENGTH_THRESHOLD, TEN_GODS } from '../../lib/saju/constants'
+import { dayReading } from '../../lib/saju/reading'
 import type { PairChemistry, SajuChart, Strength } from '../../lib/saju/types'
 import { personalCopy, strengthCopy } from '../../lib/copy'
 import { pairCopy } from '../../lib/report/pairs'
+import { suggestionsFor } from '../../lib/report/suggestions'
 import { readTraits } from '../../lib/report/traits'
 import { ELEMENT_COLOR_DEEP } from '../../lib/ui/elementStyle'
 import { useDragScroll } from '../../lib/ui/useDragScroll'
@@ -32,6 +34,7 @@ export function PersonalView({
     chart
   const myPairs = pairs.filter((p) => p.aId === chart.member.id || p.bId === chart.member.id)
   const reading = readTraits(traits)
+  const day = dayReading(pillars.day)
 
   return (
     <div className="flex flex-col gap-10">
@@ -69,6 +72,11 @@ export function PersonalView({
       >
         <CommonBlock
           label={chart.member.name}
+          /*
+            일주 두 글자를 말로 옮긴 한 줄. 이름 바로 아래가 맞는 자리다.
+            여덟 글자를 보기 전에 "그래서 이게 뭔데" 의 답이 먼저 와야 표가 읽힌다
+          */
+          description={`${day.image} · ${day.animal}`}
           first
           aside={
             <CommonChip
@@ -192,6 +200,29 @@ export function PersonalView({
             </CommonEntryList>
           </CommonBlock>
         )}
+
+        {/*
+          해보면 좋은 것. 제일 적은 오행을 채우는 쪽으로 고른다.
+          팀 결과의 기운 카드와 같은 논리라 두 화면이 같은 방식으로 읽힌다
+        */}
+        <CommonBlock
+          label={personalCopy.suggestBlock}
+          description={personalCopy.suggestNote(ELEMENT_LABEL[elements.lacking])}
+        >
+          <ul className="flex flex-col gap-2.5">
+            {suggestionsFor(elements.lacking).map((item) => (
+              <li key={item} className="flex gap-3 text-sm leading-relaxed">
+                <span
+                  aria-hidden="true"
+                  style={{ color: ELEMENT_COLOR_DEEP[elements.lacking] }}
+                >
+                  ·
+                </span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </CommonBlock>
 
         {corrections.length > 0 && (
           <div className="py-5" style={{ borderTop: '1px solid var(--rule)' }}>
