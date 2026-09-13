@@ -18,14 +18,31 @@ type Props = {
   disabled?: boolean
   /** 추가 성공을 알릴 때 쓴다. 지금 몇 명인지 같이 읽어준다 */
   count: number
+  /**
+   * 고쳐 쓸 사람의 초안. 없으면 새로 넣는 폼이다.
+   *
+   * 부르는 쪽이 `key` 로도 쓴다. 고를 사람을 바꾸면 폼이 통째로 다시 서서
+   * `InputHourField` 가 들고 있는 지시/직접 입력 같은 안쪽 상태도 같이 선다.
+   */
+  editing: { id: string; draft: Draft } | null
+  onCancelEdit: () => void
+  /** 수정 중에 덮개 위로 올릴 때 쓴다 */
+  className?: string
 }
 
 
 /** 읽어준 뒤 문장을 비우는 시간 */
 const ANNOUNCE_MS = 4000
 
-export function InputMemberForm({ onSubmit, disabled, count }: Props) {
-  const [draft, setDraft] = useState<Draft>(emptyDraft)
+export function InputMemberForm({
+  onSubmit,
+  disabled,
+  count,
+  editing,
+  onCancelEdit,
+  className,
+}: Props) {
+  const [draft, setDraft] = useState<Draft>(() => editing?.draft ?? emptyDraft())
   const [error, setError] = useState<string | null>(null)
   /**
    * 추가가 됐다는 걸 스크린리더에 알린다.
@@ -59,6 +76,12 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
       return
     }
 
+    if (editing) {
+      // 고친 뒤에는 폼을 비우지 않는다. 스토어가 고치기를 접으면서 새 폼으로 선다
+      setAdded(memberFormCopy.edited(name))
+      return
+    }
+
     const next = count + 1
     setAdded(
       next >= MAX_MEMBERS
@@ -74,8 +97,14 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
   }
 
   return (
-    <CommonCard as="form" onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <h2 className="text-base font-bold">{memberFormCopy.title}</h2>
+    <CommonCard
+      as="form"
+      onSubmit={handleSubmit}
+      className={['flex flex-col gap-6', className].filter(Boolean).join(' ')}
+    >
+      <h2 className="text-base font-bold">
+        {editing ? memberFormCopy.titleEdit : memberFormCopy.title}
+      </h2>
 
       <CommonField label={memberFormCopy.nameLabel}>
         {(id) => (
@@ -211,9 +240,14 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
       </p>
 
       {/* 주 동작은 하단 고정 바의 분석하기다. 폼 버튼은 한 단 내려 아웃라인으로 둔다 */}
-      <CommonButton type="submit" variant="ghost" disabled={disabled}>
-        {memberFormCopy.submit}
+      <CommonButton type="submit" variant="ghost" disabled={!editing && disabled}>
+        {editing ? memberFormCopy.save : memberFormCopy.submit}
       </CommonButton>
+      {editing && (
+        <CommonButton type="button" variant="quiet" onClick={onCancelEdit}>
+          {memberFormCopy.cancelEdit}
+        </CommonButton>
+      )}
     </CommonCard>
   )
 }

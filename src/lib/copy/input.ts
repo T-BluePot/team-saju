@@ -23,6 +23,10 @@ export const memberFormCopy = {
   minuteLabel: '분',
   hourOption: (hour: string) => `${hour}시`,
   minuteOption: (minute: string) => `${minute}분`,
+  titleEdit: '팀원 수정',
+  save: '저장하기',
+  cancelEdit: '취소',
+  edited: (name: string) => `${name}님 정보를 수정했습니다`,
   hourUnknownNote: '시주를 제외하고 계산합니다',
 
   /** 시간을 지시로 고를지 시각으로 넣을지 */

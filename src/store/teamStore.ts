@@ -43,6 +43,8 @@ type State = {
   charts: SajuChart[]
   /** 지금 보고 있는 게 예시 리포트인가. 자기 결과로 오해하면 안 된다 */
   isExample: boolean
+  /** 지금 고쳐 쓰는 사람. 칩을 누르면 그 사람이 폼으로 올라온다 */
+  editingId: string | null
   /** 방금 지운 사람. 되돌릴 수 있게 잠깐 들고 있는다 */
   removed: { member: MemberInput; chart: SajuChart; index: number } | null
   view: 'landing' | 'input' | 'loading' | 'result'
@@ -51,6 +53,9 @@ type State = {
   setTeamName: (name: string) => void
   addMember: (draft: Draft) => string | null
   removeMember: (id: string) => void
+  startEdit: (id: string) => void
+  cancelEdit: () => void
+  updateMember: (draft: Draft) => string | null
   showExample: () => void
   undoRemove: () => void
   dismissRemoved: () => void
@@ -95,12 +100,33 @@ function draftToInput(draft: Draft): MemberInput {
   }
 }
 
+/**
+ * 넣어둔 사람을 다시 초안으로 되돌린다. 칩을 눌러 고칠 때 폼을 채우는 데 쓴다.
+ *
+ * 동의 출처는 그대로 들고 온다. 06-privacy.md 가 팀원마다 받으라고 한 건 처음
+ * 넣을 때 얘기고, 이미 받은 걸 고치는 자리에서 다시 묻는 건 확인이 아니라 잡일이다.
+ */
+export function inputToDraft(member: MemberInput): Draft {
+  return {
+    name: member.name,
+    birthDate: member.birthDate,
+    hourKnown: member.birthHour !== null,
+    birthHour: member.birthHour ?? 12,
+    birthMinute: member.birthMinute ?? 0,
+    calendar: member.calendar,
+    isLeapMonth: member.isLeapMonth,
+    useTrueSolarTime: member.useTrueSolarTime,
+    consentSource: member.consent.source,
+  }
+}
+
 export const useTeamStore = create<State>((set, get) => ({
   consented: false,
   teamName: '',
   members: [],
   charts: [],
   isExample: false,
+  editingId: null,
   removed: null,
   view: 'landing',
 
@@ -149,8 +175,53 @@ export const useTeamStore = create<State>((set, get) => ({
         members: s.members.filter((m) => m.id !== id),
         charts: s.charts.filter((c) => c.member.id !== id),
         removed: { member: s.members[index], chart: s.charts[index], index },
+        // 고치던 사람을 지우면 폼이 없는 사람을 붙들고 있게 된다
+        editingId: s.editingId === id ? null : s.editingId,
       }
     }),
+
+  /** 칩을 눌러 고치기 시작한다 */
+  startEdit: (id) => set({ editingId: id, removed: null }),
+  cancelEdit: () => set({ editingId: null }),
+
+  /**
+   * 고쳐 쓴 내용을 제자리에 덮는다.
+   *
+   * 지우고 다시 넣지 않는다. 그러면 줄 맨 뒤로 가서 팀원 순서가 바뀐다.
+   * 아이디도 그대로 둔다. 되돌리기가 들고 있는 자리와 어긋나면 안 된다.
+   */
+  updateMember: (draft) => {
+    const { editingId, members } = get()
+    if (!editingId) return null
+
+    const index = members.findIndex((m) => m.id === editingId)
+    if (index < 0) {
+      set({ editingId: null })
+      return null
+    }
+
+    if (!draft.name.trim()) return errorCopy.noName
+    if (!draft.birthDate) return errorCopy.noBirthDate
+    if (!draft.consentSource) return errorCopy.noConsentSource
+
+    const input = { ...draftToInput(draft), id: editingId }
+    let chart
+    try {
+      chart = buildChart(input)
+    } catch (e) {
+      if (e instanceof SajuInputError) return e.message
+      return errorCopy.chartFailed
+    }
+
+    set((s) => {
+      const nextMembers = [...s.members]
+      const nextCharts = [...s.charts]
+      nextMembers[index] = input
+      nextCharts[index] = chart
+      return { members: nextMembers, charts: nextCharts, editingId: null, isExample: false }
+    })
+    return null
+  },
 
   /** 지웠던 자리에 그대로 되돌린다 */
   undoRemove: () =>
@@ -167,7 +238,12 @@ export const useTeamStore = create<State>((set, get) => ({
   dismissRemoved: () => set({ removed: null }),
 
   goInput: () =>
-    set((s) => ({ view: entryView(s.consented), removed: null, isExample: false })),
+    set((s) => ({
+      view: entryView(s.consented),
+      removed: null,
+      isExample: false,
+      editingId: null,
+    })),
 
   /**
    * 표본 팀으로 결과를 보여준다.
@@ -201,10 +277,10 @@ export const useTeamStore = create<State>((set, get) => ({
    * 이미 지나간 토스트가 처음부터 다시 뜨고 되돌리기도 살아 있었다.
    * `goBack()` `goResult()` 가 하는 것과 같이 맞춘다.
    */
-  goLanding: () => set({ view: 'landing', removed: null }),
-  goResult: () => set({ view: 'loading', removed: null }),
+  goLanding: () => set({ view: 'landing', removed: null, editingId: null }),
+  goResult: () => set({ view: 'loading', removed: null, editingId: null }),
   finishLoading: () => set({ view: 'result' }),
-  goBack: () => set((s) => ({ view: entryView(s.consented), removed: null })),
+  goBack: () => set((s) => ({ view: entryView(s.consented), removed: null, editingId: null })),
 
   /**
    * 결과에서 입력으로 되돌아간다. **예시를 보고 있었으면 비우고 나간다.**
@@ -224,6 +300,7 @@ export const useTeamStore = create<State>((set, get) => ({
       charts: [],
       removed: null,
       isExample: false,
+      editingId: null,
       view: entryView(s.consented),
     })),
 }))
