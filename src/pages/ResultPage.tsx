@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react'
 
-import { PersonalView, ResultExampleNotice, TeamReportView } from '../components/Result'
+import {
+  PersonalView,
+  ResultExampleNotice,
+  ResultShareSheet,
+  TeamReportView,
+} from '../components/Result'
 import { AppBottomBar } from '../components/Layout'
 import { CommonButton } from '../components/Common'
 import { buildTeamReport } from '../lib/report/teamReport'
@@ -114,9 +119,16 @@ export function ResultPage() {
             : nextStepCopy.more
         }
       >
-        <CommonButton type="button" variant="ghost" onClick={reset}>
-          {nextStepCopy.restart}
-        </CommonButton>
+        {/*
+          시안의 두 칸 짜임. 공유가 주 동작이라 오른쪽 강조색이고 다시 시작은 옆에 선다.
+          예시 리포트일 때는 공유를 안 그린다. 남의 표본 결과를 팀 채널에 던질 이유가 없다
+        */}
+        <div className="flex gap-2.5">
+          <CommonButton type="button" variant="ghost" className="flex-1" onClick={reset}>
+            {nextStepCopy.restart}
+          </CommonButton>
+          {!isExample && <ResultShareSheet report={report} />}
+        </div>
       </AppBottomBar>
     </div>
   )

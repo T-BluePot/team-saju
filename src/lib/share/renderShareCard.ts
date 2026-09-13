@@ -3,6 +3,7 @@ import type { Element } from '../saju/types'
 import { SOLO_LEAD, isSolo, needsBlock } from '../report/solo'
 import type { TeamReport } from '../report/teamReport'
 import { ELEMENT_HEX, ELEMENT_HEX_DEEP, illustFor } from '../ui/elementStyle'
+import { SITE_HOST } from '../config'
 import { shareCanvasCopy } from '../copy'
 
 /**
@@ -632,6 +633,20 @@ function layout(
     ctx.fillText(shareCanvasCopy.brand, bx + 48, brandTop + 26)
   })
   y += 34
+
+  /*
+   * 어디서 본 건지.
+   *
+   * 이 카드가 슬랙이나 카톡에 올라갔을 때, 보고 나서 "이거 어디서 하는 건데" 를
+   * 물어봐야 알 수 있으면 유입이 거기서 끊긴다. 공유가 유일한 유입 경로다.
+   * `https://` 는 뗀다. 붙어 있으면 읽는 데 도움이 안 되면서 줄만 길어진다.
+   */
+  y += 10
+  ctx.font = sans(21, 400)
+  paint(() => {
+    ctx.fillStyle = C.inkSoft
+  })
+  y = block(ctx, [SITE_HOST], mid, y, 28, draw, 'center')
 
   return y + PANEL_PAD_BOTTOM
 }

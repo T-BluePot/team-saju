@@ -24,4 +24,4 @@ export {
   sajuCopy,
   scrollCopy,
 } from './result'
-export { shareCanvasCopy, shareCardCopy } from './share'
+export { shareCanvasCopy, shareCardCopy, shareSheetCopy } from './share'
