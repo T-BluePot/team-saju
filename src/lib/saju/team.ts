@@ -3,6 +3,7 @@ import {
   CONTROLS,
   ELEMENTS,
   GENERATES,
+  GOLDEN_ARCHETYPE_THRESHOLD,
 } from './constants'
 import {
   addScores,
@@ -30,16 +31,21 @@ const ELEMENT_SLUG: Record<Element, string> = {
 }
 
 export const BALANCED_ARCHETYPE_ID = 'balanced'
+export const GOLDEN_ARCHETYPE_ID = 'golden'
 
 /**
- * 팀 유형 id. 주도와 결핍 조합으로 20개, 균형형 1개.
+ * 팀 유형 id. 주도와 결핍 조합으로 20개, 균형형 둘.
  * 문서 07-team-report.md
+ *
+ * 황금형을 먼저 본다. 95 이상은 85 이상이기도 해서 순서가 뒤집히면 황금형이
+ * 영영 안 나온다.
  */
 export function archetypeIdFor(
   dominant: Element,
   lacking: Element,
   balance: number,
 ): string {
+  if (balance >= GOLDEN_ARCHETYPE_THRESHOLD) return GOLDEN_ARCHETYPE_ID
   if (balance >= BALANCED_ARCHETYPE_THRESHOLD) return BALANCED_ARCHETYPE_ID
   if (dominant === lacking) return BALANCED_ARCHETYPE_ID
   return `${ELEMENT_SLUG[dominant]}-no-${ELEMENT_SLUG[lacking]}`

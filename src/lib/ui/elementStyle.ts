@@ -191,6 +191,10 @@ const ILLUST_BY_ARCHETYPE: Record<string, { src: string; alt: string }> = {
     src: '/illust/type-balanced.png',
     alt: illustrationCopy.altByArchetype['balanced'],
   },
+  'golden': {
+    src: '/illust/type-golden.png',
+    alt: illustrationCopy.altByArchetype['golden'],
+  },
 }
 
 /** 어디도 안 비어서 붙일 결핍이 없다. 아무도 안 집는 마지막 한 조각 */

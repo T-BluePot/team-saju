@@ -31,6 +31,21 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
   const { ref: balanceRef, shown: balanceShown } = useReveal<HTMLDivElement>()
   const balanceValue = useCountUp(analysis.balance, balanceShown)
 
+  /*
+   * 짚을 게 있는 오행만 남긴다.
+   *
+   * `FLAG_LABEL.normal` 은 빈 문자열이라 그대로 넘기면 `CommonEntry` 의 머리줄이
+   * 통째로 안 그려진다. 오행 표식도 비율도 없이 본문만 남아서 `유연, 통찰, 질문`
+   * 한 줄이 무슨 얘기인지 모를 자리에 떠 있게 된다.
+   *
+   * 균형이 좋을수록 여기가 비는 게 맞다. 황금 균형형은 정의상 늘 비어 있고,
+   * 분포는 바로 위 막대가 다섯 개 다 보여주고 있다.
+   */
+  const notices = [
+    { el: dominant.element, percent: dominant.percent, body: dominant.meaning },
+    { el: lacking.element, percent: lacking.percent, body: lacking.effect },
+  ].filter((n) => analysis.flags[n.el] !== 'normal')
+
   return (
     <CommonSection
       index={analysisCopy.index}
@@ -50,28 +65,24 @@ export function TeamAnalysis({ report }: { report: TeamReport }) {
         </div>
       </CommonBlock>
 
-      <CommonBlock label={analysisCopy.noticeBlock}>
-        <CommonEntryList divided>
-          <CommonEntry
-            mark={dominant.element}
-            markLabel={ELEMENT_LABEL[dominant.element]}
-            markColor={ELEMENT_COLOR_DEEP[dominant.element]}
-            title={FLAG_LABEL[analysis.flags[dominant.element]]}
-            value={`${dominant.percent}%`}
-          >
-            {dominant.meaning}
-          </CommonEntry>
-          <CommonEntry
-            mark={lacking.element}
-            markLabel={ELEMENT_LABEL[lacking.element]}
-            markColor={ELEMENT_COLOR_DEEP[lacking.element]}
-            title={FLAG_LABEL[analysis.flags[lacking.element]]}
-            value={`${lacking.percent}%`}
-          >
-            {lacking.effect}
-          </CommonEntry>
-        </CommonEntryList>
-      </CommonBlock>
+      {notices.length > 0 && (
+        <CommonBlock label={analysisCopy.noticeBlock}>
+          <CommonEntryList divided>
+            {notices.map((n) => (
+              <CommonEntry
+                key={n.el}
+                mark={n.el}
+                markLabel={ELEMENT_LABEL[n.el]}
+                markColor={ELEMENT_COLOR_DEEP[n.el]}
+                title={FLAG_LABEL[analysis.flags[n.el]]}
+                value={`${n.percent}%`}
+              >
+                {n.body}
+              </CommonEntry>
+            ))}
+          </CommonEntryList>
+        </CommonBlock>
+      )}
 
       <CommonBlock
         label={solo ? analysisCopy.traitsHeadingSolo : analysisCopy.traitsHeadingTeam}

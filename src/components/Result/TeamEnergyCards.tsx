@@ -5,7 +5,6 @@ import { CommonSection, CommonSegmented } from '../Common'
 import { useDragScroll } from '../../lib/ui/useDragScroll'
 import { energyCards } from '../../lib/report/energy'
 import type { EnergyCard } from '../../lib/report/energy'
-import { BALANCED_ARCHETYPE_ID } from '../../lib/saju/team'
 import type { TeamReport } from '../../lib/report/teamReport'
 import { ELEMENT_COLOR, ELEMENT_COLOR_DEEP, illustForEnergy } from '../../lib/ui/elementStyle'
 import { energyCardsCopy, resultCopy } from '../../lib/copy'
@@ -28,13 +27,16 @@ export function TeamEnergyCards({ report }: { report: TeamReport }) {
   const deck = useDragScroll<HTMLDivElement>()
 
   /*
-   * 균형형은 채울 데도 덜 데도 없다. 억지로 네 장을 만들면 같은 말이 두 번 나온다.
+   * 균형 계열은 채울 데도 덜 데도 없다. 억지로 네 장을 만들면 같은 말이 두 번 나온다.
    *
    * `dominant === lacking` 을 보면 안 된다. 균형 판정은 대부분 balance 점수에서 나오고
    * 그때도 dominant 와 lacking 은 서로 다르다. 그 조건만 막으면 균형형인데도 섹션이 그려져서,
    * 바로 위에서 "이미 다 있습니다" 라고 해놓고 아래에서 "제일 없는 게 금입니다" 가 된다.
+   *
+   * 유형 id 를 하나씩 세지도 않는다. 황금형이 생겼을 때 여기가 같이 안 늘어야 한다.
+   * 이 자리가 실제로 묻는 건 채울 결핍이 있느냐다.
    */
-  if (report.archetype.id === BALANCED_ARCHETYPE_ID) return null
+  if (report.archetype.lacking === null) return null
 
   const cards = energyCards(dominant, lacking)
   const shown = cards.filter((c) => (set === 'good' ? c.good : !c.good))

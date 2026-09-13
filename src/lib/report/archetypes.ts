@@ -1,7 +1,8 @@
+import { BALANCED_ARCHETYPE_ID } from '../saju/team'
 import type { Element } from '../saju/types'
 
 /**
- * 팀 유형. 주도 오행과 결핍 오행 조합으로 20개, 균형형 1개.
+ * 팀 유형. 주도 오행과 결핍 오행 조합으로 20개, 균형형 둘.
  * 문서 07-team-report.md
  *
  * 카피 규칙은 .claude/skills/report-voice/SKILL.md 를 따른다.
@@ -440,11 +441,49 @@ export const ARCHETYPES: Archetype[] = [
     ],
     needsPerson: '이미 다 있습니다. 지금 필요한 건 사람이 아니라 방향이에요',
   },
+  /*
+   * 균형형 위에 한 단 더.
+   *
+   * 균형 점수 95 이상은 어느 인원에서도 드물게 나온다. 앞의 균형형과 같은
+   * 결론을 주면 제일 고르게 나온 팀이 제일 인색한 문장을 받는다. 그렇다고
+   * 칭찬만 남기면 읽는 사람이 이 값을 믿을 이유가 없어져서 사각지대와 처방은
+   * 다른 유형과 똑같이 둘씩 붙인다.
+   *
+   * 사각지대는 앞의 균형형과 갈라놨다. 저쪽은 팀 **안에서** 아무도 안 나서는
+   * 얘기고, 이쪽은 팀 **밖에서** 이 팀이 뭘 하는 팀인지가 안 보이는 얘기다.
+   */
+  {
+    id: 'golden',
+    dominant: null,
+    lacking: null,
+    name: '오각형이 꽉 찬 팀',
+    tagline: '다섯이 고르게 다 찼다. 좀처럼 안 나오는 조합',
+    strengths: [
+      '아이디어도 마감도 정리도 팀 안에서 다 돈다. 밖에서 사람을 구해 와야 넘어가는 일이 거의 없다',
+      '한 명이 자리를 비워도 그 자리가 바로 티 나지 않는다. 서로 겹치는 폭이 넓다',
+    ],
+    blindSpots: [
+      '밖에서 보면 이 팀이 뭘 제일 잘하는 팀인지가 안 보인다. 다 되는 팀은 소개할 한 줄이 없다',
+      '뭘 맡겨도 굴러가니까 주인 없는 일이 자꾸 이 팀으로 온다. 거절할 근거를 대기가 어렵다',
+    ],
+    prescriptions: [
+      '분기 시작할 때 "이번 분기 우리 팀은 OO 하는 팀" 한 줄을 정해서 옆 팀에도 알리세요',
+      '새 일이 들어오면 지금 하는 것 중 뭘 미룰지를 같이 적어서 답하세요. 목록이 거절을 대신합니다',
+    ],
+    needsPerson:
+      '사람을 더 넣는 것보다 이 조합을 안 흩뜨리는 게 낫습니다. 지금 필요한 건 이 팀을 밖에 설명할 한 줄이에요',
+  },
 ]
 
 const BY_ID = new Map(ARCHETYPES.map((a) => [a.id, a]))
 
-const FALLBACK = ARCHETYPES[ARCHETYPES.length - 1]
+/**
+ * 모르는 id 는 균형형으로 떨어진다.
+ *
+ * 배열의 마지막 원소를 쓰고 있었는데, 유형을 뒤에 하나 붙이는 순간 폴백이
+ * 같이 옮겨간다. 황금형을 추가하면서 실제로 그럴 뻔했다. id 로 집는다.
+ */
+const FALLBACK = BY_ID.get(BALANCED_ARCHETYPE_ID)!
 
 export function getArchetype(id: string): Archetype {
   return BY_ID.get(id) ?? FALLBACK

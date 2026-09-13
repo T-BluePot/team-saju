@@ -15,13 +15,13 @@ import { emptyDraft, useTeamStore } from './store/teamStore'
 type Seed = SampleSeed
 const SAMPLE = SAMPLE_TEAM
 
-function seedMembers(only = SAMPLE.length): boolean {
+function seedMembers(rows: Seed[] = SAMPLE): boolean {
   const store = useTeamStore.getState()
   store.reset()
   store.setConsent(true)
   store.setTeamName(SAMPLE_TEAM_NAME)
 
-  for (const seed of SAMPLE.slice(0, only)) {
+  for (const seed of rows) {
     const error = useTeamStore.getState().addMember({
       ...emptyDraft(),
       ...seed,
@@ -35,9 +35,14 @@ function seedMembers(only = SAMPLE.length): boolean {
   return true
 }
 
+/** 넣고 결과까지. 특정 유형을 띄우는 시드가 전부 이 모양이다 */
+function seedResult(rows: Seed[]): void {
+  if (seedMembers(rows)) useTeamStore.setState({ view: 'result' })
+}
+
 export function seedDemo(): void {
   // 로딩 화면을 건너뛰고 결과를 바로 띄운다. 캡쳐가 타이밍을 안 타게
-  if (seedMembers()) useTeamStore.setState({ view: 'result' })
+  seedResult(SAMPLE)
 }
 
 /** 팀원을 넣어둔 입력 화면. 팀원 목록을 보려면 여기로 */
@@ -45,31 +50,29 @@ export function seedFilledInput(): void {
   if (seedMembers()) useTeamStore.setState({ view: 'input' })
 }
 
-/** 균형형이 나오는 팀. 기운 카드 섹션이 안 뜨는 걸 확인하려면 여기로 */
-const BALANCED_SAMPLE: SampleSeed[] = [
-  { name: '가람', birthDate: '1988-03-11', birthHour: 9 },
-  { name: '나린', birthDate: '1991-07-22', birthHour: 15 },
-  { name: '다온', birthDate: '1994-11-05', birthHour: 20 },
+/**
+ * 균형형(85~94)이 나오는 팀. 기운 카드 섹션이 안 뜨는 걸 확인하려면 여기로.
+ *
+ * 앞의 조합은 60점이라 실은 `earth-no-water` 가 뜨고 있었다. 문턱이 75이던
+ * 시절에도 균형형이 아니었는데, 균형형이 흔하던 때라 눈치를 못 챘다.
+ * 문턱을 옮기면 이 시드도 같이 확인한다.
+ */
+const BALANCED_SAMPLE: Seed[] = [
+  { name: '가람', birthDate: '1995-06-11', birthHour: 12 },
+  { name: '나린', birthDate: '1985-04-24', birthHour: 6 },
+  { name: '다온', birthDate: '1991-01-25', birthHour: 16 },
 ]
 
-export function seedBalanced(): void {
-  const store = useTeamStore.getState()
-  store.reset()
-  store.setConsent(true)
-  store.setTeamName(SAMPLE_TEAM_NAME)
-  for (const seed of BALANCED_SAMPLE) {
-    const error = useTeamStore.getState().addMember({
-      ...emptyDraft(),
-      ...seed,
-      consentSource: 'self',
-    })
-    if (error) {
-      console.error('[devSeed]', seed.name, error)
-      return
-    }
-  }
-  useTeamStore.setState({ view: 'result' })
-}
+export const seedBalanced = () => seedResult(BALANCED_SAMPLE)
+
+/** 황금 균형형(95+)이 나오는 팀. 98점 */
+const GOLDEN_SAMPLE: Seed[] = [
+  { name: '가람', birthDate: '1993-06-28', birthHour: 19 },
+  { name: '나린', birthDate: '1981-05-24', birthHour: 5 },
+  { name: '다온', birthDate: '1984-03-20', birthHour: 12 },
+]
+
+export const seedGolden = () => seedResult(GOLDEN_SAMPLE)
 
 /** 예시 리포트 화면. 배너가 붙은 상태를 캡쳐하려면 여기로 */
 export function seedExample(): void {
@@ -84,24 +87,7 @@ const WATER_SAMPLE: Seed[] = [
   { name: '민서', birthDate: '1996-01-14', birthHour: 22 },
 ]
 
-export function seedWater(): void {
-  const store = useTeamStore.getState()
-  store.reset()
-  store.setConsent(true)
-  store.setTeamName(SAMPLE_TEAM_NAME)
-  for (const seed of WATER_SAMPLE) {
-    const error = useTeamStore.getState().addMember({
-      ...emptyDraft(),
-      ...seed,
-      consentSource: 'self',
-    })
-    if (error) {
-      console.error('[devSeed]', seed.name, error)
-      return
-    }
-  }
-  useTeamStore.setState({ view: 'result' })
-}
+export const seedWater = () => seedResult(WATER_SAMPLE)
 
 /** 한 명을 지운 직후. 되돌리기가 떠 있는 상태를 캡쳐하려면 여기로 */
 export function seedRemoved(): void {
@@ -113,7 +99,7 @@ export function seedRemoved(): void {
 
 /** 한 명만 넣은 결과. 1인 모드 화면을 보려면 여기로 */
 export function seedSolo(): void {
-  if (seedMembers(1)) useTeamStore.setState({ view: 'result' })
+  seedResult(SAMPLE.slice(0, 1))
 }
 
 /** 로딩 화면에 세운다. 사람이 여럿일 때 명식이 넘어가는 걸 보려면 여기로 */
@@ -141,7 +127,7 @@ export function seedConsent(): void {
  * `#demo-consent` 랜딩과 개인정보 상세 모달, `#demo-personal` 개인 명식 탭, `#demo-solo` 1인 결과,
  * `#demo-filled` 팀원이 들어 있는 입력 화면, `#demo-removed` 되돌리기가 뜬 상태,
  * `#demo-water` 다른 오행이 주도하는 팀, `#demo-example` 예시 리포트,
- * `#demo-balanced` 균형형 팀
+ * `#demo-balanced` 균형형 팀, `#demo-golden` 황금 균형형 팀
  */
 export function applyDemoHash(): void {
   if (window.location.hash === '#demo') seedDemo()
@@ -155,4 +141,5 @@ export function applyDemoHash(): void {
   if (window.location.hash === '#demo-water') seedWater()
   if (window.location.hash === '#demo-example') seedExample()
   if (window.location.hash === '#demo-balanced') seedBalanced()
+  if (window.location.hash === '#demo-golden') seedGolden()
 }

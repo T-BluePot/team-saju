@@ -19,10 +19,11 @@ describe('1인 결과 화법', () => {
     }
   })
 
-  it('혼자일 때 균형형만 다른 문구로 간다', () => {
+  it('혼자일 때 균형 계열만 다른 문구로 간다', () => {
     for (const a of ARCHETYPES) {
       const block = needsBlock(true, a)
-      if (a.id === 'balanced') {
+      // id 가 아니라 결핍 유무로 갈린다. 균형형이든 황금형이든 붙일 결핍이 없다
+      if (a.lacking === null) {
         expect(block.heading).toBe('지금은 이렇습니다')
         expect(block.body).not.toBe(a.needsPerson)
       } else {
@@ -32,20 +33,23 @@ describe('1인 결과 화법', () => {
     }
   })
 
-  it('혼자 균형형 문구도 지적으로 끝나지 않는다', () => {
+  it('혼자 균형 계열 문구도 지적으로 끝나지 않는다', () => {
     // "어느 쪽으로도 안 기울어 있다" 는 지적이다. 뭘 하면 되는지가 같이 와야 한다
-    const { body } = needsBlock(true, ARCHETYPES.find((a) => a.id === 'balanced')!)
-    expect(body).toMatch(/보세요|하세요|해보세요/)
+    for (const a of ARCHETYPES.filter((x) => x.lacking === null)) {
+      expect(needsBlock(true, a).body, a.id).toMatch(/보세요|하세요|해보세요/)
+    }
   })
 
   it('1인 전용 문구에 금지 표현이 없다', () => {
-    const balanced = needsBlock(true, ARCHETYPES.find((a) => a.id === 'balanced')!)
-    const all = [SOLO_LEAD, SOLO_NOTE, balanced.heading, balanced.body].join(' ')
+    const bodies = ARCHETYPES.filter((a) => a.lacking === null).map((a) => needsBlock(true, a))
+    const all = [SOLO_LEAD, SOLO_NOTE, ...bodies.flatMap((b) => [b.heading, b.body])].join(' ')
     for (const rule of BANNED_PHRASES) {
       expect(rule.test(all), `금지 표현: ${rule}`).toBe(false)
     }
-    for (const vague of VAGUE_PRESCRIPTION) {
-      expect(vague.test(balanced.body), `뭉뚱그린 처방: ${balanced.body}`).toBe(false)
+    for (const b of bodies) {
+      for (const vague of VAGUE_PRESCRIPTION) {
+        expect(vague.test(b.body), `뭉뚱그린 처방: ${b.body}`).toBe(false)
+      }
     }
   })
 })
