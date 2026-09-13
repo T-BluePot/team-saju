@@ -151,6 +151,7 @@ export function InputMemberForm({
         hour={draft.birthHour}
         minute={draft.birthMinute}
         known={draft.hourKnown}
+        saved={editing !== null}
         onChange={(hour, minute) => setDraft((d) => ({ ...d, birthHour: hour, birthMinute: minute }))}
       />
 

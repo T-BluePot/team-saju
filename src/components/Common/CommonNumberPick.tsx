@@ -138,8 +138,13 @@ export function CommonNumberPick({
               border: '1px solid var(--rule)',
             }}
           >
+            {/*
+              `<li>` 는 자리만 내준다. 역할을 비워야 `listbox` 가 `option` 을
+              바로 거느린다. 사이에 `listitem` 이 끼면 그 관계가 끊겨서
+              스크린리더가 「24개 중 3번」 같은 자리 안내를 못 읽는다.
+            */}
             {options.map((n) => (
-              <li key={n}>
+              <li key={n} role="presentation">
                 <button
                   type="button"
                   role="option"

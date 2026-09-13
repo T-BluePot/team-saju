@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 
 import { CommonFieldGroup, CommonNumberPick, CommonSegmented, CommonSelect } from '../Common'
 import { memberFormCopy } from '../../lib/copy'
@@ -39,14 +39,33 @@ export function InputHourField({
   hour,
   minute,
   known,
+  saved = false,
   onChange,
 }: {
   hour: number
   minute: number
   known: boolean
+  /** 이미 넣어둔 사람을 다시 연 것인가. 새로 넣는 폼이면 false */
+  saved?: boolean
   onChange: (hour: number, minute: number) => void
 }) {
-  const [mode, setMode] = useState<Mode>('branch')
+  // 고정 문자열 id 를 쓰지 않는다. 이 폼이 한 화면에 둘 서는 순간 라벨이
+  // 엉뚱한 쪽 선택칸을 연다. 같은 파일의 다른 칸들도 `useId()` 를 쓴다
+  const branchId = useId()
+
+  /**
+   * 어느 쪽으로 열 것인가.
+   *
+   * 새로 넣는 폼은 늘 지시로 연다. 다시 연 폼은 넣어둔 시각을 보고 정한다.
+   * 14시 7분처럼 지시 한가운데가 아닌 값을 지시로 열면 `미시 (13:30~15:29)` 만
+   * 보여서 7분이 화면에서 사라진다. 저장까지는 살아 있지만, 확인하려고 선택을
+   * 한 번 건드리면 그 순간 한가운데 값으로 덮여서 진짜로 없어진다.
+   */
+  const [mode, setMode] = useState<Mode>(() => {
+    if (!saved) return 'branch'
+    const b = hourBranchAt(hour, minute)
+    return b && b.at[0] === hour && b.at[1] === minute ? 'branch' : 'clock'
+  })
 
   // 고른 칸은 들고 있지 않고 시각에서 되찾는다. 두 벌로 들면 어긋난다
   const picked = HOUR_BRANCHES.indexOf(hourBranchAt(hour, minute) ?? HOUR_BRANCHES[0])
@@ -70,11 +89,11 @@ export function InputHourField({
 
           {mode === 'branch' ? (
             <>
-              <label className="sr-only" htmlFor="hour-branch">
+              <label className="sr-only" htmlFor={branchId}>
                 {memberFormCopy.hourBranchLabel}
               </label>
               <CommonSelect
-                id="hour-branch"
+                id={branchId}
                 value={picked}
                 onChange={(e) => {
                   const b = HOUR_BRANCHES[Number(e.target.value)]

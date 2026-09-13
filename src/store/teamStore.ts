@@ -22,12 +22,20 @@ export type Draft = {
   consentSource: 'self' | 'delegated' | null
 }
 
+/**
+ * 빈 초안.
+ *
+ * 시각 기본값이 12시 30분인 건 그게 오시의 **한가운데**여서다. 시간을 안 건드린
+ * 사람과 지시에서 오시를 고른 사람이 같은 값을 갖는다. 12시 0분으로 두면
+ * 화면에는 오시라고 적혀 있는데 저장값은 오시를 고른 것과 달라서, 다시 열 때
+ * 「한가운데가 아니네」 하고 직접 입력으로 서버린다.
+ */
 export const emptyDraft = (): Draft => ({
   name: '',
   birthDate: '',
   hourKnown: true,
   birthHour: 12,
-  birthMinute: 0,
+  birthMinute: 30,
   calendar: 'solar',
   isLeapMonth: false,
   useTrueSolarTime: true,
