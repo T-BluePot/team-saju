@@ -35,6 +35,14 @@ type Props = {
    * 여기 들고 있으면 그려지기도 전에 같이 사라진다.
    */
   onAnnounce: (text: string) => void
+  /**
+   * 마지막으로 고른 진태양시. 새로 넣는 폼의 기본값이다.
+   *
+   * 이 폼이 들고 있으면 안 된다. 고치기를 마칠 때 `key` 로 통째로 다시 서면서
+   * 그 선택이 기본값으로 돌아간다. 화면이 들고 있다가 넘겨준다.
+   */
+  trueSolarTime: boolean
+  onTrueSolarTime: (next: boolean) => void
 }
 
 
@@ -46,8 +54,12 @@ export function InputMemberForm({
   onCancelEdit,
   className,
   onAnnounce,
+  trueSolarTime,
+  onTrueSolarTime,
 }: Props) {
-  const [draft, setDraft] = useState<Draft>(() => editing?.draft ?? emptyDraft())
+  const [draft, setDraft] = useState<Draft>(
+    () => editing?.draft ?? { ...emptyDraft(), useTrueSolarTime: trueSolarTime },
+  )
   const [error, setError] = useState<string | null>(null)
   const nameRef = useRef<HTMLInputElement>(null)
 
@@ -174,7 +186,11 @@ export function InputMemberForm({
         <CommonCheckLabel
           className="items-start"
           checked={draft.useTrueSolarTime}
-          onChange={(e) => set('useTrueSolarTime', e.target.checked)}
+          onChange={(e) => {
+            set('useTrueSolarTime', e.target.checked)
+            // 다음 사람에게 들고 갈 값이라 화면에도 같이 올린다
+            onTrueSolarTime(e.target.checked)
+          }}
         >
           {memberFormCopy.trueSolarTime}
           <span

@@ -4,10 +4,17 @@ import { CommonButton, CommonField, CommonTextInput } from '../components/Common
 import { InputMemberForm, InputMemberList, InputUndoToast } from '../components/Input'
 import { AppBottomBar } from '../components/Layout'
 import { inputCopy } from '../lib/copy'
-
-/** 읽어준 뒤 문장을 비우는 시간 */
-const ANNOUNCE_MS = 4000
 import { MAX_MEMBERS, inputToDraft, useTeamStore } from '../store/teamStore'
+
+/**
+ * 읽어준 뒤 문장을 비우는 시간.
+ *
+ * 안 비우면 두 가지가 걸린다. 문장이 직전과 똑같으면 React 가 텍스트 노드를
+ * 안 건드려서 `aria-live` 가 다시 안 읽는다. 지우고 같은 이름을 다시 넣는
+ * 흐름에서 두 번째가 무음이 된다. 그리고 팀원을 지우면 인원수는 줄었는데
+ * 여기 낡은 숫자가 그대로 남는다.
+ */
+const ANNOUNCE_MS = 4000
 
 export function InputPage() {
   const members = useTeamStore((s) => s.members)
@@ -33,6 +40,17 @@ export function InputPage() {
    * 추가할 때는 읽히고 수정할 때만 무음이었다. 살아남는 자리에 둔다.
    */
   const [announce, setAnnounce] = useState('')
+
+  /**
+   * 마지막으로 고른 진태양시.
+   *
+   * 팀 전체에 같은 선택인 경우가 대부분이라 다음 사람에게 들고 간다. 폼이
+   * 들고 있으면 안 된다. 고치기를 마칠 때 `key` 로 폼이 통째로 다시 서면서
+   * 그 선택이 기본값으로 돌아가, 끄고 넣던 팀에 켜진 사람이 조용히 섞였다.
+   * 한 팀 안에서 30분 다른 기준으로 계산된 사람이 생기는데 어느 줄도 그 말을
+   * 안 해준다. 폼보다 오래 사는 자리에 둔다.
+   */
+  const [trueSolarTime, setTrueSolarTime] = useState(true)
 
   useEffect(() => {
     if (!announce) return
@@ -100,6 +118,8 @@ export function InputPage() {
         editing={editing}
         onCancelEdit={cancelEdit}
         onAnnounce={setAnnounce}
+        trueSolarTime={trueSolarTime}
+        onTrueSolarTime={setTrueSolarTime}
       />
 
       {/*
