@@ -65,11 +65,17 @@ const BALANCED_SAMPLE: Seed[] = [
 
 export const seedBalanced = () => seedResult(BALANCED_SAMPLE)
 
-/** 황금 균형형(95+)이 나오는 팀. 98점 */
+/**
+ * 황금 균형형(95+)이 나오는 팀. 96점.
+ *
+ * 시드는 분을 안 적어서 `emptyDraft()` 의 기본 분을 탄다. 그 값이 0 에서 30 으로
+ * 바뀌자 앞의 조합은 진태양시 보정과 겹쳐 시주가 한 칸 밀리면서 93점 균형형이 됐다.
+ * `devSeed.test.ts` 가 이 시드들이 제 유형을 띄우는지 지킨다.
+ */
 const GOLDEN_SAMPLE: Seed[] = [
-  { name: '가람', birthDate: '1993-06-28', birthHour: 19 },
-  { name: '나린', birthDate: '1981-05-24', birthHour: 5 },
-  { name: '다온', birthDate: '1984-03-20', birthHour: 12 },
+  { name: '가람', birthDate: '1980-12-28', birthHour: 1 },
+  { name: '나린', birthDate: '1986-11-08', birthHour: 17 },
+  { name: '다온', birthDate: '1991-03-07', birthHour: 4 },
 ]
 
 export const seedGolden = () => seedResult(GOLDEN_SAMPLE)
