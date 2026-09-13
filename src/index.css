@@ -748,16 +748,30 @@ dialog.sheet[open]::backdrop {
   background: color-mix(in srgb, var(--surface) 55%, transparent);
   backdrop-filter: blur(6px);
   color: var(--ink-soft);
+  /*
+   * 커지는 건 밝아지는 것보다 천천히 간다. 같은 속도로 두면 톡 튀어나오는데
+   * 이 판은 족자라 그런 움직임이 안 어울린다. 끝에서 살짝 늘어지는 곡선을 쓴다.
+   * 족자가 펼쳐질 때와 같은 곡선이다.
+   */
   transition:
     background 0.18s ease-out,
-    color 0.18s ease-out;
+    color 0.18s ease-out,
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* 손이 닿으면 또렷해진다 */
+/* 손이 닿으면 또렷해지고 살짝 커진다 */
 .scroll-nav:hover .scroll-nav-chip,
+.scroll-nav:focus-visible .scroll-nav-chip,
 .scroll-nav:active .scroll-nav-chip {
   background: color-mix(in srgb, var(--surface) 88%, transparent);
   color: var(--ink);
+  transform: scale(1.12);
+}
+
+/* 누를 때는 도로 들어간다. 이 버튼은 `.press` 를 안 달아서 여기서 직접 준다 */
+.scroll-nav:active .scroll-nav-chip {
+  transform: scale(0.96);
+  transition-duration: 0.18s, 0.18s, 0.09s;
 }
 
 .scroll-nav:disabled .scroll-nav-chip {
