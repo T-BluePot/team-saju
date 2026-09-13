@@ -85,7 +85,7 @@ const ILLUST_BY_LACKING: Record<Element, { src: string; alt: string }> = {
  * 그림이 들어간다. 실제로 한 번 그렇게 붙였다가 뺐다.
  *
  * 출처는 위와 같은 いらすとや 다. 파일 이름은 내용이 바뀌면 같이 바꾼다.
- * `vercel.json` 이 1년 immutable 캐시를 걸어둬서 같은 이름으로 내용만 갈면
+ * `public/_headers` 가 1년 immutable 캐시를 걸어둬서 같은 이름으로 내용만 갈면
  * 이미 받아간 사람은 옛 그림을 계속 본다.
  */
 const ILLUST_BY_STRONG: Record<Element, { src: string; alt: string }> = {

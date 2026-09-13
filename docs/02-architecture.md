@@ -14,7 +14,7 @@
 | 사주 계산 | lunar-typescript 1.8 (절기 테이블 내장, 의존성 0) |
 | AI | @anthropic-ai/sdk (서버 사이드만) |
 | 테스트 | Vitest 3 |
-| 배포 | Vercel |
+| 배포 | Cloudflare Workers |
 
 배제한 것
 
@@ -37,11 +37,12 @@
         |
         | SajuFacts (간지, 오행, 십신만) / 생년월일 원본은 안 나감
         v  POST /api/interpret
-Vercel Function (api/interpret.ts)
+Cloudflare Worker (api/interpret.ts)
+  정적 자산과 같은 Worker 다. /api/* 만 코드가 받고 나머지는 dist 를 그대로 내보낸다
   입력 검증 (날짜 필드 있으면 400)
   에이전트 파이프라인 오케스트레이션
   가드레일 필터
-  ANTHROPIC_API_KEY (서버 전용)
+  ANTHROPIC_API_KEY (Workers 시크릿. env 로 들어오지 process.env 가 아니다)
         |
         v  Claude API (claude-sonnet-5)
 ```
@@ -219,16 +220,45 @@ type SajuFacts = {
 }
 ```
 
-## 개발 서버 API
+## 배포와 개발 서버 API
 
-Vercel Function을 로컬에서도 쓰려고 `vite.config.ts`에 dev 전용 미들웨어를 둔다.
-`api/interpret.ts`는 Web 표준 `Request -> Response` 시그니처로 써서 Vercel Node 런타임이랑
-Vite 미들웨어 양쪽에서 같은 코드가 돈다.
+정적 자산과 API 가 **한 Worker** 다. `wrangler.jsonc` 가 `dist` 를 자산으로 들고,
+`/api/*` 만 코드가 먼저 받는다. 나머지 경로는 `single-page-application` 처리로
+`index.html` 을 돌려준다.
+
+Sprint 2 에서 `api/interpret.ts` 를 붙일 때 설정이 이렇게 늘어난다. **지금은 자산만
+있고 `main` 이 없다.**
+
+```jsonc
+{
+  "name": "team-saju",
+  "main": "./api/interpret.ts",        // Sprint 2 에 추가
+  "compatibility_date": "2026-09-12",
+  "compatibility_flags": ["nodejs_compat"],   // @anthropic-ai/sdk 가 요구하면
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application",
+    "binding": "ASSETS",               // Worker 가 자산을 되돌려줄 때 쓴다
+    "run_worker_first": ["/api/*"]     // 이 경로만 코드가 받는다
+  }
+}
+```
+
+`api/interpret.ts` 는 Web 표준 `Request -> Response` 로 쓴다. Workers 런타임과 Vite
+dev 미들웨어 양쪽에서 같은 코드가 돈다. 로컬은 `vite.config.ts` 의 dev 전용
+미들웨어를 그대로 쓰고, Workers 런타임까지 확인할 일이 있으면 `wrangler dev` 로
+붙는다.
 
 ```
-npm run dev     localhost:5173, 프론트 + /api/* 미들웨어
-vercel deploy   정적 자산 + 서버리스 함수
+npm run dev        localhost:5180, 프론트 + /api/* 미들웨어
+npx wrangler dev   Workers 런타임에서 확인할 때
+git push           dev 에 들어가면 Workers Builds 가 빌드하고 올린다
 ```
+
+**Vercel 과 다른 점 둘.** 하나, 시크릿이 `process.env` 가 아니라 핸들러 두 번째
+인자 `env` 로 들어온다. `env.ANTHROPIC_API_KEY` 이고 `wrangler secret put` 으로
+넣는다. 둘, Node API 가 기본으로 없다. `@anthropic-ai/sdk` 는 fetch 기반이라
+대체로 돌지만, 붙일 때 `nodejs_compat` 이 필요한지 실제로 확인하고 정한다.
 
 ## 보안
 
