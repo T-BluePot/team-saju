@@ -24,9 +24,19 @@ export function InputMemberList({ charts, onRemove, editingId, onEdit }: Props) 
       {/*
         덮개 위로 올리는 건 칩 줄까지다. `팀원 N명` 은 누를 것도 없는 글인데
         같이 올려두면 덮개도 아니고 쓸 것도 아닌 죽은 자리가 된다.
-        올라와 있는 건 실제로 눌러 쓰는 것만이어야 한다.
+
+        줄 자체는 손을 안 받는다. 줄은 폭을 다 쓰는데 칩은 왼쪽 몇 개뿐이라,
+        올리기만 하면 칩 오른쪽 빈 자리가 덮개도 아니고 누를 것도 아닌
+        죽은 자리가 된다. 칩만 손을 받고 나머지는 덮개로 흘려보낸다.
       */}
-      <ul className={['flex flex-wrap gap-2', editingId !== null && 'raised'].filter(Boolean).join(' ')}>
+      <ul
+        className={[
+          'flex flex-wrap gap-2',
+          editingId !== null && 'raised pointer-events-none',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         {charts.map((c) => {
           const editing = editingId === c.member.id
           /*
@@ -43,7 +53,12 @@ export function InputMemberList({ charts, onRemove, editingId, onEdit }: Props) 
               as="li"
               flush
               radius="rounded-full"
-              className="flex items-center gap-2 p-1 transition-opacity"
+              className={[
+                'flex items-center gap-2 p-1 transition-opacity',
+                editingId !== null && 'pointer-events-auto',
+              ]
+                .filter(Boolean)
+                .join(' ')}
               style={{ opacity: editingId !== null && !editing ? 0.35 : 1 }}
             >
               {/*
