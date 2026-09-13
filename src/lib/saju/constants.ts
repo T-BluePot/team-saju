@@ -259,8 +259,22 @@ export const STRENGTH_THRESHOLD = { strong: 58, weak: 42 } as const
 /** 과잉 결핍 판정. 문서 03-saju-spec.md 7장 */
 export const ELEMENT_FLAG_THRESHOLD = { excess: 30, lacking: 12 } as const
 
-/** 균형점수가 이 이상이면 결핍을 따지지 않고 균형형 */
-export const BALANCED_ARCHETYPE_THRESHOLD = 75
+/**
+ * 균형점수가 이 이상이면 결핍을 따지지 않고 균형형.
+ *
+ * 원래 75였다. 인원이 늘수록 오행이 저절로 섞여서 점수가 올라가는데, 실측하니
+ * 5명 팀의 97%가 75를 넘었다. 그러면 20유형이 화면에 안 나온다. 85면 5명 팀의
+ * 41%가 제 유형을 받는다. 분포표는 07-team-report.md 에 있다.
+ */
+export const BALANCED_ARCHETYPE_THRESHOLD = 85
+
+/**
+ * 이 이상이면 황금 균형형.
+ *
+ * 어느 인원에서도 드물다. 1명 0.3%, 8명 4%. 균형형과 갈라놓은 건 99점 팀과
+ * 86점 팀이 같은 결론을 받고 있어서다.
+ */
+export const GOLDEN_ARCHETYPE_THRESHOLD = 95
 
 /**
  * 십이운성. 일간이 각 지지에서 어느 세기에 있는지.

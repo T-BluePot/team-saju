@@ -29,14 +29,19 @@ export const SOLO_NOTE =
 /**
  * "이 팀에 들어오면 좋은 사람" 자리.
  *
- * 균형형만 따로 본다. `needsPerson` 이 "이미 다 있습니다" 인데 이건 여럿이 모여서
- * 고르다는 뜻으로 쓴 문장이다. 혼자한테 붙으면 앞뒤가 안 맞는다.
+ * 균형 계열만 따로 본다. `needsPerson` 이 "이미 다 있습니다" 나 "이 조합을 안
+ * 흩뜨리는 게 낫습니다" 인데 둘 다 여럿이 모여서 고르다는 뜻으로 쓴 문장이다.
+ * 혼자한테 붙으면 앞뒤가 안 맞는다.
+ *
+ * id 가 아니라 `lacking` 을 본다. 황금형이 생기면서 여기가 id 를 하나 더 알아야
+ * 했는데, 실제로 묻고 있던 건 "채울 결핍이 있느냐" 였다. 균형 계열이 또 늘어도
+ * 이 분기는 안 고친다.
  */
 export function needsBlock(
   solo: boolean,
-  archetype: Pick<Archetype, 'id' | 'needsPerson'>,
+  archetype: Pick<Archetype, 'lacking' | 'needsPerson'>,
 ): { heading: string; body: string } {
-  if (solo && archetype.id === 'balanced') {
+  if (solo && archetype.lacking === null) {
     return {
       heading: '지금은 이렇습니다',
       body:

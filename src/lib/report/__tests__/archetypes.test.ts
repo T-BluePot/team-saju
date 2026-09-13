@@ -1,13 +1,17 @@
 import { describe, expect, it } from 'vitest'
 
 import { BANNED_PHRASES, VAGUE_PRESCRIPTION } from './bannedPhrases'
-import { ELEMENTS } from '../../saju/constants'
+import {
+  BALANCED_ARCHETYPE_THRESHOLD,
+  ELEMENTS,
+  GOLDEN_ARCHETYPE_THRESHOLD,
+} from '../../saju/constants'
 import { archetypeIdFor } from '../../saju/team'
 import { ARCHETYPES, getArchetype } from '../archetypes'
 
 describe('팀 유형', () => {
-  it('20개 조합에 균형형을 더해 21개다', () => {
-    expect(ARCHETYPES).toHaveLength(21)
+  it('20개 조합에 균형형 둘을 더해 22개다', () => {
+    expect(ARCHETYPES).toHaveLength(22)
   })
 
   it('id 가 겹치지 않는다', () => {
@@ -27,9 +31,27 @@ describe('팀 유형', () => {
     }
   })
 
-  it('균형 점수가 75 이상이면 결핍과 무관하게 균형형이다', () => {
-    expect(archetypeIdFor('火', '金', 75)).toBe('balanced')
-    expect(archetypeIdFor('火', '金', 74)).toBe('fire-no-metal')
+  /*
+   * 문턱 넷을 다 고정한다. 85 와 95 는 각각 아래위로 갈리는 자리라 한쪽만
+   * 적어두면 부등호를 `>` 로 바꿔도 테스트가 안 깨진다.
+   */
+  it('균형 점수 85 부터 균형형, 95 부터 황금형이다', () => {
+    expect(archetypeIdFor('火', '金', 84)).toBe('fire-no-metal')
+    expect(archetypeIdFor('火', '金', 85)).toBe('balanced')
+    expect(archetypeIdFor('火', '金', 94)).toBe('balanced')
+    expect(archetypeIdFor('火', '金', 95)).toBe('golden')
+    expect(archetypeIdFor('火', '金', 100)).toBe('golden')
+  })
+
+  it('황금형 문턱이 균형형보다 먼저 걸린다', () => {
+    // 순서가 뒤집히면 95 이상도 균형형으로 떨어져서 황금형이 영영 안 나온다
+    expect(GOLDEN_ARCHETYPE_THRESHOLD).toBeGreaterThan(BALANCED_ARCHETYPE_THRESHOLD)
+  })
+
+  it('균형 계열 둘은 채울 결핍이 없다', () => {
+    // 기운 카드와 1인 화법이 id 가 아니라 이 값으로 갈린다
+    const noLacking = ARCHETYPES.filter((a) => a.lacking === null).map((a) => a.id)
+    expect(noLacking).toEqual(['balanced', 'golden'])
   })
 
   it('없는 id 를 넣으면 균형형으로 떨어진다', () => {
