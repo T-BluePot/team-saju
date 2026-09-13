@@ -1,4 +1,4 @@
 export { SajuElementBars } from './SajuElementBars'
 export { SajuElementRadar } from './SajuElementRadar'
-export { SajuEmptyPillar, SajuPillarCard } from './SajuPillarCard'
+export { SajuPillarTable } from './SajuPillarTable'
 export { SajuTraitBars } from './SajuTraitBars'

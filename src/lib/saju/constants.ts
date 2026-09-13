@@ -44,6 +44,87 @@ export const BRANCHES: Branch[] = [
   '午', '未', '申', '酉', '戌', '亥',
 ]
 
+/**
+ * 천간과 지지의 우리말 음.
+ *
+ * 계산에는 안 쓴다. 명식표에서 한자 밑에 음을 같이 보여주려고 둔다.
+ * 사주를 처음 보는 사람에게 庚 한 글자는 읽을 수조차 없는 표시다.
+ * `TWELVE_STAGE_KO` `NAYIN_KO` 와 같은 갈래라 여기 같이 둔다.
+ */
+export const STEM_KO: Record<Stem, string> = {
+  甲: '갑', 乙: '을',
+  丙: '병', 丁: '정',
+  戊: '무', 己: '기',
+  庚: '경', 辛: '신',
+  壬: '임', 癸: '계',
+}
+
+export const BRANCH_KO: Record<Branch, string> = {
+  子: '자', 丑: '축', 寅: '인', 卯: '묘', 辰: '진', 巳: '사',
+  午: '오', 未: '미', 申: '신', 酉: '유', 戌: '술', 亥: '해',
+}
+
+export type HourBranch = {
+  branch: Branch
+  /** 화면에 세우는 이름 */
+  name: string
+  /** 시계 시각 [시, 분]. `to` 는 그 분까지 포함한다 */
+  from: [number, number]
+  to: [number, number]
+  /** 고르면 저장하는 시각. 구간 한가운데다 */
+  at: [number, number]
+}
+
+/**
+ * 십이지시. 시간을 시각이 아니라 지시로 고를 때 쓴다.
+ *
+ * 경계가 30분씩 밀려 있는 건 진태양시 때문이다. 한국은 동경 135도를 표준자오선으로
+ * 쓰는데 국토는 127.5도쯤에 있어서 시계가 태양보다 30분 빠르다. 문서 03-saju-spec.md
+ *
+ * **`at` 은 구간의 시작이 아니라 한가운데다.** 경계값을 저장하면 진태양시 보정을
+ * 껐을 때 옆 칸으로 넘어간다. 한가운데는 보정을 켜든 끄든 같은 지시에 남는다.
+ *
+ * 자시가 둘이다. 야자시설을 쓰므로 23시 이후는 다음날 일주로 본다 (같은 문서).
+ * 갈리는 자리는 **진태양시 00:00, 곧 시계로 00:30** 이다. 시계 자정으로 끊으면
+ * 00:00~00:29 가 조자시로 들어가는데 그 30분은 진태양시로 23:30~23:59 라 야자시다.
+ *
+ * 야자시 한 칸에는 자정 앞뒤가 같이 들어간다. 같은 시각을 두고도 생년월일을
+ * 자정 앞으로 적은 사람과 뒤로 적은 사람이 있어서, 한 칸에 시각 하나만 둘 수는
+ * 없다. `at` 은 자정 앞(23:45)으로 잡았다. 자정을 넘겨 태어났으면 직접 입력이 맞다.
+ */
+export const HOUR_BRANCHES: HourBranch[] = [
+  { branch: '子', name: '야자시', from: [23, 30], to: [0, 29], at: [23, 45] },
+  { branch: '子', name: '자시', from: [0, 30], to: [1, 29], at: [0, 45] },
+  { branch: '丑', name: '축시', from: [1, 30], to: [3, 29], at: [2, 30] },
+  { branch: '寅', name: '인시', from: [3, 30], to: [5, 29], at: [4, 30] },
+  { branch: '卯', name: '묘시', from: [5, 30], to: [7, 29], at: [6, 30] },
+  { branch: '辰', name: '진시', from: [7, 30], to: [9, 29], at: [8, 30] },
+  { branch: '巳', name: '사시', from: [9, 30], to: [11, 29], at: [10, 30] },
+  { branch: '午', name: '오시', from: [11, 30], to: [13, 29], at: [12, 30] },
+  { branch: '未', name: '미시', from: [13, 30], to: [15, 29], at: [14, 30] },
+  { branch: '申', name: '신시', from: [15, 30], to: [17, 29], at: [16, 30] },
+  { branch: '酉', name: '유시', from: [17, 30], to: [19, 29], at: [18, 30] },
+  { branch: '戌', name: '술시', from: [19, 30], to: [21, 29], at: [20, 30] },
+  { branch: '亥', name: '해시', from: [21, 30], to: [23, 29], at: [22, 30] },
+]
+
+/**
+ * 시계 시각이 어느 지시에 드는가.
+ *
+ * 직접 입력에서 지시로 돌아올 때 고른 칸을 되살리는 데 쓴다.
+ * 야자시만 자정을 걸쳐서 `from` 이 `to` 보다 크다. 그 칸은 둘 중 하나만 맞으면 든다.
+ */
+export function hourBranchAt(hour: number, minute: number): HourBranch | null {
+  const m = hour * 60 + minute
+  return (
+    HOUR_BRANCHES.find((b) => {
+      const from = b.from[0] * 60 + b.from[1]
+      const to = b.to[0] * 60 + b.to[1]
+      return from > to ? m >= from || m <= to : m >= from && m <= to
+    }) ?? null
+  )
+}
+
 export const STEM_ELEMENT: Record<Stem, Element> = {
   甲: '木', 乙: '木',
   丙: '火', 丁: '火',

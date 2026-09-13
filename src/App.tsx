@@ -30,9 +30,9 @@ export default function App() {
   }, [view])
 
   return (
-    <div className="min-h-screen">
+    <div className="app-frame">
       <AppHeader />
-      <main className="mx-auto w-full max-w-2xl px-5 pb-28 pt-8">
+      <main className="w-full px-5 pb-28 pt-8">
         {view === 'landing' && <LandingPage />}
         {view === 'input' && <InputPage />}
         {view === 'loading' && <LoadingPage />}

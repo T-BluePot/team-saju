@@ -10,6 +10,12 @@
  */
 
 @theme {
+  /* 시안에 있는데 Tailwind 기본 스케일에 없는 두 단계.
+     간격과 반경은 기본 스케일이 그대로 덮어서 새로 정의할 게 없다.
+     랜딩 h1 과 결과 유형명에 쓰려던 32 / 38 은 clamp 로 가면서 필요가 없어졌다 */
+  --text-10: 0.625rem; /* 헤더 태그라인, 하단 고지 */
+  --text-11: 0.6875rem; /* 도장, 기운 카드 태그 */
+
   --font-serif: 'Nanum Myeongjo', 'Apple SD Gothic Neo', serif;
   --font-sans:
     'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
@@ -26,6 +32,26 @@
   --ink: #17140f;
   --ink-soft: #6b6355;
   --rule: #ddd4c2;
+  /* 항목 사이를 점선으로 나눌 때. 실선 괘선보다 한 단 옅다 */
+  /*
+   * 괘선 둘.
+   *
+   * 무늬가 뜻을 정한다. **실선은 덩어리가 바뀐다**, **점선은 같은 종류가 반복되는
+   * 줄 사이**다. 진하기는 층을 정한다. 카드를 가르는 큰 덩어리는 `--rule`,
+   * 그 안에서 다시 가르는 것과 표의 줄은 `--rule-faint` 다.
+   *
+   *   카드 안 블록 경계   실선 --rule        카드 전체 폭
+   *   블록 안 덩어리      실선 --rule-faint  내용 폭
+   *   표의 줄, 항목 사이  점선 --rule-faint  그 표나 목록 폭
+   *
+   * 셋이 같은 화면에 겹치는 자리가 개인 명식이라 거기서 규칙이 갈렸었다.
+   *
+   * 예외가 하나 있다. 랜딩의 三단 설명은 항목이 반복되지만 실선 `--rule` 을 쓴다.
+   * 규칙대로 점선으로 내려봤더니 바로 아래 동의 목록과 같은 무게가 되면서
+   * 첫 화면에서 제일 먼저 읽혀야 할 세 단계가 잔글씨 목록으로 묻혔다.
+   * 규칙은 화면을 읽기 쉽게 하려고 있는 거라 여기서는 규칙을 접는다.
+   */
+  --rule-faint: color-mix(in srgb, var(--rule) 55%, var(--paper));
 
   /* 주사. 부적에 쓰는 다홍 */
   --cinnabar: #d93a26;
@@ -55,17 +81,52 @@
    * `--ink` 를 쓰면 다크에서 뒷막이 밝아져서 반대로 간다. 그래서 두 테마가 같은 값이다.
    */
   --scrim: color-mix(in srgb, #17140f 55%, transparent);
+  /*
+   * 머리글 높이. 결과 화면의 탭 줄이 이 아래에 붙어 서야 해서 값이 필요하다.
+   * 머리글 자신이 이 값을 최소 높이로 쓴다. 한쪽만 고치면 탭이 뜨거나 파묻힌다.
+   */
+  --header-h: 61px;
+
+  /* 본문보다 한 단 더 물러난 글자. 출처, 각주 */
+  --ink-faint: color-mix(in srgb, var(--ink-soft) 62%, var(--paper));
+
+  /*
+   * 두꺼운 축과 얇은 축.
+   *
+   * 강조색은 결과 화면에서 주도 오행으로 갈리는데, 厚 와 薄 은 그것과 무관하게
+   * 늘 같은 두 색이어야 서로 반대라는 게 읽힌다. 그래서 따로 둔다.
+   */
+  --strong-deep: #2f5580;
+  --weak-deep: var(--cinnabar-deep);
 
   /* 주의 톤. 대리 입력 배지처럼 짚고 넘어가야 하는 자리에 */
   --warn: #8a6a12;
   --warn-wash: #fdf1d0;
 
-  /* 오방색 */
+  /* 족자. 비단과 금선 */
+  --scroll-silk: #4a5b58;
+  --scroll-gold: #bfa678;
+
+  /* 오방색. 면과 선에 쓴다 */
   --el-wood: #2f7d6b;
   --el-fire: #d93a26;
   --el-earth: #c08a2e;
   --el-metal: #7c8188;
   --el-water: #2b3a55;
+
+  /*
+   * 글자용 오방색.
+   *
+   * 오방색 원본은 한지색 위에서 土 2.99:1, 金 3.86:1 이라 글자로 쓰면 4.5:1 에
+   * 못 미친다. `[data-element]` 의 `--accent-deep` 이 같은 값을 들고 있었는데
+   * 그건 그 화면의 주도 오행 하나에만 걸려서, 오행 다섯이 한 줄에 같이 서는
+   * 자리(오행 막대, 명식표)에서는 쓸 수가 없었다.
+   */
+  --el-wood-deep: #1f5a4c;
+  --el-fire-deep: var(--cinnabar-deep);
+  --el-earth-deep: #8a6220;
+  --el-metal-deep: #565b61;
+  --el-water-deep: var(--el-water);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -76,6 +137,8 @@
     --ink: #f2ece0;
     --ink-soft: #a49a87;
     --rule: #352f25;
+    /* 라이트의 남색을 그대로 쓰면 어두운 종이 위에서 안 읽힌다 */
+    --strong-deep: #89b0da;
 
     --cinnabar: #ef5a44;
     --cinnabar-deep: #ff7a66;
@@ -94,6 +157,17 @@
     --el-earth: #d9a648;
     --el-metal: #9aa1aa;
     --el-water: #6b83ad;
+
+    /*
+     * 다크는 오방색이 이미 밝아서 대체로 글자로 그대로 쓴다.
+     * 火와 水만 예외다. 오행 막대는 그 줄을 제 색으로 옅게 까는데, 그 물 위에서
+     * 다크 --el-fire 가 4.49:1 로 4.5 에 딱 못 미친다. 水는 더 어둡다.
+     */
+    --el-wood-deep: var(--el-wood);
+    --el-fire-deep: var(--cinnabar-deep);
+    --el-earth-deep: var(--el-earth);
+    --el-metal-deep: var(--el-metal);
+    --el-water-deep: #8098c4;
   }
 }
 
@@ -105,8 +179,29 @@ body,
 
 body {
   margin: 0;
+  /* 기둥 바깥. 종이보다 한 단 어두워야 지면이 떠 보인다 */
+  background-color: var(--paper-deep);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * 앱 기둥.
+ *
+ * 한지 결은 종이 안에만 둔다. body 에 깔면 넓은 화면에서 격자가 끝없이 이어져
+ * 어디까지가 지면인지가 안 보인다.
+ *
+ * 경계는 괘선이 아니라 색으로 가른다. 이 화면은 이미 카드 테두리, 머리글 밑선,
+ * 하단 바 윗선, 점선 구분에 한지 격자까지 선이 많다. 기둥 좌우에 실괘선을 하나
+ * 더 세우면 어지럽다. 바깥을 한 단 어둡게 두면 선 없이도 지면이 떠 보인다.
+ */
+.app-frame {
+  position: relative;
+  margin: 0 auto;
+  min-height: 100vh;
+  max-width: 42rem;
   background-color: var(--paper);
-  /* 한지 결. 아주 옅은 격자를 깔아 종이 느낌을 준다 */
   background-image:
     repeating-linear-gradient(
       0deg,
@@ -118,9 +213,6 @@ body {
       transparent 0 23px,
       color-mix(in srgb, var(--rule) 14%, transparent) 23px 24px
     );
-  color: var(--ink);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
 }
 
 * {
@@ -191,16 +283,6 @@ body {
   }
 }
 
-@keyframes pulse-soft {
-  0%,
-  100% {
-    opacity: 0.35;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
 .animate-ink {
   animation: ink-rise 0.5s ease-out both;
 }
@@ -252,11 +334,113 @@ body {
 }
 
 /*
+ * 수정 중 오버레이.
+ *
+ * 팀원 칩을 눌러 고치는 동안 나머지 화면을 덮는다. 고치는 중에 팀 이름을 바꾸거나
+ * 다른 사람을 새로 넣으면 지금 폼에 올라온 게 누구 것인지가 흐려진다. 덮개를 누르면
+ * 고치기가 풀린다. 취소 버튼까지 찾아가지 않아도 빠져나올 수 있어야 한다.
+ *
+ * `dialog` 를 안 쓴다. 칩 줄과 폼 카드 둘을 같이 띄워야 하는데 둘은 형제가 아니다.
+ *
+ * **머리글보다 아래에 깐다.** 원하는 순서가 `덮개 > 머리글`, `머리글 > 칩` 인데
+ * 칩은 덮개 위에 있어야 한다. 셋이 서로를 물어서 한 줄로는 못 세운다.
+ * 그래서 덮개와 올린 것을 둘 다 머리글(30) 아래에 두고, 머리글은 제 안에서
+ * 따로 덮는다. 이렇게 해야 스크롤할 때 칩이 머리글을 뚫고 나가지 않는다.
+ */
+.editscrim {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background: var(--scrim);
+}
+
+.raised {
+  position: relative;
+  z-index: 26;
+}
+
+/*
+ * 머리글은 제 자리에 남고 안쪽만 덮인다. 누르는 건 부르는 쪽이 막는다.
+ *
+ * 아래로 1px 더 나간다. `inset: 0` 은 테두리 안쪽까지만 덮어서 머리글 밑줄
+ * 한 가닥만 안 덮인 채로 화면을 가로지른다. 덮인 판에 그 줄만 밝게 떠 보인다.
+ */
+.editscrim-top {
+  position: absolute;
+  inset: 0 0 -1px;
+  background: var(--scrim);
+}
+
+/*
  * `dialog` 는 `showModal()` 로 연다. 포커스 가두기와 Esc 가 공짜로 딸려오는 대신
  * 뒷막은 `::backdrop` 으로만 칠할 수 있다. 인라인 스타일이 닿지 않는 자리다.
+ *
+ * 뒷막은 문서 트리 밖이라 `:root` 에 둔 변수가 안 내려오는 엔진이 있다. 그러면
+ * `var(--scrim)` 이 빈 값이 되어 뒷막이 투명해지고, 모달이 그냥 겹쳐 뜬 것처럼
+ * 보인다. 조용히 깨져서 눈치채기 어렵다. 여기서 한 번 더 정해둔다.
  */
+::backdrop {
+  --scrim: color-mix(in srgb, #17140f 55%, transparent);
+}
+
 dialog::backdrop {
   background: var(--scrim);
+}
+
+/*
+ * 시트가 뚝 나타나지 않게 아래에서 밀어 올린다.
+ *
+ * `showModal()` 은 display 를 한 번에 바꿔서 전이가 걸릴 틈이 없다.
+ * `@starting-style` 로 열리기 직전 값을 주고, display 와 overlay 를
+ * `allow-discrete` 로 열어야 닫힐 때도 끝까지 보인다.
+ *
+ * framer-motion 을 쓰면 native `dialog` 를 버려야 하고 그러면 포커스 가두기와
+ * Esc 를 손으로 짜야 한다. 계측해보니 스프링과의 차이는 45ms 였고 번들은
+ * gzip 40.8KB 가 늘었다. 그 값을 안 한다. 2026-09-07 결정도 그대로 간다.
+ *
+ * 지원하지 않는 브라우저에서는 애니메이션만 빠지고 모달은 그대로 뜬다.
+ */
+dialog.sheet {
+  translate: 0 100%;
+  transition:
+    translate 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    display 0.32s allow-discrete,
+    overlay 0.32s allow-discrete;
+}
+
+dialog.sheet[open] {
+  translate: 0 0;
+}
+
+@starting-style {
+  dialog.sheet[open] {
+    translate: 0 100%;
+  }
+}
+
+dialog.sheet::backdrop {
+  background: transparent;
+  transition:
+    background-color 0.32s ease,
+    display 0.32s allow-discrete,
+    overlay 0.32s allow-discrete;
+}
+
+dialog.sheet[open]::backdrop {
+  background: var(--scrim);
+}
+
+@starting-style {
+  dialog.sheet[open]::backdrop {
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.sheet,
+  dialog.sheet::backdrop {
+    transition: none;
+  }
 }
 
 /*
@@ -271,27 +455,27 @@ dialog::backdrop {
  */
 [data-element='木'] {
   --accent: var(--el-wood);
-  --accent-deep: #1f5a4c;
+  --accent-deep: var(--el-wood-deep);
   --accent-wash: color-mix(in srgb, var(--el-wood) 12%, var(--surface));
 }
 [data-element='火'] {
   --accent: var(--el-fire);
-  --accent-deep: var(--cinnabar-deep);
+  --accent-deep: var(--el-fire-deep);
   --accent-wash: color-mix(in srgb, var(--el-fire) 12%, var(--surface));
 }
 [data-element='土'] {
   --accent: var(--el-earth);
-  --accent-deep: #8a6220;
+  --accent-deep: var(--el-earth-deep);
   --accent-wash: color-mix(in srgb, var(--el-earth) 12%, var(--surface));
 }
 [data-element='金'] {
   --accent: var(--el-metal);
-  --accent-deep: #565b61;
+  --accent-deep: var(--el-metal-deep);
   --accent-wash: color-mix(in srgb, var(--el-metal) 12%, var(--surface));
 }
 [data-element='水'] {
   --accent: var(--el-water);
-  --accent-deep: var(--el-water);
+  --accent-deep: var(--el-water-deep);
   --accent-wash: color-mix(in srgb, var(--el-water) 12%, var(--surface));
 }
 
@@ -315,5 +499,711 @@ dialog::backdrop {
    */
   [data-element='水'] {
     --accent-deep: #8098c4;
+  }
+}
+
+/*
+ * 족자.
+ *
+ * 유형을 걸어 보여주는 판이다. 랜딩에서 한 장씩 넘겨보고, 결과에서는 펼쳐진다.
+ * 둘이 같은 판을 쓴다.
+ *
+ * 봉과 비단과 종이가 겹치는 자리라 Tailwind 유틸로 흩어놓으면 읽기 어렵다.
+ * `.seal` 이나 `.press` 처럼 한 덩어리로 묶어 여기 둔다.
+ */
+.scroll {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+/*
+ * 위아래 봉. 좌우로 조금 삐져나와 축이 드러난다.
+ *
+ * 나뭇결과 놋쇠 마구리 색은 여기서만 쓰는 재질색이라 토큰으로 안 뺐다.
+ * 비단과 금선은 여러 규칙이 나눠 쓰니 `--scroll-silk` `--scroll-gold` 로 뺐다.
+ */
+.scroll-rod {
+  position: relative;
+  z-index: 3;
+  width: calc(100% + 20px);
+  height: 10px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #5a4a38 0%, #33291f 55%, #241c14 100%);
+  box-shadow:
+    0 3px 7px -2px rgb(23 20 15 / 42%),
+    0 1px 0 rgb(255 255 255 / 10%) inset;
+}
+
+/* 축 마구리 */
+.scroll-rod::before,
+.scroll-rod::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  background: #a8987a;
+}
+
+.scroll-rod::before {
+  left: -3px;
+}
+
+.scroll-rod::after {
+  right: -3px;
+}
+
+.scroll-silk {
+  width: 100%;
+  padding: 11px 10px 14px;
+  background: var(--scroll-silk);
+}
+
+.scroll-paper {
+  position: relative;
+  display: flex;
+  min-height: 352px;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 32px 24px;
+  background: var(--surface);
+  text-align: center;
+}
+
+/*
+ * 회문 모서리 넷과 그 사이를 잇는 금선.
+ * 모서리 안의 금색만 리터럴이다. data URI 안에서는 CSS 변수를 못 읽는다
+ */
+.scroll-frame {
+  position: absolute;
+  z-index: 2;
+  inset: 10px;
+  pointer-events: none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='23'%20height='23'%20viewBox='0%200%2023%2023'%3E%3Cg%20fill='none'%20stroke='%23bfa678'%20stroke-width='1'%3E%3Cpath%20d='M23%200.5H14.5V21.5H7.5V0.5H0.5V7.5'/%3E%3Cpath%20d='M0.5%2014.5V23'/%3E%3Cpath%20d='M0.5%207.5H21.5V14.5H0.5'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='23'%20height='23'%20viewBox='0%200%2023%2023'%3E%3Cg%20fill='none'%20stroke='%23bfa678'%20stroke-width='1'%20transform='translate(23,0)%20scale(-1,1)'%3E%3Cpath%20d='M23%200.5H14.5V21.5H7.5V0.5H0.5V7.5'/%3E%3Cpath%20d='M0.5%2014.5V23'/%3E%3Cpath%20d='M0.5%207.5H21.5V14.5H0.5'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='23'%20height='23'%20viewBox='0%200%2023%2023'%3E%3Cg%20fill='none'%20stroke='%23bfa678'%20stroke-width='1'%20transform='translate(0,23)%20scale(1,-1)'%3E%3Cpath%20d='M23%200.5H14.5V21.5H7.5V0.5H0.5V7.5'/%3E%3Cpath%20d='M0.5%2014.5V23'/%3E%3Cpath%20d='M0.5%207.5H21.5V14.5H0.5'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='23'%20height='23'%20viewBox='0%200%2023%2023'%3E%3Cg%20fill='none'%20stroke='%23bfa678'%20stroke-width='1'%20transform='translate(23,23)%20scale(-1,-1)'%3E%3Cpath%20d='M23%200.5H14.5V21.5H7.5V0.5H0.5V7.5'/%3E%3Cpath%20d='M0.5%2014.5V23'/%3E%3Cpath%20d='M0.5%207.5H21.5V14.5H0.5'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(var(--scroll-gold), var(--scroll-gold)),
+    linear-gradient(var(--scroll-gold), var(--scroll-gold)),
+    linear-gradient(var(--scroll-gold), var(--scroll-gold)),
+    linear-gradient(var(--scroll-gold), var(--scroll-gold));
+  background-repeat: no-repeat;
+  background-size:
+    23px 23px,
+    23px 23px,
+    23px 23px,
+    23px 23px,
+    calc(100% - 46px) 1px,
+    calc(100% - 46px) 1px,
+    1px calc(100% - 46px),
+    1px calc(100% - 46px);
+  background-position:
+    0 0,
+    100% 0,
+    0 100%,
+    100% 100%,
+    23px 0,
+    23px 100%,
+    0 23px,
+    100% 23px;
+}
+
+/* 금선 가운데 마름모 */
+.scroll-rule {
+  display: flex;
+  width: 100%;
+  height: 12px;
+  align-items: center;
+  gap: 44px;
+  margin: 24px 0 20px;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='34'%20height='12'%20viewBox='0%200%2034%2012'%3E%3Cg%20fill='none'%20stroke='%23bfa678'%20stroke-width='1'%20stroke-linejoin='miter'%3E%3Cpath%20d='M17%201L22.5%206L17%2011L11.5%206Z'/%3E%3Cpath%20d='M6.5%203L9.5%206L6.5%209L3.5%206Z'/%3E%3Cpath%20d='M27.5%203L30.5%206L27.5%209L24.5%206Z'/%3E%3C/g%3E%3C/svg%3E")
+    center / 34px 12px no-repeat;
+}
+
+.scroll-rule::before,
+.scroll-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--scroll-gold);
+}
+
+/* 짧고 좁은 판. 여덟 글자만 거는 로딩 화면이 쓴다 */
+.scroll-narrow {
+  max-width: 300px;
+}
+
+.scroll-narrow .scroll-paper {
+  min-height: 0;
+  justify-content: center;
+  padding: 32px 20px;
+}
+
+/* 펼침. --p 는 0에서 1 */
+.scroll-stage {
+  position: relative;
+  width: 100%;
+}
+
+.scroll-curtain {
+  clip-path: inset(0 0 calc((1 - min(var(--p, 1), 1)) * 100%) 0);
+}
+
+/*
+ * 아래 봉은 걷히는 끝단을 따라 내려온다.
+ *
+ * 시안은 비단만 `rotateX` 로 눕히고 봉은 눕히지 않아서, 천이 누운 만큼 봉이
+ * 떠 보이고 흔들림이 잦아들 때 한 번에 붙었다. 눕히는 걸 뺐다. 걷히는 자리가
+ * 그대로 보이는 편이 낫고 봉이 뜰 일도 없다.
+ */
+.scroll-stage .scroll-rod.bottom {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--p, 1) * 100%);
+  transform: translate(-50%, -6px) rotate(calc(var(--wave, 0) * 0.7deg));
+}
+
+/* 천을 타고 내려가는 결 */
+/*
+ * 넘기는 자리.
+ *
+ * 화살표 글자만 흐리게 얹어뒀더니 넘길 수 있는 판인 줄 모르고 지나갔다.
+ * 면을 깔고 괘선을 두른 동그라미로 바꾸고, 손이 그 쪽에 닿으면 가장자리에서
+ * 안쪽으로 옅게 번지게 한다. 눌리는 자리가 버튼 하나가 아니라 그 구역 전체라는
+ * 걸 손이 닿는 순간에만 말해준다. 평소에는 판을 가리지 않는다.
+ *
+ * 금선 안쪽으로 들어오게 위아래를 10px 씩 띄운다. 그 선이 판의 테두리다.
+ */
+/*
+ * 겹쳐 쌓은 장.
+ *
+ * 넘겨보는 자리에서 장마다 내용 길이가 다르면 판이 늘었다 줄었다 하면서
+ * 봉이 위아래로 뛴다. 높이를 재서 붙잡아봤지만 폭이 바뀌면 잰 값이 낡는다.
+ * 여섯 장을 같은 칸에 겹쳐 두면 판이 제일 긴 장에 맞춰 서고, 그 다음부터는
+ * 폭이 어떻게 바뀌든 브라우저가 알아서 맞춘다. 재지 않는다.
+ */
+.deck {
+  display: grid;
+  flex: 1;
+  width: 100%;
+}
+
+.deck > * {
+  grid-area: 1 / 1;
+}
+
+.deck-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.deck-slide[aria-hidden='true'] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.scroll-nav {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  z-index: 3;
+  display: flex;
+  width: 64px;
+  align-items: center;
+}
+
+.scroll-nav.left {
+  left: 10px;
+  justify-content: flex-start;
+}
+
+.scroll-nav.right {
+  right: 10px;
+  justify-content: flex-end;
+}
+
+.scroll-nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  /*
+   * 먹을 옅게 깔았더니 판이 탁해졌다. 그렇다고 --surface 를 얹으면 판이 이미
+   * 그 색이라 아무 일도 안 일어난다. 같은 한지 계열에서 한 단만 내려간 색을 쓴다.
+   */
+  background: color-mix(in srgb, var(--paper-deep) 85%, transparent);
+  backdrop-filter: blur(5px);
+  transition: opacity 0.18s ease-out;
+}
+
+/*
+ * 마스크로 안쪽을 향해 색과 흐림이 같이 풀린다. 경계선이 안 생긴다.
+ */
+.scroll-nav.left::before {
+  -webkit-mask-image: linear-gradient(to right, #000, transparent);
+  mask-image: linear-gradient(to right, #000, transparent);
+}
+
+.scroll-nav.right::before {
+  -webkit-mask-image: linear-gradient(to left, #000, transparent);
+  mask-image: linear-gradient(to left, #000, transparent);
+}
+
+/* 손가락에는 hover 가 없다. 누르는 동안에도 같이 번지게 둔다 */
+.scroll-nav:hover::before,
+.scroll-nav:active::before {
+  opacity: 1;
+}
+
+/* 끝 장에서는 번지지 않는다. 갈 데가 없는데 갈 수 있다고 말하는 셈이다 */
+.scroll-nav:disabled::before {
+  opacity: 0;
+}
+
+/*
+ * 유리판 하나 얹은 느낌으로 둔다.
+ *
+ * 꽉 찬 면에 진한 테두리를 두르니 판 위에 칙칙한 단추 둘이 박혀 보였다.
+ * 반쯤 비치게 하고 뒤를 흐리면 판의 결이 비쳐서 얹혀 있다는 느낌이 난다.
+ * `backdrop-filter` 를 못 읽는 브라우저에서는 반투명한 면만 남고 그대로 읽힌다.
+ */
+.scroll-nav-chip {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--rule) 60%, transparent);
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--ink-soft);
+  /*
+   * 커지는 건 밝아지는 것보다 천천히 간다. 같은 속도로 두면 톡 튀어나오는데
+   * 이 판은 족자라 그런 움직임이 안 어울린다. 끝에서 살짝 늘어지는 곡선을 쓴다.
+   * 족자가 펼쳐질 때와 같은 곡선이다.
+   */
+  transition:
+    background 0.18s ease-out,
+    color 0.18s ease-out,
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 손이 닿으면 또렷해지고 살짝 커진다 */
+.scroll-nav:hover .scroll-nav-chip,
+.scroll-nav:focus-visible .scroll-nav-chip,
+.scroll-nav:active .scroll-nav-chip {
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--ink);
+  transform: scale(1.12);
+}
+
+/* 누를 때는 도로 들어간다. 이 버튼은 `.press` 를 안 달아서 여기서 직접 준다 */
+.scroll-nav:active .scroll-nav-chip {
+  transform: scale(0.96);
+  transition-duration: 0.18s, 0.18s, 0.09s;
+}
+
+.scroll-nav:disabled .scroll-nav-chip {
+  opacity: 0.25;
+}
+
+.scroll-ripple {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  height: 34%;
+  top: calc(var(--rp, 0.5) * 100%);
+  transform: translateY(-50%);
+  opacity: var(--ro, 0);
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgb(23 20 15 / 0%) 0%,
+    rgb(23 20 15 / 22%) 45%,
+    rgb(255 255 255 / 10%) 62%,
+    rgb(23 20 15 / 0%) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-stage .scroll-rod.bottom,
+  .scroll-ripple {
+    transition: none;
+  }
+}
+
+/*
+ * 일간 강약 눈금.
+ *
+ * 지수 하나만 숫자로 내밀면 62가 어느 쪽인지 모른다. 가운데를 중화 구간으로
+ * 칠하고 핀을 지수 자리에 세운다. 구간 경계는 `STRENGTH_THRESHOLD` 가 정하니
+ * 값은 컴포넌트가 변수로 넘긴다.
+ */
+.gauge {
+  position: relative;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--rule);
+}
+
+.gauge-mid {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--gauge-low);
+  right: var(--gauge-high);
+  background: color-mix(in srgb, var(--ink-soft) 35%, var(--rule));
+}
+
+.gauge-pin {
+  position: absolute;
+  top: 50%;
+  left: var(--gauge-at);
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border: 2px solid var(--surface);
+  border-radius: 9999px;
+  background: var(--accent-deep);
+  transform: translateY(-50%);
+}
+
+/* 펼침 요약줄. 브라우저 기본 삼각형을 걷고 화살표를 직접 단다 */
+.summary-plain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  list-style: none;
+}
+
+.summary-plain::-webkit-details-marker {
+  display: none;
+}
+
+.chevron {
+  transition: transform 0.2s;
+}
+
+details[open] > .summary-plain .chevron {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
+  }
+}
+
+/*
+ * 펼쳐지는 자리.
+ *
+ * `grid-template-rows: 0fr -> 1fr` 로 늘린다. 높이를 미리 재지 않아도 되고
+ * `max-height` 로 어림잡을 때처럼 내용이 그 값을 넘어 잘리는 일도 없다.
+ * 안쪽은 조금 늦게 떠오른다. 액자가 다 열린 뒤에 내용이 들어와야 덜 어수선하다.
+ */
+.reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.open {
+  grid-template-rows: 1fr;
+}
+
+.reveal > * {
+  overflow: hidden;
+}
+
+.reveal-inner {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.3s 0.08s,
+    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.08s;
+}
+
+.reveal.open .reveal-inner {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-inner {
+    transition: none;
+  }
+}
+
+/*
+ * 명식표.
+ *
+ * 320px 에서도 기둥 넷이 한 화면에 들어가야 한다. 가로 스크롤은 안 쓴다.
+ * 그래서 글자 크기를 화면 폭에 매달았다. 좁아지면 같이 줄고, `힘이 빠진` 처럼
+ * 다섯 글자에 띄어쓰기까지 든 값도 한 줄을 지킨다.
+ *
+ * 카드 안쪽 여백을 표만 밀어내서 폭을 벌었다. 이 표는 읽는 폭이 곧 정보량이라
+ * 여백을 지키는 것보다 넷이 다 보이는 게 먼저다.
+ */
+.chart-grid {
+  display: grid;
+  grid-template-columns: auto repeat(4, minmax(0, 1fr));
+  column-gap: 1px;
+}
+
+/*
+ * 표는 블록 들여쓰기를 안 받는다.
+ *
+ * 블록 안 내용은 라벨보다 한 칸 들여쓴다(`pl-3`). 문단에는 맞는 규칙인데 표에
+ * 걸면 왼쪽 37px 오른쪽 25px 로 어긋나 앉는다. 표는 그 자체가 덩어리라
+ * 카드 안에서 가운데 선다.
+ *
+ * 375px 아래에서는 카드 여백까지 밀어낸다. 그래야 기둥 넷이 다 보인다.
+ * 8px 은 남겨서 값이 카드 테두리에 붙지 않게 한다.
+ */
+.chart-bleed {
+  margin-left: -12px;
+}
+
+@media (width < 375px) {
+  .chart-bleed {
+    margin-left: -28px;
+    margin-right: -16px;
+  }
+}
+
+/*
+ * 320px 30px, 375px 34px, 430px 부터 38px.
+ *
+ * 여덟 글자가 화면에서 제일 큰 건 맞지만 모바일에서 42px 까지 키우니 한자만
+ * 남고 나머지가 전부 부속처럼 눌렸다. 밑에 음과 오행이 붙어서 덩어리로도
+ * 커진 터라 한 단 낮춘다.
+ */
+.chart-glyph {
+  font-size: clamp(1.875rem, 9vw, 2.375rem);
+  line-height: 1.1;
+}
+
+/*
+ * 한자 밑에 붙는 음과 오행. 한자 크기와 무관하게 늘 작다.
+ *
+ * 한자와는 2px 만 띄운다. 한 덩어리로 읽혀야 해서다. 덩어리 사이는 칸이
+ * 아래 여백으로 벌린다. 둘 다 0 이면 천간의 음이 지지 한자에 붙어 버린다.
+ */
+.chart-sound {
+  margin-top: 2px;
+  font-size: clamp(0.625rem, 2.8vw, 0.6875rem);
+  letter-spacing: -0.02em;
+}
+
+/* 십신 지장간 단계 납음. 375px 위에서 13px, 320px 에서 12px */
+.chart-value {
+  font-size: clamp(0.75rem, 3.5vw, 0.8125rem);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+/* 줄 이름. 값보다 한 단 작고 흐리다 */
+.chart-name {
+  font-size: clamp(0.6875rem, 3.2vw, 0.75rem);
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+/* 고르는 알약 줄. 기운 카드의 두 묶음과 입력 화면의 시간 넣는 방법이 같이 쓴다 */
+.seg {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--rule);
+  border-radius: 9999px;
+  background: var(--paper-deep);
+}
+
+.seg button {
+  flex: 1;
+  padding: 9px 8px;
+  border-radius: 9999px;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.seg button[aria-pressed='true'] {
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+/*
+ * 밀어서 보는 줄.
+ *
+ * 막대를 안 보여준다. 판 위에 회색 막대가 하나 더 그어지는 게 이 화면에 안 맞고,
+ * 데스크탑에서는 자리까지 먹어서 카드 아래에 쓰지도 않을 10px 이 깔렸다.
+ *
+ * 대신 끌 수 있게 한다. 손가락은 브라우저가 알아서 밀어주고, 마우스는
+ * `useDragScroll` 이 받는다. 막대가 없어도 닿을 데가 있다.
+ */
+.scroll-x {
+  scrollbar-width: none;
+}
+
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* 끌 수 있는 줄이라고 알린다 */
+.scroll-x {
+  cursor: grab;
+}
+
+.scroll-x:active {
+  cursor: grabbing;
+}
+
+@media (width >= 560px) {
+  /* 나란히 서면 끌 게 없다 */
+  .energy-cards.scroll-x {
+    cursor: auto;
+  }
+}
+
+/*
+ * 기운 카드.
+ *
+ * 앞에는 넉 장을 한 줄에 늘어놨다. 넷 중 둘은 데려오면 좋은 쪽이고 둘은 이미
+ * 넘치는 쪽인데, 섞여 있으니 어느 게 어느 쪽인지가 카드를 다 읽어야 나왔다.
+ * 두 묶음으로 갈라서 한 번에 한 묶음, 두 장만 보여준다.
+ *
+ * 좁은 화면에서는 한 장씩 밀어서 본다. 두 장을 나란히 두면 375px 에서 카드가
+ * 138px 이 되고, 그림과 이름표와 본문이 다 들어가야 하는 칸치고는 너무 좁다.
+ * 세로로 쌓아봤지만 두 줄이 되면서 이 구역만 길어졌다. 560px 부터는 나란히 둔다.
+ *
+ * 높이는 긴 쪽에 맞춘다. 카피 길이가 카드마다 달라서 그냥 두면 아래가 들쭉날쭉하다.
+ */
+.energy-cards {
+  display: grid;
+  align-items: stretch;
+  gap: 10px;
+  grid-auto-columns: 100%;
+  grid-auto-flow: column;
+  margin-inline: -24px;
+  overflow-x: auto;
+  padding-inline: 24px;
+  scroll-padding-inline: 24px;
+  scroll-snap-type: x mandatory;
+}
+
+.energy-cards > * {
+  scroll-snap-align: start;
+}
+
+@media (width >= 560px) {
+  .energy-cards {
+    grid-auto-columns: auto;
+    grid-auto-flow: row;
+    grid-template-columns: 1fr 1fr;
+    margin-inline: 0;
+    overflow-x: visible;
+    padding-inline: 0;
+    scroll-snap-type: none;
+  }
+}
+
+/* 오행 면. 그림이 아래쪽에 서고 이름표가 그 위에 반쯤 걸친다 */
+.energy-face {
+  position: relative;
+  display: grid;
+  min-height: 132px;
+  padding: 16px 12px 26px;
+  border-radius: 11px 11px 0 0;
+  background: var(--energy-face, var(--paper-deep));
+  place-items: end center;
+}
+
+.energy-face img {
+  display: block;
+  width: auto;
+  max-width: 88%;
+  max-height: 104px;
+  object-fit: contain;
+}
+
+/*
+ * 겹치는 기운 쪽에만 붙는 첨언.
+ *
+ * 다른 자리의 處 딱지처럼 면을 깔지 않는다. 이 카드는 이미 "그래도 데려오려면"
+ * 이라는 단서라 본문보다 낮게 깔려야 하는데, 상자를 두르면 본문보다 눈에 먼저 든다.
+ * 점선 한 줄로 끊고 도장만 작게 남긴다.
+ */
+.energy-rx {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--rule);
+  line-height: 1.6;
+}
+
+.energy-rx .dot {
+  display: grid;
+  width: 15px;
+  height: 15px;
+  flex: none;
+  margin-top: 1px;
+  border-radius: 9999px;
+  /* CommonPrescription 의 處 와 같은 짝이다. --on-accent 는 --accent-deep 위에만 얹는다 */
+  background: var(--accent-deep);
+  color: var(--on-accent);
+  font-size: 9px;
+  font-weight: 700;
+  place-items: center;
+}
+
+/* 오행 도장. 그림이 들어오면서 한자가 갈 데가 없어져 여기로 올렸다 */
+.energy-seal {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--energy-seal, var(--ink));
+  color: var(--on-accent);
+  font-size: 13px;
+  font-weight: 700;
+  place-items: center;
+}
+
+/* 이름표. 면 아래쪽에 반쯤 걸친다 */
+.energy-plate {
+  position: relative;
+  z-index: 2;
+  margin: -20px 10px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+@media (width >= 560px) {
+  .energy-face {
+    min-height: 180px;
+    padding-top: 24px;
+  }
+
+  .energy-face img {
+    max-height: 150px;
   }
 }

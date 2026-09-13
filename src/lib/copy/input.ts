@@ -23,7 +23,27 @@ export const memberFormCopy = {
   minuteLabel: '분',
   hourOption: (hour: string) => `${hour}시`,
   minuteOption: (minute: string) => `${minute}분`,
+  titleEdit: '팀원 수정',
+  save: '저장하기',
+  cancelEdit: '취소',
+  edited: (name: string) => `${name}님 정보를 수정했습니다`,
   hourUnknownNote: '시주를 제외하고 계산합니다',
+
+  /** 시간을 지시로 고를지 시각으로 넣을지 */
+  hourModeGroup: '시간을 넣는 방법',
+  hourModeBranch: '십이지시',
+  hourModeClock: '직접 입력',
+  hourBranchLabel: '지시',
+  hourBranchNote: '태어난 시를 모르면 어림해도 괜찮습니다. 시주만 달라집니다',
+  /** 자시가 자정을 걸쳐서 두 칸인 이유 */
+  hourBranchMidnightNote: '자시가 둘인 건 진태양시로 자정이 00:30 이기 때문입니다',
+
+  /** `23:30` 처럼 두 자리로 읽는다. 목록이 열세 줄이라 한 줄이 짧아야 한다 */
+  clockAt: (hour: number, minute: number) =>
+    `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+  hourRange: (from: string, to: string) => `${from}~${to}`,
+  /** `야자시 (23:30~00:29)` */
+  hourBranchOption: (name: string, range: string) => `${name} (${range})`,
   trueSolarTime: '진태양시 보정',
   trueSolarTimeNote:
     '태어난 시간을 실제 태양시 기준으로 보정합니다. 정확한 계산을 위해 켜두는 것을 권장합니다.',

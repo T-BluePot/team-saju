@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import { CommonScroll } from '../Common'
 import { loadingCopy } from '../../lib/copy'
 import type { SajuChart } from '../../lib/saju/types'
 import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
@@ -66,58 +67,52 @@ export function LoadingView({ charts, onDone }: Props) {
   }, [onDone, rounds, totalSteps])
 
   return (
-    <div className="flex min-h-[68vh] flex-col items-center justify-center gap-10 py-10">
-      <div key={who} className="flex gap-2.5">
-        {pillars.map((p, col) => (
-          <div key={col} className="flex flex-col gap-2.5">
-            {[p?.stem ?? null, p?.branch ?? null].map((ch, row) => {
-              const order = col * 2 + row
-              const shown = revealed > order
-              const color =
-                ch && row === 0 ? ELEMENT_COLOR[STEM_ELEMENT[p!.stem]] : 'var(--ink)'
-              return (
-                <div
-                  key={row}
-                  className="serif flex size-14 items-center justify-center rounded-lg text-2xl font-bold transition-all duration-300 sm:size-16 sm:text-3xl"
-                  style={{
-                    background: shown ? 'var(--surface)' : 'transparent',
-                    border: `1px solid ${shown ? 'var(--rule)' : 'color-mix(in srgb, var(--rule) 45%, transparent)'}`,
-                    color: shown ? color : 'transparent',
-                    opacity: shown ? 1 : 0.4,
-                    transform: shown ? 'scale(1)' : 'scale(0.94)',
-                  }}
-                >
-                  {ch ?? '·'}
-                </div>
-              )
-            })}
-          </div>
-        ))}
-      </div>
-
-      <div className="flex flex-col items-center gap-3">
-        <p className="serif text-lg" style={{ color: 'var(--ink)' }}>
-          {loadingCopy.lines[lineIndex]}
-        </p>
-        <div className="flex gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              className="size-1.5 rounded-full"
-              style={{
-                background: 'var(--accent)',
-                animation: `pulse-soft 1.1s ease-in-out ${i * 0.18}s infinite`,
-              }}
-            />
+    <div className="flex min-h-[68vh] flex-col items-center justify-center gap-8 py-10">
+      {/* 계산하는 동안에도 족자를 걸어둔다. 결과에서 펼쳐질 판이 뭔지 미리 보인다 */}
+      <CommonScroll narrow>
+        <div key={who} className="flex gap-2">
+          {pillars.map((p, col) => (
+            <div key={col} className="flex flex-col gap-2">
+              {[p?.stem ?? null, p?.branch ?? null].map((ch, row) => {
+                const order = col * 2 + row
+                const shown = revealed > order
+                const color =
+                  ch && row === 0 ? ELEMENT_COLOR[STEM_ELEMENT[p!.stem]] : 'var(--ink)'
+                return (
+                  <div
+                    key={row}
+                    className="serif grid h-13 w-11 place-items-center rounded-lg text-2xl font-bold transition-all duration-300"
+                    style={{
+                      background: shown ? 'var(--surface)' : 'transparent',
+                      border: `1px solid ${shown ? 'var(--rule)' : 'color-mix(in srgb, var(--rule) 45%, transparent)'}`,
+                      color: shown ? color : 'transparent',
+                      opacity: shown ? 1 : 0.4,
+                      transform: shown ? 'scale(1)' : 'scale(0.94)',
+                    }}
+                  >
+                    {ch ?? '·'}
+                  </div>
+                )
+              })}
+            </div>
           ))}
         </div>
-      </div>
+      </CommonScroll>
 
-      <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-        {charts.length <= 1 || !sample
-          ? loadingCopy.captionSolo
-          : loadingCopy.caption(sample.member.name)}
-      </p>
+      {/*
+        점 세 개를 걷었다. 한 줄이 900ms 마다 갈리는 게 이미 돌아가고 있다는
+        신호라 같은 말을 두 번 하는 자리였다
+      */}
+      <div className="flex flex-col items-center gap-4">
+        <p className="serif min-h-7 text-center text-xl" style={{ color: 'var(--ink-soft)' }}>
+          {loadingCopy.lines[lineIndex]}
+        </p>
+        <p className="text-center text-xs" style={{ color: 'var(--ink-soft)' }}>
+          {charts.length <= 1 || !sample
+            ? loadingCopy.captionSolo
+            : loadingCopy.caption(sample.member.name)}
+        </p>
+      </div>
     </div>
   )
 }

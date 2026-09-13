@@ -1,8 +1,6 @@
 // 첫 화면과 개인정보 동의의 문구.
 
 export const landingCopy = {
-  // 머리글로 올리는 건 UI 개정 때 본다. 그때까지 타이틀 위에 둔다
-  eyebrow: '四柱로 보는 팀 궁합',
   titleTop: '우리 팀은',
   titleBottom: '어떤 팀일까',
   // 줄바꿈 자리를 문장이 정한다. 화면 폭에 맡기면 어절이 어중간하게 끊긴다
@@ -10,6 +8,10 @@ export const landingCopy = {
   leadBottom: '팀의 오행 조합과 비어 있는 기운을 살펴봅니다.',
   tasteLabel: '우리 팀은 어떤 유형일까요?',
   tasteMore: (rest: number) => `외 ${rest}가지 유형`,
+  // 족자를 한 장씩 넘긴다. 마지막 장은 그림 대신 남은 유형 수를 센다
+  tasteMoreNote: '팀원을 넣으면 우리 팀의 족자가 펼쳐집니다',
+  tastePrev: '이전 유형',
+  tasteNext: '다음 유형',
   steps: [
     [
       '一',

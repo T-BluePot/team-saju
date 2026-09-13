@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import {
   CommonButton,
@@ -7,9 +7,9 @@ import {
   CommonField,
   CommonFieldGroup,
   CommonPickCard,
-  CommonSelect,
   CommonTextInput,
 } from '../Common'
+import { InputHourField } from './InputHourField'
 import { memberFormCopy } from '../../lib/copy'
 import { MAX_MEMBERS, emptyDraft, type Draft } from '../../store/teamStore'
 
@@ -18,34 +18,50 @@ type Props = {
   disabled?: boolean
   /** 추가 성공을 알릴 때 쓴다. 지금 몇 명인지 같이 읽어준다 */
   count: number
+  /**
+   * 고쳐 쓸 사람의 초안. 없으면 새로 넣는 폼이다.
+   *
+   * 부르는 쪽이 `key` 로도 쓴다. 고를 사람을 바꾸면 폼이 통째로 다시 서서
+   * `InputHourField` 가 들고 있는 지시/직접 입력 같은 안쪽 상태도 같이 선다.
+   */
+  editing: { id: string; draft: Draft } | null
+  onCancelEdit: () => void
+  /** 수정 중에 덮개 위로 올릴 때 쓴다 */
+  className?: string
+  /**
+   * 추가나 수정이 됐다는 걸 알린다.
+   *
+   * 읽어주는 자리는 이 폼 밖이다. 고쳐서 저장하면 폼이 `key` 로 다시 서는데,
+   * 여기 들고 있으면 그려지기도 전에 같이 사라진다.
+   */
+  onAnnounce: (text: string) => void
+  /**
+   * 마지막으로 고른 진태양시. 새로 넣는 폼의 기본값이다.
+   *
+   * 이 폼이 들고 있으면 안 된다. 고치기를 마칠 때 `key` 로 통째로 다시 서면서
+   * 그 선택이 기본값으로 돌아간다. 화면이 들고 있다가 넘겨준다.
+   */
+  trueSolarTime: boolean
+  onTrueSolarTime: (next: boolean) => void
 }
 
-const HOURS = Array.from({ length: 24 }, (_, i) => i)
 
-/** 읽어준 뒤 문장을 비우는 시간 */
-const ANNOUNCE_MS = 4000
-
-export function InputMemberForm({ onSubmit, disabled, count }: Props) {
-  const [draft, setDraft] = useState<Draft>(emptyDraft)
+export function InputMemberForm({
+  onSubmit,
+  disabled,
+  count,
+  editing,
+  onCancelEdit,
+  className,
+  onAnnounce,
+  trueSolarTime,
+  onTrueSolarTime,
+}: Props) {
+  const [draft, setDraft] = useState<Draft>(
+    () => editing?.draft ?? { ...emptyDraft(), useTrueSolarTime: trueSolarTime },
+  )
   const [error, setError] = useState<string | null>(null)
-  /**
-   * 추가가 됐다는 걸 스크린리더에 알린다.
-   * 실패는 role="alert" 로 읽히는데 성공은 신호가 포커스 이동뿐이었다.
-   * 그러면 "이름, 편집 텍스트" 만 들려서 추가된 건지 실패해서 다시 치라는 건지 구분이 안 된다.
-   *
-   * 읽어준 뒤에는 비운다. 안 비우면 두 가지가 걸린다.
-   * 문장이 직전과 똑같으면 React 가 텍스트 노드를 안 건드려서 aria-live 가 안 읽는다.
-   * 지우고 같은 이름을 다시 넣는 흐름에서 두 번째가 무음이 된다.
-   * 그리고 팀원을 지우면 인원수는 줄었는데 여기 낡은 숫자가 그대로 남는다.
-   */
-  const [added, setAdded] = useState('')
   const nameRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (!added) return
-    const t = window.setTimeout(() => setAdded(''), ANNOUNCE_MS)
-    return () => window.clearTimeout(t)
-  }, [added])
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }))
@@ -56,12 +72,17 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
     const message = onSubmit(draft)
     setError(message)
     if (message) {
-      setAdded('')
+      return
+    }
+
+    if (editing) {
+      // 고친 뒤에는 폼을 비우지 않는다. 스토어가 고치기를 접으면서 새 폼으로 선다
+      onAnnounce(memberFormCopy.edited(name))
       return
     }
 
     const next = count + 1
-    setAdded(
+    onAnnounce(
       next >= MAX_MEMBERS
         ? memberFormCopy.addedFull(name, next)
         : memberFormCopy.added(name, next),
@@ -75,8 +96,14 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
   }
 
   return (
-    <CommonCard as="form" onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <h2 className="text-base font-bold">{memberFormCopy.title}</h2>
+    <CommonCard
+      as="form"
+      onSubmit={handleSubmit}
+      className={['flex flex-col gap-6', className].filter(Boolean).join(' ')}
+    >
+      <h2 className="text-base font-bold">
+        {editing ? memberFormCopy.titleEdit : memberFormCopy.title}
+      </h2>
 
       <CommonField label={memberFormCopy.nameLabel}>
         {(id) => (
@@ -132,63 +159,50 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
         )}
       </CommonField>
 
-      <CommonFieldGroup legend={memberFormCopy.hourGroup}>
+      <InputHourField
+        hour={draft.birthHour}
+        minute={draft.birthMinute}
+        known={draft.hourKnown}
+        saved={editing !== null}
+        onChange={(hour, minute) => setDraft((d) => ({ ...d, birthHour: hour, birthMinute: minute }))}
+      />
+
+      {/*
+        시간에 걸리는 선택 둘을 한 박스로 묶는다. 떨어뜨려 두면 진태양시가
+        태어난 시간과 무관한 별개 설정처럼 읽힌다. 설명은 라벨 옆이 아니라
+        아래 줄로 내린다. 옆에 붙이면 한 줄이 길어져 라벨이 안 보인다.
+      */}
+      <div
+        className="flex flex-col gap-3 rounded-xl px-4 py-3.5"
+        style={{ background: 'var(--paper-deep)', border: '1px solid var(--rule)' }}
+      >
         <CommonCheckLabel
+          className="items-start"
           checked={!draft.hourKnown}
           onChange={(e) => set('hourKnown', !e.target.checked)}
         >
           {memberFormCopy.hourUnknown}
         </CommonCheckLabel>
-        {draft.hourKnown && (
-          <div className="flex items-center gap-2">
-            <label className="sr-only" htmlFor="hour">
-              {memberFormCopy.hourLabel}
-            </label>
-            <CommonSelect
-              id="hour"
-              value={draft.birthHour}
-              onChange={(e) => set('birthHour', Number(e.target.value))}
-            >
-              {HOURS.map((h) => (
-                <option key={h} value={h}>
-                  {memberFormCopy.hourOption(String(h).padStart(2, '0'))}
-                </option>
-              ))}
-            </CommonSelect>
-            <label className="sr-only" htmlFor="minute">
-              {memberFormCopy.minuteLabel}
-            </label>
-            <CommonSelect
-              id="minute"
-              value={draft.birthMinute}
-              onChange={(e) => set('birthMinute', Number(e.target.value))}
-            >
-              {[0, 10, 20, 30, 40, 50].map((m) => (
-                <option key={m} value={m}>
-                  {memberFormCopy.minuteOption(String(m).padStart(2, '0'))}
-                </option>
-              ))}
-            </CommonSelect>
-          </div>
-        )}
-        {!draft.hourKnown && (
-          <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-            {memberFormCopy.hourUnknownNote}
-          </p>
-        )}
-      </CommonFieldGroup>
+        <CommonCheckLabel
+          className="items-start"
+          checked={draft.useTrueSolarTime}
+          onChange={(e) => {
+            set('useTrueSolarTime', e.target.checked)
+            // 다음 사람에게 들고 갈 값이라 화면에도 같이 올린다
+            onTrueSolarTime(e.target.checked)
+          }}
+        >
+          {memberFormCopy.trueSolarTime}
+          <span
+            className="mt-0.5 block text-xs leading-relaxed"
+            style={{ color: 'var(--ink-soft)' }}
+          >
+            {memberFormCopy.trueSolarTimeNote}
+          </span>
+        </CommonCheckLabel>
+      </div>
 
-      <CommonCheckLabel
-        checked={draft.useTrueSolarTime}
-        onChange={(e) => set('useTrueSolarTime', e.target.checked)}
-      >
-        {memberFormCopy.trueSolarTime}
-        <span className="ml-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
-          {memberFormCopy.trueSolarTimeNote}
-        </span>
-      </CommonCheckLabel>
-
-      <CommonFieldGroup legend={memberFormCopy.sourceGroup}>
+      <CommonFieldGroup label={memberFormCopy.sourceGroup}>
         <CommonPickCard
           name="consent"
           checked={draft.consentSource === 'self'}
@@ -220,18 +234,15 @@ export function InputMemberForm({ onSubmit, disabled, count }: Props) {
         </p>
       )}
 
-      {/*
-        추가된 건 팀원 칩으로 이미 보인다. 눈으로 보는 사람에게는 중복이라
-        화면에서 감추고 스크린리더만 읽게 둔다.
-        리전은 내용보다 먼저 트리에 있어야 안정적으로 읽히니 항상 렌더한다.
-      */}
-      <p role="status" className="sr-only">
-        {added}
-      </p>
-
-      <CommonButton type="submit" variant="primary" disabled={disabled}>
-        {memberFormCopy.submit}
+      {/* 주 동작은 하단 고정 바의 분석하기다. 폼 버튼은 한 단 내려 아웃라인으로 둔다 */}
+      <CommonButton type="submit" variant="ghost" disabled={!editing && disabled}>
+        {editing ? memberFormCopy.save : memberFormCopy.submit}
       </CommonButton>
+      {editing && (
+        <CommonButton type="button" variant="quiet" onClick={onCancelEdit}>
+          {memberFormCopy.cancelEdit}
+        </CommonButton>
+      )}
     </CommonCard>
   )
 }

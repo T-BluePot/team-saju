@@ -19,31 +19,80 @@ const controlStyle: React.CSSProperties = {
 }
 
 /**
+ * 필드 머리. 라벨과 설명을 묶는다.
+ *
+ * 간격은 여기서만 정한다. 개별 화면이 제 나름대로 gap 을 주면 같은 폼 안에서
+ * 라벨과 컨트롤 사이가 자리마다 달라진다. 실제로 그렇게 어긋나 있었다.
+ *
+ * `as` 로 label 과 legend 를 갈아끼운다. fieldset 안에서는 legend 가 첫 자식이어야
+ * 해서 바깥을 div 로 감쌀 수 없다. 그래서 라벨 요소 자체가 설명까지 품는다.
+ */
+export function CommonFieldLabel({
+  label,
+  description,
+  htmlFor,
+  as: Tag = 'label',
+  space = 'field',
+}: {
+  label: string
+  description?: string
+  htmlFor?: string
+  as?: 'label' | 'legend' | 'p'
+  /**
+   * 라벨 아래 여백.
+   *
+   * 글자 규칙은 하나지만 여백은 두 값이다. 입력 필드는 라벨과 컨트롤이 한
+   * 덩어리로 붙어 읽혀야 해서 8px, 카드 안 블록은 그 아래가 문단이라
+   * 12px 이다. 같은 값으로 묶었더니 블록 쪽이 답답했다.
+   *
+   * `none` 은 옆에 딱지가 서는 자리다. 라벨이 여백을 들고 있으면 딱지가 그
+   * 여백까지 포함한 가운데에 놓여서 글자 줄보다 위로 뜬다. 여백은 바깥 줄이 준다.
+   */
+  space?: 'field' | 'block' | 'none'
+}) {
+  const gap = space === 'none' ? 'block' : space === 'block' ? 'mb-3 block' : 'mb-2 block'
+
+  return (
+    <Tag htmlFor={htmlFor} className={gap}>
+      <span className="serif block text-sm font-extrabold tracking-tight">{label}</span>
+      {description && (
+        <span
+          className="mt-0.5 block text-xs leading-relaxed"
+          style={{ color: 'var(--ink-soft)' }}
+        >
+          {description}
+        </span>
+      )}
+    </Tag>
+  )
+}
+
+/** 필드 몸통. 컨트롤이 여럿이면 같은 간격으로 쌓인다 */
+const BODY = 'flex flex-col gap-3'
+
+/**
  * 라벨과 컨트롤을 묶는다.
  * label 의 htmlFor 는 여기서 만들고 id 를 children 으로 넘긴다.
  * 컨트롤에 그 id 를 다는 건 호출부 몫이라 강제되지는 않는다. 규칙으로 지킨다.
  */
 export function CommonField({
   label,
-  hint,
+  description,
   children,
+  inert = false,
 }: {
   label: string
-  hint?: string
+  /** 적기 전에 알아야 하는 말. 라벨 바로 아래 붙는다 */
+  description?: string
   children: (id: string) => ReactNode
+  /** 덮개가 깔린 동안은 손도 초점도 안 닿아야 한다. 덮개는 마우스만 막는다 */
+  inert?: boolean
 }) {
   const id = useId()
   return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="serif text-sm font-bold">
-        {label}
-      </label>
-      {children(id)}
-      {hint && (
-        <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-          {hint}
-        </p>
-      )}
+    <div inert={inert}>
+      <CommonFieldLabel label={label} description={description} htmlFor={id} />
+      <div className={BODY}>{children(id)}</div>
     </div>
   )
 }
@@ -81,7 +130,13 @@ export function CommonSelect({
  * type 기본값을 반드시 둔다. input 의 기본 type 은 text 라서
  * 빠뜨리면 체크박스가 텍스트 칸으로 렌더되고 checked 가 항상 false 로 읽힌다.
  * {...rest} 보다 앞에 둬야 호출부의 type="radio" 가 이긴다.
+ *
+ * 크기를 직접 정한다. 안 정하면 브라우저 기본값인 13px 로 나오는데, 시안은
+ * 체크박스 18px 라디오 16px 이다. 네모가 동그라미보다 조금 큰 건 같은 크기로
+ * 두면 동그라미가 작아 보여서다.
  */
+const BOX = { checkbox: 18, radio: 16 } as const
+
 export function CommonCheckLabel({
   children,
   className = '',
@@ -89,13 +144,25 @@ export function CommonCheckLabel({
   style,
   ...rest
 }: InputHTMLAttributes<HTMLInputElement> & { children: ReactNode }) {
+  const size = BOX[type as keyof typeof BOX] ?? BOX.checkbox
   return (
     <label
       className={['flex cursor-pointer items-center gap-2 text-sm', className]
         .filter(Boolean)
         .join(' ')}
     >
-      <input type={type} {...rest} style={{ accentColor: 'var(--accent)', ...style }} />
+      <input
+        type={type}
+        {...rest}
+        style={{
+          accentColor: 'var(--accent)',
+          width: size,
+          height: size,
+          flex: 'none',
+          margin: 0,
+          ...style,
+        }}
+      />
       <span>{children}</span>
     </label>
   )
@@ -169,27 +236,18 @@ export function CommonPickCard({
 
 /** 묶음 입력. 양음력, 태어난 시간처럼 선택지가 몇 개 없을 때 */
 export function CommonFieldGroup({
-  legend,
+  label,
+  description,
   children,
-  boxed = false,
 }: {
-  legend: string
+  label: string
+  description?: string
   children: ReactNode
-  boxed?: boolean
 }) {
   return (
-    <fieldset
-      className={boxed ? 'flex flex-col gap-2 rounded-xl p-3' : 'flex flex-col gap-1.5'}
-      style={
-        boxed
-          ? { background: 'var(--paper-deep)', border: '1px solid var(--rule)' }
-          : undefined
-      }
-    >
-      <legend className={boxed ? 'px-1 text-sm font-medium' : 'serif text-sm font-bold'}>
-        {legend}
-      </legend>
-      {children}
+    <fieldset>
+      <CommonFieldLabel as="legend" label={label} description={description} />
+      <div className={BODY}>{children}</div>
     </fieldset>
   )
 }

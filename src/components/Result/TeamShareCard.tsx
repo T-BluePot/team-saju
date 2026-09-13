@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 
-import { CommonButton, CommonCard } from '../Common'
+import { CommonButton, CommonSection } from '../Common'
 import type { TeamReport } from '../../lib/report/teamReport'
 import { shareCardCopy } from '../../lib/copy'
 import {
@@ -51,8 +51,10 @@ const FAILED = shareCardCopy.failed
 
 export function TeamShareCard({ report }: { report: TeamReport }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const zoomRef = useRef<HTMLDialogElement>(null)
   const blobRef = useRef<Blob | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
+  const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
 
@@ -82,11 +84,17 @@ export function TeamShareCard({ report }: { report: TeamReport }) {
   }
 
   const makePreview = async () => {
+    // 한 번 구우면 다시 안 굽는다. 두 번째부터는 접었다 펴는 것뿐이다
+    if (preview) {
+      setOpen((v) => !v)
+      return
+    }
     const canvas = canvasRef.current
     if (!canvas) return
     try {
       await drawShareCard(canvas, report)
       setPreview(canvas.toDataURL('image/png'))
+      setOpen(true)
       setNotice(null)
     } catch {
       setNotice(FAILED)
@@ -128,28 +136,46 @@ export function TeamShareCard({ report }: { report: TeamReport }) {
   }
 
   return (
-    <CommonCard as="section" flush>
-      <div className="p-6 sm:p-7">
-        <h3 className="serif text-lg font-bold">{shareCardCopy.heading}</h3>
-        <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-          {shareCardCopy.note}
-        </p>
-
-        {preview && (
-          <>
-            <img
-              src={preview}
-              alt={shareCardCopy.previewAlt}
-              className="mt-5 w-full max-w-[280px] rounded-xl"
-              style={{ border: '1px solid var(--rule)' }}
-            />
-            {touch && (
-              <p className="mt-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
-                {shareCardCopy.longPressHint}
-              </p>
-            )}
-          </>
+    <CommonSection
+      index={shareCardCopy.index}
+      title={shareCardCopy.heading}
+      subtitle={shareCardCopy.note}
+      flush
+    >
+      <div className="px-6 pt-6 text-center sm:px-7">
+        {/* 아직 아무것도 없을 때가 기본이다. 뭘 누르면 뭐가 나오는지 여기서 말한다 */}
+        {!open && (
+          <p className="pb-6 text-xs" style={{ color: 'var(--ink-soft)' }}>
+            {shareCardCopy.emptyHint}
+          </p>
         )}
+
+        {/*
+          높이를 재지 않고 펼친다. 카피 길이에 따라 판 높이가 달라져서
+          `max-height` 로 어림잡으면 긴 팀에서 아래가 잘린다
+        */}
+        <div className={open ? 'reveal open' : 'reveal'}>
+          <div>
+            <div className="reveal-inner">
+              {preview && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => zoomRef.current?.showModal()}
+                    className="press mx-auto block w-70 max-w-full overflow-hidden rounded-xl"
+                    style={{ border: '1px solid var(--rule)', cursor: 'zoom-in' }}
+                  >
+                    <img src={preview} alt={shareCardCopy.previewAlt} className="block w-full" />
+                  </button>
+                  <p className="pb-6 pt-3 text-11" style={{ color: 'var(--ink-soft)' }}>
+                    {touch ? shareCardCopy.longPressHint : shareCardCopy.zoomHint}
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
         <canvas ref={canvasRef} className="hidden" />
 
         {/*
@@ -158,7 +184,7 @@ export function TeamShareCard({ report }: { report: TeamReport }) {
         */}
         <p
           role="status"
-          className={notice ? 'mt-4 rounded-lg px-3 py-2 text-sm' : undefined}
+          className={notice ? 'mb-6 rounded-lg px-3 py-2 text-sm' : undefined}
           style={
             notice
               ? { background: 'var(--accent-wash)', color: 'var(--accent-deep)' }
@@ -170,7 +196,7 @@ export function TeamShareCard({ report }: { report: TeamReport }) {
       </div>
 
       <CommonButton type="button" variant="quiet" fullBleed onClick={makePreview}>
-        {shareCardCopy.preview}
+        {open ? shareCardCopy.close : shareCardCopy.preview}
       </CommonButton>
       <CommonButton
         type="button"
@@ -188,6 +214,38 @@ export function TeamShareCard({ report }: { report: TeamReport }) {
             ? shareCardCopy.share
             : shareCardCopy.download}
       </CommonButton>
-    </CommonCard>
+
+      {/*
+        크게 보기. `showModal()` 이 포커스 가두기와 Esc 를 챙긴다.
+        직접 만들면 뒤 화면 스크롤 잠금까지 손으로 짜야 한다
+      */}
+      <dialog
+        ref={zoomRef}
+        onClick={(e) => {
+          if (e.target === zoomRef.current) zoomRef.current?.close()
+        }}
+        className="m-auto max-h-none max-w-none bg-transparent p-5"
+        style={{ width: '100%', height: '100%' }}
+      >
+        {preview && (
+          <div className="flex h-full items-center justify-center">
+            <img
+              src={preview}
+              alt={shareCardCopy.previewAlt}
+              className="max-h-full w-auto max-w-full rounded-2xl"
+            />
+            <button
+              type="button"
+              onClick={() => zoomRef.current?.close()}
+              aria-label={shareCardCopy.close}
+              className="press fixed right-5 top-5 grid size-10 place-items-center rounded-full text-xl leading-none"
+              style={{ background: 'var(--paper)', color: 'var(--ink)' }}
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        )}
+      </dialog>
+    </CommonSection>
   )
 }

@@ -8,25 +8,47 @@ import type { TraitAxes, TraitAxis } from '../../lib/saju/types'
  */
 export function SajuTraitBars({
   traits,
-  highlight,
+  strong,
+  weak,
 }: {
   traits: TraitAxes
   /**
-   * 짚어줄 축. 제일 두꺼운 쪽과 얇은 쪽을 강조할 때 넘긴다.
-   * 안 넘기면 전부 강조색이다. 짚을 축이 없다는 것과 전부 흐리게 하라는 건 다르다.
+   * 두꺼운 축과 얇은 축.
+   *
+   * 둘 다 안 넘기면 전부 강조색이다. 짚을 축이 없다는 것과 전부 흐리게
+   * 하라는 건 다르다. 넘기면 두꺼운 쪽과 얇은 쪽이 서로 다른 색이 된다.
+   * 같은 색으로 칠하면 어느 쪽이 넘치고 어느 쪽이 모자란지가 안 갈린다.
    */
-  highlight?: TraitAxis[]
+  strong?: TraitAxis[]
+  weak?: TraitAxis[]
 }) {
   const { ref, shown } = useReveal<HTMLUListElement>()
+  const marked = strong != null || weak != null
 
   return (
     <ul ref={ref} className="flex flex-col gap-2">
       {TRAIT_AXES.map((axis, i) => {
-        const dim = highlight != null && !highlight.includes(axis)
-        const weight = highlight != null && !dim ? 'font-bold' : ''
+        const isStrong = strong?.includes(axis) ?? false
+        const isWeak = weak?.includes(axis) ?? false
+        const dim = marked && !isStrong && !isWeak
+        const color = isStrong
+          ? 'var(--strong-deep)'
+          : isWeak
+            ? 'var(--weak-deep)'
+            : dim
+              ? 'var(--ink-faint)'
+              : 'var(--accent)'
+        // 짚은 축만 먹으로 남기고 나머지는 물러나게 한다. 다 진하면 파랑과 빨강이 안 산다
+        const textColor = isStrong || isWeak ? color : dim ? 'var(--ink-soft)' : undefined
+
         return (
           <li key={axis} className="flex items-center gap-3">
-            <span className={`w-9 shrink-0 text-sm ${weight}`}>{axis}</span>
+            <span
+              className={`w-9 shrink-0 text-sm ${isStrong || isWeak ? 'font-bold' : ''}`}
+              style={{ color: textColor }}
+            >
+              {axis}
+            </span>
             <div
               className="h-2 flex-1 overflow-hidden rounded-full"
               style={{ background: 'var(--rule)' }}
@@ -35,14 +57,17 @@ export function SajuTraitBars({
                 className="h-full rounded-full"
                 style={{
                   width: shown ? `${traits[axis]}%` : 0,
-                  background: dim ? 'var(--ink-soft)' : 'var(--accent)',
+                  background: color,
                   transition: 'width 700ms cubic-bezier(0.22, 1, 0.36, 1)',
                   transitionDelay: `${i * 70}ms`,
                 }}
               />
             </div>
             <span
-              className={`w-9 shrink-0 text-right text-sm tabular-nums ${weight}`}
+              className={`w-9 shrink-0 text-right text-sm tabular-nums ${
+                isStrong || isWeak ? 'font-bold' : ''
+              }`}
+              style={{ color: textColor }}
             >
               {traits[axis]}%
             </span>

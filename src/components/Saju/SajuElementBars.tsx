@@ -1,18 +1,11 @@
 import { ELEMENTS, ELEMENT_LABEL, ELEMENT_TEAM_MEANING } from '../../lib/saju/constants'
 import { useReveal } from '../../lib/ui/useReveal'
-import type { ElementFlag, ElementScores } from '../../lib/saju/types'
-import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
-
-const FLAG_LABEL: Record<ElementFlag, string> = {
-  excess: '넘침',
-  lacking: '부족',
-  empty: '비어 있음',
-  normal: '',
-}
+import type { ElementScores } from '../../lib/saju/types'
+import { ELEMENT_COLOR, ELEMENT_COLOR_DEEP, FLAG_LABEL } from '../../lib/ui/elementStyle'
 
 type Props = {
   percents: ElementScores
-  flags?: Record<string, ElementFlag>
+  flags?: Record<string, keyof typeof FLAG_LABEL>
   showMeaning?: boolean
 }
 
@@ -23,13 +16,26 @@ export function SajuElementBars({ percents, flags, showMeaning = false }: Props)
     <ul ref={ref} className="flex flex-col gap-2.5">
       {ELEMENTS.map((el, i) => {
         const flag = flags?.[el] ?? 'normal'
+        const marked = flag !== 'normal'
         return (
-          <li key={el} className="flex items-center gap-3">
+          <li
+            key={el}
+            className="flex items-center gap-3 rounded-lg px-2 py-2"
+            style={
+              // 칩을 붙이는 대신 행 전체를 그 오행 색으로 옅게 깐다.
+              // 칩은 줄 끝에 하나 더 붙는 요소라 다섯 줄이 다 시끄러워진다
+              marked
+                ? { background: `color-mix(in srgb, ${ELEMENT_COLOR[el]} 11%, var(--surface))` }
+                : undefined
+            }
+          >
             <span
-              className="w-11 shrink-0 text-sm font-semibold"
-              style={{ color: ELEMENT_COLOR[el] }}
+              className="w-6 shrink-0 text-sm font-semibold"
+              style={{ color: ELEMENT_COLOR_DEEP[el] }}
             >
-              {el} {ELEMENT_LABEL[el]}
+              <span aria-hidden="true">{el}</span>
+              {/* 한자만 두면 화면은 깔끔한데 읽어주는 쪽이 잃는다 */}
+              <span className="sr-only">{ELEMENT_LABEL[el]}</span>
             </span>
             <div
               className="h-2.5 flex-1 overflow-hidden rounded-full"
@@ -46,20 +52,19 @@ export function SajuElementBars({ percents, flags, showMeaning = false }: Props)
                 }}
               />
             </div>
-            <span className="w-9 shrink-0 text-right text-sm tabular-nums">
+            <span
+              className={[
+                'w-9 shrink-0 text-right text-xs tabular-nums',
+                marked ? 'font-bold' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              style={marked ? { color: 'var(--ink)' } : undefined}
+            >
               {percents[el]}%
             </span>
-            {flag !== 'normal' && (
-              <span
-                className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium"
-                style={{
-                  background: 'var(--accent-wash)',
-                  color: 'var(--accent-deep)',
-                }}
-              >
-                {FLAG_LABEL[flag]}
-              </span>
-            )}
+            {/* 색만으로 상태를 말하면 색을 못 보는 쪽에는 아무것도 안 남는다 */}
+            {marked && <span className="sr-only">{FLAG_LABEL[flag]}</span>}
             {showMeaning && (
               <span className="hidden shrink-0 text-xs sm:block" style={{ color: 'var(--ink-soft)' }}>
                 {ELEMENT_TEAM_MEANING[el]}

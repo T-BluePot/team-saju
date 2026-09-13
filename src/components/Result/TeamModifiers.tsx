@@ -1,6 +1,6 @@
-import { CommonRule, CommonSubHeading } from '../Common'
+import { CommonBlock, CommonEntry, CommonEntryList } from '../Common'
 import type { TeamReport } from '../../lib/report/teamReport'
-import { modifiersCopy } from '../../lib/copy'
+import { modifiersCopy, resultCopy } from '../../lib/copy'
 
 /**
  * 유형 위에 얹는 변주.
@@ -14,35 +14,26 @@ export function TeamModifiers({ report }: { report: TeamReport }) {
   if (report.modifiers.length === 0) return null
 
   return (
-    <>
-      <CommonRule />
-
-      <CommonSubHeading>{modifiersCopy.heading}</CommonSubHeading>
-      <p className="mt-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
-        {modifiersCopy.note}
-      </p>
-
-      <ul className="mt-3 flex flex-col gap-4">
+    <CommonBlock label={modifiersCopy.heading} description={modifiersCopy.note}>
+      {/*
+        분홍 칩을 걷었다. 변주가 서넛씩 붙는 자리라 칩이 줄마다 뜨면
+        같은 강조가 반복돼서 정작 본문이 뒤로 물러난다.
+      */}
+      <CommonEntryList divided>
         {report.modifiers.map((m) => (
-          <li key={m.id}>
-            <span
-              className="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold"
-              style={{ background: 'var(--accent-wash)', color: 'var(--accent-deep)' }}
+          <div key={m.id}>
+            <p
+              className="mb-1.5 text-xs font-bold tracking-wide"
+              style={{ color: 'var(--accent-deep)' }}
             >
               {m.label}
-            </span>
-            <p className="mt-1.5 text-sm leading-relaxed">{m.line}</p>
-            {m.fix && (
-              <p
-                className="mt-1.5 border-l-2 pl-3 text-sm leading-relaxed"
-                style={{ borderColor: 'var(--accent)', color: 'var(--ink-soft)' }}
-              >
-                {m.fix}
-              </p>
-            )}
-          </li>
+            </p>
+            <CommonEntry fix={m.fix} fixMark={resultCopy.prescriptionMark}>
+              {m.line}
+            </CommonEntry>
+          </div>
         ))}
-      </ul>
-    </>
+      </CommonEntryList>
+    </CommonBlock>
   )
 }

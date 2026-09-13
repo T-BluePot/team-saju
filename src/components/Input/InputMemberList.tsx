@@ -1,15 +1,19 @@
 import { CommonCard, CommonChip } from '../Common'
 import { memberListCopy } from '../../lib/copy'
 import type { SajuChart } from '../../lib/saju/types'
-import { ELEMENT_COLOR } from '../../lib/ui/elementStyle'
+import { ELEMENT_LABEL } from '../../lib/saju/constants'
+import { ELEMENT_COLOR_DEEP } from '../../lib/ui/elementStyle'
 
 type Props = {
   charts: SajuChart[]
   onRemove: (id: string) => void
+  /** 지금 고쳐 쓰는 사람 */
+  editingId: string | null
+  onEdit: (id: string) => void
 }
 
 /** 입력 화면에서 지금까지 넣은 팀원을 칩으로 보여준다 */
-export function InputMemberList({ charts, onRemove }: Props) {
+export function InputMemberList({ charts, onRemove, editingId, onEdit }: Props) {
   if (charts.length === 0) return null
 
   return (
@@ -17,42 +21,106 @@ export function InputMemberList({ charts, onRemove }: Props) {
       <p className="serif mb-2.5 text-sm font-bold">
         {memberListCopy.count(charts.length)}
       </p>
-      <ul className="flex flex-wrap gap-2">
-        {charts.map((c) => (
-          <CommonCard
-            key={c.member.id}
-            as="li"
-            flush
-            radius="rounded-full"
-            className="flex items-center gap-2 py-1 pl-3.5 pr-1"
-          >
-            <span className="text-sm font-medium">{c.member.name}</span>
-            <span
-              className="serif text-sm font-bold"
-              style={{ color: ELEMENT_COLOR[c.elements.dominant] }}
+      {/*
+        덮개 위로 올리는 건 칩 줄까지다. `팀원 N명` 은 누를 것도 없는 글인데
+        같이 올려두면 덮개도 아니고 쓸 것도 아닌 죽은 자리가 된다.
+
+        줄 자체는 손을 안 받는다. 줄은 폭을 다 쓰는데 칩은 왼쪽 몇 개뿐이라,
+        올리기만 하면 칩 오른쪽 빈 자리가 덮개도 아니고 누를 것도 아닌
+        죽은 자리가 된다. 칩만 손을 받고 나머지는 덮개로 흘려보낸다.
+      */}
+      <ul
+        className={[
+          'flex flex-wrap gap-2',
+          editingId !== null && 'raised pointer-events-none',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        {charts.map((c) => {
+          const editing = editingId === c.member.id
+          const faded = editingId !== null && !editing
+          /*
+            고르는 중에는 고른 것만 남기고 나머지를 물러나게 한다. 폼에 올라온 게
+            누구인지가 칩 줄에서 바로 보여야, 고치는 중인 걸 잊고 새로 넣지 않는다.
+
+            물러난 칩은 `inert` 다. 흐리게만 두면 눌러진다. 서림을 고쳐놓고
+            저장하기 전에 효경 칩을 누르면 폼이 통째로 다시 서면서 고쳐둔 게
+            확인 한 번 없이 사라졌다. v1 은 아무것도 저장하지 않아서 되돌릴 데도
+            없고, 대리 입력이면 그 사람에게 다시 물어봐야 한다. 다른 사람을
+            고치려면 저장하든 취소하든 이 사람을 먼저 끝낸다.
+
+            `style` 로 `borderColor` 를 같이 넘기면 안 된다. 고르는 중이 아닐 때
+            undefined 가 들어가면서 카드가 깔아둔 `1px solid var(--rule)` 의 색만
+            지워지고 `currentColor`, 곧 먹색으로 떨어진다. 칩마다 검은 테가 둘린다.
+          */
+          return (
+            <CommonCard
+              key={c.member.id}
+              as="li"
+              flush
+              radius="rounded-full"
+              inert={faded}
+              className={[
+                'flex items-center gap-2 p-1 transition-opacity',
+                editingId !== null && 'pointer-events-auto',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              style={{ opacity: faded ? 0.35 : 1 }}
             >
-              {c.elements.dominant}
-            </span>
-            {c.member.consent.source === 'delegated' && (
-              <CommonChip tone="accent" size="sm">
-                {memberListCopy.delegated}
-              </CommonChip>
-            )}
-            <button
-              type="button"
-              onClick={() => onRemove(c.member.id)}
-              aria-label={memberListCopy.remove(c.member.name)}
-              className="press flex size-8 items-center justify-center rounded-full text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{
-                background: 'var(--paper-deep)',
-                color: 'var(--ink-soft)',
-                outlineColor: 'var(--accent)',
-              }}
-            >
-              ×
-            </button>
-          </CommonCard>
-        ))}
+              {/*
+                이름을 누르면 그 사람이 폼으로 올라온다. 고칠 대상을 고르는 자리가
+                곧 목록이라 칩에 단다. 폼 안에 목록을 또 두면 같은 사람이 두 군데 선다.
+              */}
+              <button
+                type="button"
+                onClick={() => onEdit(c.member.id)}
+                aria-pressed={editing}
+                className="press rounded-full py-1 pl-2.5 pr-1 focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{ outlineColor: 'var(--accent)' }}
+              >
+                {/*
+                  이름과 한자를 한 덩어리로 묶어 밑선을 맞춘다. 명조와 고딕은 같은
+                  크기여도 밑선이 다르게 앉아서 `items-center` 로 두면 한자가 반 칸쯤
+                  떠 보인다. 지우기 단추는 가운데를 맞춰야 하니 바깥 줄은 그대로 둔다.
+
+                  한자는 일간의 오행이다. 오행 분포의 최다가 아니다. 그 사람을 한
+                  글자로 말하는 건 일간이라, 분포로 뽑으면 명식에서 `辛 금` 인 사람
+                  칩에 `火` 가 붙는다. 한자만 두면 안 읽히니 한글 이름을 같이 단다.
+                */}
+                <span className="flex items-baseline gap-1.5">
+                  <span className="text-sm font-medium">{c.member.name}</span>
+                  <span
+                    className="serif text-sm font-bold leading-none"
+                    style={{ color: ELEMENT_COLOR_DEEP[c.dayMaster.element] }}
+                  >
+                    <span aria-hidden="true">{c.dayMaster.element}</span>
+                    <span className="sr-only">{ELEMENT_LABEL[c.dayMaster.element]}</span>
+                  </span>
+                </span>
+              </button>
+              {c.member.consent.source === 'delegated' && (
+                <CommonChip tone="accent" size="sm">
+                  {memberListCopy.delegated}
+                </CommonChip>
+              )}
+              <button
+                type="button"
+                onClick={() => onRemove(c.member.id)}
+                aria-label={memberListCopy.remove(c.member.name)}
+                className="press flex size-8 items-center justify-center rounded-full text-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{
+                  background: 'var(--paper-deep)',
+                  color: 'var(--ink-soft)',
+                  outlineColor: 'var(--accent)',
+                }}
+              >
+                ×
+              </button>
+            </CommonCard>
+          )
+        })}
       </ul>
     </div>
   )
