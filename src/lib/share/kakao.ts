@@ -1,4 +1,4 @@
-import { KAKAO_JS_KEY } from '../config'
+import { KAKAO_JS_KEY, SITE_URL } from '../config'
 
 /**
  * 카카오톡 공유.
@@ -49,9 +49,26 @@ declare global {
   }
 }
 
-/** 키가 있어야 버튼을 그린다 */
+/**
+ * 이 주소에서 카카오를 불러도 되나.
+ *
+ * 키는 번들에 박히는 공개 값이라 **진짜 제한은 카카오 개발자 콘솔의 사이트 도메인
+ * 등록**이다. 여기서는 그 등록과 같은 목록을 코드에서 한 번 더 본다. 프리뷰 배포나
+ * 남의 사이트에 이 번들이 올라갔을 때 버튼이 떠서 눌렀다가 카카오가 거절하는 걸 막는다.
+ *
+ * 콘솔 등록이 빠지면 키를 복사해 간 쪽은 이 가드를 안 거치니 제한이 없는 것과 같다.
+ * 개발 서버는 localhost 만 연다. 콘솔에도 같은 주소를 등록해야 실제로 보내진다.
+ */
+function allowedHere(): boolean {
+  if (typeof window === 'undefined') return false
+  const { origin, hostname } = window.location
+  if (origin === new URL(SITE_URL).origin) return true
+  return import.meta.env.DEV && hostname === 'localhost'
+}
+
+/** 키가 있고 허락된 주소일 때만 버튼을 그린다 */
 export function kakaoReady(): boolean {
-  return KAKAO_JS_KEY.length > 0
+  return KAKAO_JS_KEY.length > 0 && allowedHere()
 }
 
 let loading: Promise<KakaoSdk | null> | null = null
