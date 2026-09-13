@@ -18,16 +18,18 @@ export function AppHeader() {
       팀원을 고쳐 쓰는 동안에는 여기도 덮인다.
 
       덮개를 머리글보다 아래에 깔아서(그래야 칩이 머리글을 뚫지 않는다) 머리글만
-      덮이지 않고 남는다. 제 안에 같은 색을 한 겹 얹고 누르는 것도 막는다.
-      `inert` 가 아니라 `pointer-events` 인 건, 이 자리에 초점이 서 있던 사람을
-      갑자기 트리 밖으로 밀어내지 않으려는 것이다.
+      덮이지 않고 남는다. 제 안에 같은 색을 한 겹 얹는다.
+
+      `pointer-events: none` 이 아니라 `inert` 다. 그건 마우스만 막고 Tab 은 그대로
+      들여보내서, 고치는 중에 로고로 초점을 옮겨 Enter 를 누르면 화면을 떠나버렸다.
+      `inert` 는 초점까지 막는다.
     */
     <header
       className="sticky top-0 z-30 backdrop-blur-sm"
+      inert={editingId !== null}
       style={{
         background: 'color-mix(in srgb, var(--paper) 88%, transparent)',
         borderBottom: '1px solid var(--rule)',
-        pointerEvents: editingId ? 'none' : undefined,
       }}
     >
       {editingId && <span aria-hidden="true" className="editscrim-top" />}

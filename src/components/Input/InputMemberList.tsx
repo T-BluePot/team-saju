@@ -39,9 +39,16 @@ export function InputMemberList({ charts, onRemove, editingId, onEdit }: Props) 
       >
         {charts.map((c) => {
           const editing = editingId === c.member.id
+          const faded = editingId !== null && !editing
           /*
             고르는 중에는 고른 것만 남기고 나머지를 물러나게 한다. 폼에 올라온 게
             누구인지가 칩 줄에서 바로 보여야, 고치는 중인 걸 잊고 새로 넣지 않는다.
+
+            물러난 칩은 `inert` 다. 흐리게만 두면 눌러진다. 서림을 고쳐놓고
+            저장하기 전에 효경 칩을 누르면 폼이 통째로 다시 서면서 고쳐둔 게
+            확인 한 번 없이 사라졌다. v1 은 아무것도 저장하지 않아서 되돌릴 데도
+            없고, 대리 입력이면 그 사람에게 다시 물어봐야 한다. 다른 사람을
+            고치려면 저장하든 취소하든 이 사람을 먼저 끝낸다.
 
             `style` 로 `borderColor` 를 같이 넘기면 안 된다. 고르는 중이 아닐 때
             undefined 가 들어가면서 카드가 깔아둔 `1px solid var(--rule)` 의 색만
@@ -53,13 +60,14 @@ export function InputMemberList({ charts, onRemove, editingId, onEdit }: Props) 
               as="li"
               flush
               radius="rounded-full"
+              inert={faded}
               className={[
                 'flex items-center gap-2 p-1 transition-opacity',
                 editingId !== null && 'pointer-events-auto',
               ]
                 .filter(Boolean)
                 .join(' ')}
-              style={{ opacity: editingId !== null && !editing ? 0.35 : 1 }}
+              style={{ opacity: faded ? 0.35 : 1 }}
             >
               {/*
                 이름을 누르면 그 사람이 폼으로 올라온다. 고칠 대상을 고르는 자리가

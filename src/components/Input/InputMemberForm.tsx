@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import {
   CommonButton,
@@ -28,11 +28,15 @@ type Props = {
   onCancelEdit: () => void
   /** 수정 중에 덮개 위로 올릴 때 쓴다 */
   className?: string
+  /**
+   * 추가나 수정이 됐다는 걸 알린다.
+   *
+   * 읽어주는 자리는 이 폼 밖이다. 고쳐서 저장하면 폼이 `key` 로 다시 서는데,
+   * 여기 들고 있으면 그려지기도 전에 같이 사라진다.
+   */
+  onAnnounce: (text: string) => void
 }
 
-
-/** 읽어준 뒤 문장을 비우는 시간 */
-const ANNOUNCE_MS = 4000
 
 export function InputMemberForm({
   onSubmit,
@@ -41,27 +45,11 @@ export function InputMemberForm({
   editing,
   onCancelEdit,
   className,
+  onAnnounce,
 }: Props) {
   const [draft, setDraft] = useState<Draft>(() => editing?.draft ?? emptyDraft())
   const [error, setError] = useState<string | null>(null)
-  /**
-   * 추가가 됐다는 걸 스크린리더에 알린다.
-   * 실패는 role="alert" 로 읽히는데 성공은 신호가 포커스 이동뿐이었다.
-   * 그러면 "이름, 편집 텍스트" 만 들려서 추가된 건지 실패해서 다시 치라는 건지 구분이 안 된다.
-   *
-   * 읽어준 뒤에는 비운다. 안 비우면 두 가지가 걸린다.
-   * 문장이 직전과 똑같으면 React 가 텍스트 노드를 안 건드려서 aria-live 가 안 읽는다.
-   * 지우고 같은 이름을 다시 넣는 흐름에서 두 번째가 무음이 된다.
-   * 그리고 팀원을 지우면 인원수는 줄었는데 여기 낡은 숫자가 그대로 남는다.
-   */
-  const [added, setAdded] = useState('')
   const nameRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (!added) return
-    const t = window.setTimeout(() => setAdded(''), ANNOUNCE_MS)
-    return () => window.clearTimeout(t)
-  }, [added])
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }))
@@ -72,18 +60,17 @@ export function InputMemberForm({
     const message = onSubmit(draft)
     setError(message)
     if (message) {
-      setAdded('')
       return
     }
 
     if (editing) {
       // 고친 뒤에는 폼을 비우지 않는다. 스토어가 고치기를 접으면서 새 폼으로 선다
-      setAdded(memberFormCopy.edited(name))
+      onAnnounce(memberFormCopy.edited(name))
       return
     }
 
     const next = count + 1
-    setAdded(
+    onAnnounce(
       next >= MAX_MEMBERS
         ? memberFormCopy.addedFull(name, next)
         : memberFormCopy.added(name, next),
@@ -229,15 +216,6 @@ export function InputMemberForm({
           {error}
         </p>
       )}
-
-      {/*
-        추가된 건 팀원 칩으로 이미 보인다. 눈으로 보는 사람에게는 중복이라
-        화면에서 감추고 스크린리더만 읽게 둔다.
-        리전은 내용보다 먼저 트리에 있어야 안정적으로 읽히니 항상 렌더한다.
-      */}
-      <p role="status" className="sr-only">
-        {added}
-      </p>
 
       {/* 주 동작은 하단 고정 바의 분석하기다. 폼 버튼은 한 단 내려 아웃라인으로 둔다 */}
       <CommonButton type="submit" variant="ghost" disabled={!editing && disabled}>

@@ -79,15 +79,18 @@ export function CommonField({
   label,
   description,
   children,
+  inert = false,
 }: {
   label: string
   /** 적기 전에 알아야 하는 말. 라벨 바로 아래 붙는다 */
   description?: string
   children: (id: string) => ReactNode
+  /** 덮개가 깔린 동안은 손도 초점도 안 닿아야 한다. 덮개는 마우스만 막는다 */
+  inert?: boolean
 }) {
   const id = useId()
   return (
-    <div>
+    <div inert={inert}>
       <CommonFieldLabel label={label} description={description} htmlFor={id} />
       <div className={BODY}>{children(id)}</div>
     </div>

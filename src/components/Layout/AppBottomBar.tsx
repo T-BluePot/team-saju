@@ -18,14 +18,18 @@ import type { ReactNode } from 'react'
 export function AppBottomBar({
   children,
   hint,
+  inert = false,
 }: {
   children: ReactNode
   /** 버튼 위에 뜨는 안내 한 줄. 왜 못 누르는지 같은 사정을 여기서 말한다 */
   hint?: string
+  /** 덮개가 깔린 동안은 손이 안 닿아야 한다. 덮개는 마우스만 막는다 */
+  inert?: boolean
 }) {
   return (
     <div
       className="sticky bottom-9 z-10 -mx-5 -mb-19 mt-8 px-5 pb-3 pt-3.5"
+      inert={inert}
       style={{ background: 'var(--paper)', borderTop: '1px solid var(--rule)' }}
     >
       {hint && (
