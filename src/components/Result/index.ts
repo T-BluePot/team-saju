@@ -1,6 +1,7 @@
 export { ArchetypeContent, ArchetypeScroll } from './ArchetypeScroll'
 export { PersonalView } from './PersonalView'
 export { ResultExampleNotice } from './ResultExampleNotice'
+export { ResultShareSheet } from './ResultShareSheet'
 export { TeamAnalysis } from './TeamAnalysis'
 export { TeamEnergyCards } from './TeamEnergyCards'
 export { TeamHeadline } from './TeamHeadline'
