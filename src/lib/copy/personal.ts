@@ -32,6 +32,16 @@ export const personalCopy = {
   tenGodsHeading: '십신',
   pairsHeading: '다른 팀원과의 조합',
   corrections: '계산 근거 보기',
+  /**
+   * 해보면 좋은 것.
+   *
+   * 부족한 오행을 채우는 쪽으로 고른다는 걸 설명에 적는다. 안 적으면 왜 나한테
+   * 이게 나왔는지 모른다. `재미로` 를 같이 두는 건 이 칸이 조언으로 안 읽히게
+   * 하려는 것이다. 목록 자체는 `lib/report/suggestions.ts` 에 있다
+   */
+  suggestBlock: '해보면 좋은 것',
+  suggestNote: (element: string) =>
+    `이 명식에 제일 적은 ${element} 기운으로 골라본 거리예요. 재미로 보는 것이니 끌리는 것만 해보세요.`,
 } as const
 
 /**
