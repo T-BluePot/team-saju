@@ -56,14 +56,12 @@ export function InputPage() {
       */}
       {editing && <div className="editscrim" aria-hidden="true" onPointerDown={cancelEdit} />}
 
-      <div className={editing ? 'raised' : undefined}>
-        <InputMemberList
-          charts={charts}
-          onRemove={removeMember}
-          editingId={editingId}
-          onEdit={startEdit}
-        />
-      </div>
+      <InputMemberList
+        charts={charts}
+        onRemove={removeMember}
+        editingId={editingId}
+        onEdit={startEdit}
+      />
       <InputUndoToast />
 
       {/*

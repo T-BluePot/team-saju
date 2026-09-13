@@ -341,17 +341,29 @@ body {
  * 고치기가 풀린다. 취소 버튼까지 찾아가지 않아도 빠져나올 수 있어야 한다.
  *
  * `dialog` 를 안 쓴다. 칩 줄과 폼 카드 둘을 같이 띄워야 하는데 둘은 형제가 아니다.
+ *
+ * **머리글보다 아래에 깐다.** 원하는 순서가 `덮개 > 머리글`, `머리글 > 칩` 인데
+ * 칩은 덮개 위에 있어야 한다. 셋이 서로를 물어서 한 줄로는 못 세운다.
+ * 그래서 덮개와 올린 것을 둘 다 머리글(30) 아래에 두고, 머리글은 제 안에서
+ * 따로 덮는다. 이렇게 해야 스크롤할 때 칩이 머리글을 뚫고 나가지 않는다.
  */
 .editscrim {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: 25;
   background: var(--scrim);
 }
 
 .raised {
   position: relative;
-  z-index: 41;
+  z-index: 26;
+}
+
+/* 머리글은 제 자리에 남고 안쪽만 덮인다. 누르는 건 부르는 쪽이 막는다 */
+.editscrim-top {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
 }
 
 /*

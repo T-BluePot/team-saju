@@ -5,6 +5,7 @@ export function AppHeader() {
   const goLanding = useTeamStore((s) => s.goLanding)
   const goEdit = useTeamStore((s) => s.goEdit)
   const view = useTeamStore((s) => s.view)
+  const editingId = useTeamStore((s) => s.editingId)
 
   /**
    * 결과와 로딩에서는 오른쪽 버튼 대신 왼쪽에 뒤로가기를 둔다.
@@ -13,13 +14,23 @@ export function AppHeader() {
   const showBack = view === 'result' || view === 'loading'
 
   return (
+    /*
+      팀원을 고쳐 쓰는 동안에는 여기도 덮인다.
+
+      덮개를 머리글보다 아래에 깔아서(그래야 칩이 머리글을 뚫지 않는다) 머리글만
+      덮이지 않고 남는다. 제 안에 같은 색을 한 겹 얹고 누르는 것도 막는다.
+      `inert` 가 아니라 `pointer-events` 인 건, 이 자리에 초점이 서 있던 사람을
+      갑자기 트리 밖으로 밀어내지 않으려는 것이다.
+    */
     <header
       className="sticky top-0 z-30 backdrop-blur-sm"
       style={{
         background: 'color-mix(in srgb, var(--paper) 88%, transparent)',
         borderBottom: '1px solid var(--rule)',
+        pointerEvents: editingId ? 'none' : undefined,
       }}
     >
+      {editingId && <span aria-hidden="true" className="editscrim-top" />}
       <div
         className="grid w-full items-center gap-2 px-5 py-3"
         style={{

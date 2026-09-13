@@ -21,7 +21,12 @@ export function InputMemberList({ charts, onRemove, editingId, onEdit }: Props) 
       <p className="serif mb-2.5 text-sm font-bold">
         {memberListCopy.count(charts.length)}
       </p>
-      <ul className="flex flex-wrap gap-2">
+      {/*
+        덮개 위로 올리는 건 칩 줄까지다. `팀원 N명` 은 누를 것도 없는 글인데
+        같이 올려두면 덮개도 아니고 쓸 것도 아닌 죽은 자리가 된다.
+        올라와 있는 건 실제로 눌러 쓰는 것만이어야 한다.
+      */}
+      <ul className={['flex flex-wrap gap-2', editingId !== null && 'raised'].filter(Boolean).join(' ')}>
         {charts.map((c) => {
           const editing = editingId === c.member.id
           /*
